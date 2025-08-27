@@ -1,0 +1,155 @@
+📸 Photobooth App PRD
+
+Overview
+
+Our photobooth app is a cashless, customizable event solution that empowers photobooth business owners to deliver DSLR-quality or tablet-based booth experiences. We combine capture customization, physical + digital output, and cashless payments in one platform.
+
+Problem: Photobooth operators manually handle payments and juggle multiple apps/hardware, making operations inefficient.
+Solution: A mobile + web app that handles setup → branding → capture → payment → print/share seamlessly.
+
+Target Users:
+	•	Photobooth Owners – streamlined management, no manual payments.
+	•	Event Planners/Brands – custom branding, reliable experience.
+	•	Guests – fun, frictionless session with instant photo output.
+
+⸻
+
+Core Features
+
+1. Booth Customization
+	•	Start screen: custom logo, theme colors, instructions.
+	•	Layouts: photo strips, collages, branded overlays.
+	•	Filters & AR props: optional engagement add-ons.
+
+Why: Branded experiences increase event & sponsor value.
+How: Cloud template builder stored per event.
+
+⸻
+
+2. Capture Modes
+	•	Photo (base).
+	•	GIF/Boomerang.
+	•	Short Video.
+	•	Hardware: support tablet cameras first, DSLR integration later.
+
+Why: More capture options = more guest engagement.
+How: Camera abstraction layer → mobile camera SDK first, DSLR SDK research.
+
+⸻
+
+3. Cashless Payments
+	•	QR-based (Paymongo QRPh).
+	•	Owner sets pricing per session.
+	•	Booth session unlocks after payment.
+	•	Revenue tracking on dashboard.
+
+Why: Removes friction of manual cash handling.
+How: Payment API → unlock session token → capture enabled.
+
+⸻
+
+4. Output & Sharing
+	•	Physical print: connect to photobooth printer.
+	•	Digital share: email + QR download link.
+	•	Owner gallery: full event media library, downloadable for social media promotion.
+	•	No direct guest → social media posting (privacy risk).
+
+Why: Owners need shareable content, guests need quick retrieval.
+How: Cloud upload → shortlink/QR generation → print queue integration.
+
+⸻
+
+5. Owner Dashboard
+	•	Create/manage multiple events.
+	•	Analytics: sessions, revenue, media count.
+	•	Gallery access for each event.
+	•	Export all media for post-event use.
+
+⸻
+
+User Experience
+
+Personas
+	•	Owner: wants ease of setup & no payment hassle.
+	•	Planner/Brand: wants theme-aligned booth.
+	•	Guest: wants a fun, quick, and frictionless session.
+
+Key Flows
+	1.	Owner creates event → customizes booth → sets pricing.
+	2.	Guest approaches → scans QR → pays → session unlocks.
+	3.	Capture (photo/GIF/video) → preview → confirm.
+	4.	Output: instant print + QR/email digital share.
+	5.	Owner monitors analytics and retrieves event gallery.
+
+⸻
+
+Technical Architecture
+
+Frontend:
+	•	Tablet App (Guest Booth) – React Native.
+	•	Owner Dashboard (Web) – Next.js.
+
+Backend:
+	•	NestJS backend.
+	•	PostgreSQL (CloudSQL).
+	•	Paymongo API for QRPh.
+	•	Media storage: Google Cloud Storage.
+	•	Print service integration (DSLR printer SDK + generic printer support).
+
+Data Models:
+	•	User (owner, guest session).
+	•	Event (branding, pricing, settings).
+	•	Session (payment link, capture, output status).
+	•	Media (photo/video metadata, storage URL).
+	•	Transaction (payment ID, amount, status).
+
+⸻
+
+Development Roadmap
+
+Phase 1 (MVP – Cloud-Only)
+	•	Owner dashboard (create events, set pricing, branding).
+	•	Guest capture via tablet camera.
+	•	Payment unlock with Paymongo QRPh.
+	•	Capture photo/GIF + print + email/QR share.
+	•	Owner gallery view + export.
+
+Phase 2
+	•	Add short video/boomerang capture.
+	•	Custom layout builder for strips/collages.
+	•	Event-level analytics dashboard (sessions, payments, top layouts).
+	•	Multiple printer support.
+
+Phase 3
+	•	DSLR integration (research SDKs like Canon SDK or gPhoto2).
+	•	Sponsor branding overlays, white-label support.
+	•	Offline capture with sync.
+	•	Advanced analytics + monetization features.
+
+⸻
+
+Logical Dependency Chain
+	1.	Core foundation: Auth, event creation, media storage.
+	2.	Payments integration: QRPh flow → unlock sessions.
+	3.	Tablet capture: photo first, minimal flows.
+	4.	Output layer: print + QR/email share.
+	5.	Owner gallery + dashboard: analytics & export.
+	6.	Enhancements: video modes, DSLR support, sponsor branding, offline sync.
+
+⸻
+
+Risks and Mitigations
+	•	DSLR integration complexity: May delay → MVP sticks to tablet camera until stable SDK integration.
+	•	Printer SDK fragmentation: Prioritize widely used photobooth printers → fallback to generic print drivers.
+	•	Payment API dependency: Mitigate by supporting manual override (cash toggle) if QR fails.
+	•	Guest privacy concerns: Keep social media posting under owner control only.
+
+⸻
+
+Appendix
+	•	DSLR SDK research: Canon EOS SDK, Nikon SDK, gPhoto2.
+	•	Paymongo QRPh API docs.
+	•	Competitor feature mapping (DSLR Photobooth, Booth.Events).
+	•	Cloud printer options (DSLR photo printer, dye-sublimation printers).
+
+⸻
