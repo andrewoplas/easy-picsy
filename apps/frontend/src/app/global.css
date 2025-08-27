@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-jost), system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-passion-one), cursive;
+}
+
+.fillout-embed-popup-main {
+  width: 80vw !important;
+  height: 90vh !important;
+}
+
+.fillout-embed-popup-main iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.fillout-embed-popup-close {
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
