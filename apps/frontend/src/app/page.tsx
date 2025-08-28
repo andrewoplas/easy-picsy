@@ -22,8 +22,49 @@ export default function LandingPage() {
     setShowForm(true);
   };
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Easy Picsy',
+    description:
+      'Professional photobooth management software with GCash payments, real-time analytics, and white-label branding for rental businesses in the Philippines.',
+    url: 'https://easypicsy.com',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web Browser',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'PHP',
+      availability: 'https://schema.org/PreOrder',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'Easy Picsy',
+      url: 'https://easypicsy.com',
+      logo: 'https://easypicsy.com/logo.svg',
+      sameAs: ['https://instagram.com/easypicsybooths'],
+    },
+    featureList: [
+      'GCash and QRPh payment integration',
+      'Real-time analytics dashboard',
+      'Cloud-based event management',
+      'White-label branding tools',
+      'Compatible with existing hardware',
+      'Drag-and-drop customization',
+    ],
+    audience: {
+      '@type': 'BusinessAudience',
+      audienceType:
+        'Photobooth rental businesses, wedding photographers, event suppliers',
+    },
+  };
+
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       {/* Navigation */}
       <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-50 animate-slide-up">
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-3">
@@ -114,21 +155,20 @@ export default function LandingPage() {
             {/* Left Content */}
             <div className="animate-fade-in">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight animate-slide-up">
-                Less time setting up,
+                Professional Photobooth Software
                 <br />
-                <span className="text-easy-yellow">
-                  more time taking photos
-                </span>
+                <span className="text-easy-yellow">with Cashless Payments</span>
               </h1>
               <p
                 className="text-xl text-gray-600 mb-8 animate-fade-in"
                 style={{ animationDelay: '0.2s' }}
               >
-                Easy Picsy is your photobooth assistant that{' '}
+                Easy Picsy is the modern photobooth management software that{' '}
                 <span className="font-semibold text-gray-800">
-                  automates event setup
+                  automates GCash payments, event branding, and real-time
+                  analytics
                 </span>{' '}
-                including payments, branding, and analytics.
+                for photobooth rental businesses in the Philippines.
               </p>
 
               <div
@@ -218,14 +258,15 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4 animate-slide-up">
-              Our Features
+              Complete Photobooth Business Solution
             </h2>
             <p
               className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in"
               style={{ animationDelay: '0.2s' }}
             >
-              Unlock unique perks, priority access, and special privileges by
-              joining Easy Picsy as an early adopter.
+              Everything photobooth suppliers need to streamline operations,
+              increase revenue, and deliver exceptional guest experiences at
+              weddings, parties, and corporate events.
             </p>
           </div>
 
@@ -235,45 +276,48 @@ export default function LandingPage() {
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.4s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <Zap className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Quick Setup
+                Fast Photobooth Setup
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Get your photobooth running in minutes with our intuitive
-                interface. No tech skills needed.
+                Launch your photobooth rental in minutes with our drag-and-drop
+                interface. Perfect for wedding photobooths and event photography
+                businesses.
               </p>
             </div>
             <div
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.5s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <DollarSign className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <DollarSign className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Built-in Payments
+                GCash & QRPh Integration
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Accept GCash and QRPh payments automatically without third-party
-                plugins or manual setup.
+                Accept cashless payments seamlessly with built-in GCash and QRPh
+                support. Increase revenue by 40% with contactless photobooth
+                payments.
               </p>
             </div>
             <div
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.6s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <Globe className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <Globe className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Cloud Management
+                Cloud-Based Management
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Edit events from anywhere with browser access. Something
-                traditional software can&apos;t do.
+                Manage multiple photobooth events remotely through any web
+                browser. Monitor live bookings and update settings from
+                anywhere.
               </p>
             </div>
           </div>
@@ -284,45 +328,48 @@ export default function LandingPage() {
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.7s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <BarChart3 className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <BarChart3 className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Real-time Analytics
+                Business Analytics Dashboard
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Track sessions, revenue, and guest engagement with live
-                dashboard updates and insights.
+                Track photobooth usage, revenue metrics, and guest engagement in
+                real-time. Make data-driven decisions for your rental business
+                growth.
               </p>
             </div>
             <div
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.8s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <Camera className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <Camera className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Universal Hardware
+                Compatible Hardware Support
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Works perfectly with existing cameras, printers, and tablets. No
-                expensive hardware upgrades.
+                Works with your existing DSLR cameras, photo printers, and
+                tablets. No expensive equipment upgrades needed for your
+                photobooth business.
               </p>
             </div>
             <div
               className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.9s' }}
             >
-              <div className="w-16 h-16 bg-easy-black rounded-2xl flex items-center justify-center mb-6">
-                <Sparkles className="w-8 h-8 text-easy-yellow" />
+              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                <Sparkles className="w-8 h-8 text-easy-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Custom Branding
+                White-Label Branding
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Drag-and-drop template editor lets you customize branding for
-                each client in seconds.
+                Create custom branded photobooth experiences for weddings and
+                corporate events. Drag-and-drop editor makes client
+                customization effortless.
               </p>
             </div>
           </div>
@@ -334,13 +381,14 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4 animate-slide-up">
-              How Contactless Payments Work
+              Cashless Photobooth Payment System
             </h2>
             <p
               className="text-lg text-gray-600 animate-fade-in"
               style={{ animationDelay: '0.2s' }}
             >
-              Accept cashless payments with GCash and QRPh
+              Streamlined QR code payments for modern photobooth rentals in the
+              Philippines
             </p>
           </div>
 
@@ -369,7 +417,7 @@ export default function LandingPage() {
                   style={{ animationDelay: '0.6s' }}
                 >
                   <div className="lg:w-1/2 lg:pr-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -402,7 +450,7 @@ export default function LandingPage() {
                   style={{ animationDelay: '0.7s' }}
                 >
                   <div className="lg:w-1/2 lg:pl-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -435,7 +483,7 @@ export default function LandingPage() {
                   style={{ animationDelay: '0.8s' }}
                 >
                   <div className="lg:w-1/2 lg:pr-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -468,7 +516,7 @@ export default function LandingPage() {
                   style={{ animationDelay: '0.9s' }}
                 >
                   <div className="lg:w-1/2 lg:pl-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -521,7 +569,7 @@ export default function LandingPage() {
                   className="text-center relative animate-scale-in"
                   style={{ animationDelay: '1.1s' }}
                 >
-                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">1</span>
                     </div>
@@ -540,7 +588,7 @@ export default function LandingPage() {
                   className="text-center relative animate-scale-in"
                   style={{ animationDelay: '1.2s' }}
                 >
-                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">2</span>
                     </div>
@@ -559,7 +607,7 @@ export default function LandingPage() {
                   className="text-center relative animate-scale-in"
                   style={{ animationDelay: '1.3s' }}
                 >
-                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">3</span>
                     </div>
@@ -607,21 +655,24 @@ export default function LandingPage() {
               </span>
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-easy-black mb-6 animate-slide-up leading-tight">
-              Ready to Upgrade Your
+              Transform Your
               <br />
-              <span className="text-easy-yellow">Photobooth Business?</span>
+              <span className="text-easy-yellow">
+                Photobooth Rental Business
+              </span>
             </h2>
             <p
               className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in"
               style={{ animationDelay: '0.2s' }}
             >
-              Join 200+ photobooth operators already on our waitlist
+              Join 200+ wedding photographers and event suppliers already using
+              Easy Picsy
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <div
-              className="bg-white rounded-2xl p-6 shadow-sm animate-scale-in"
+              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.4s' }}
             >
               <div className="text-2xl mb-3">🚀</div>
@@ -631,7 +682,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div
-              className="bg-white rounded-2xl p-6 shadow-sm animate-scale-in"
+              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.5s' }}
             >
               <div className="text-2xl mb-3">💰</div>
@@ -643,7 +694,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div
-              className="bg-white rounded-2xl p-6 shadow-sm animate-scale-in"
+              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
               style={{ animationDelay: '0.6s' }}
             >
               <div className="text-2xl mb-3">🏆</div>
