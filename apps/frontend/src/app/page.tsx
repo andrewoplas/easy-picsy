@@ -1,7 +1,15 @@
 'use client';
 
+import AnimatedBackground from '@/components/AnimatedBackground';
 import { Button } from '@/components/ui/button';
+import {
+  useFloatingAnimation,
+  useHoverAnimation,
+  useStaggerAnimation,
+} from '@/hooks/useGSAPAnimations';
 import { FilloutPopupEmbed } from '@fillout/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   BarChart3,
   Camera,
@@ -13,14 +21,242 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingPage() {
   const [showForm, setShowForm] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const heroContentRef = useRef<HTMLDivElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
+  const featureCardsRef = useStaggerAnimation(0.08, {}, '.feature-card');
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const guestStepsRef = useStaggerAnimation(0.15, {}, 'children');
+  const resourceCardsRef = useStaggerAnimation(0.12, {}, 'children');
+  const floatingCameraRef = useFloatingAnimation(15, 4);
+  const ctaButtonRef = useHoverAnimation<HTMLButtonElement>(
+    { scale: 1.1, rotate: 2 },
+    { scale: 1, rotate: 0 }
+  );
 
   const handleJoinWaitlist = () => {
     setShowForm(true);
   };
+
+  useEffect(() => {
+    // Check if animations have already run
+    const hasAnimated = sessionStorage.getItem('landingAnimated');
+
+    const ctx = gsap.context(() => {
+      // Only run entrance animations if not already animated
+      if (!hasAnimated) {
+        gsap.fromTo(
+          navRef.current,
+          { y: -100, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power3.out',
+            delay: 0.2,
+          }
+        );
+
+        if (heroContentRef.current) {
+          const elements = heroContentRef.current.children;
+          gsap.fromTo(
+            elements,
+            {
+              opacity: 0,
+              y: 50,
+              scale: 0.95,
+            },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 1,
+              stagger: 0.15,
+              ease: 'power3.out',
+              delay: 0.5,
+            }
+          );
+        }
+
+        if (heroImageRef.current) {
+          gsap.fromTo(
+            heroImageRef.current,
+            {
+              opacity: 0,
+              scale: 0.8,
+              rotate: -10,
+            },
+            {
+              opacity: 1,
+              scale: 1,
+              rotate: 0,
+              duration: 1.5,
+              ease: 'elastic.out(1, 0.8)',
+              delay: 0.8,
+              onComplete: () => {
+                // Mark animations as completed
+                sessionStorage.setItem('landingAnimated', 'true');
+              },
+            }
+          );
+        }
+      } else {
+        // If already animated, just set elements to their final state
+        gsap.set(navRef.current, { y: 0, opacity: 1 });
+        if (heroContentRef.current) {
+          gsap.set(heroContentRef.current.children, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          });
+        }
+        if (heroImageRef.current) {
+          gsap.set(heroImageRef.current, { opacity: 1, scale: 1, rotate: 0 });
+        }
+      }
+
+      // Continuous animations (these should always run)
+      if (heroImageRef.current) {
+        gsap.to(heroImageRef.current, {
+          y: 20,
+          duration: 3,
+          ease: 'power1.inOut',
+          repeat: -1,
+          yoyo: true,
+        });
+      }
+
+      const sparkles = document.querySelectorAll('.sparkle-icon');
+      sparkles.forEach((sparkle, index) => {
+        gsap.to(sparkle, {
+          rotate: 360,
+          duration: 3 + index * 0.5,
+          ease: 'none',
+          repeat: -1,
+        });
+      });
+
+      if (timelineRef.current) {
+        const timelineItems =
+          timelineRef.current.querySelectorAll('.timeline-item');
+
+        ScrollTrigger.create({
+          trigger: timelineRef.current,
+          start: 'top 70%',
+          once: true, // Only trigger once
+          onEnter: () => {
+            gsap.fromTo(
+              '.timeline-line',
+              { scaleY: 0 },
+              {
+                scaleY: 1,
+                duration: 1.5,
+                ease: 'power2.inOut',
+                transformOrigin: 'top',
+              }
+            );
+
+            timelineItems.forEach((item, index) => {
+              const isLeft = index % 2 === 0;
+              gsap.fromTo(
+                item,
+                {
+                  opacity: 0,
+                  x: isLeft ? -100 : 100,
+                  scale: 0.8,
+                },
+                {
+                  opacity: 1,
+                  x: 0,
+                  scale: 1,
+                  duration: 0.8,
+                  delay: index * 0.2,
+                  ease: 'power3.out',
+                }
+              );
+
+              const dot = item.querySelector('.timeline-dot');
+              if (dot) {
+                gsap.fromTo(
+                  dot,
+                  { scale: 0 },
+                  {
+                    scale: 1,
+                    duration: 0.5,
+                    delay: index * 0.2 + 0.3,
+                    ease: 'back.out(1.7)',
+                  }
+                );
+              }
+            });
+          },
+        });
+      }
+
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach((button) => {
+        button.addEventListener('mouseenter', () => {
+          gsap.to(button, {
+            scale: 1.05,
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        });
+        button.addEventListener('mouseleave', () => {
+          gsap.to(button, {
+            scale: 1,
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        });
+      });
+
+      gsap.utils.toArray('.feature-card').forEach((card: any) => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, {
+            y: -4,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+          gsap.to(card.querySelector('.feature-icon'), {
+            scale: 1.05,
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        });
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, {
+            y: 0,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+          gsap.to(card.querySelector('.feature-icon'), {
+            scale: 1,
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        });
+      });
+
+      gsap.to('.grid-background', {
+        backgroundPosition: '100% 100%',
+        duration: 60, // Slowed down from 20 to 60 seconds
+        ease: 'none',
+        repeat: -1,
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -60,20 +296,25 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative" ref={heroRef}>
+      <AnimatedBackground />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      {/* Navigation */}
-      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-50 animate-slide-up">
+
+      <nav
+        ref={navRef}
+        className="fixed top-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-50"
+      >
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <img
                 src="/logo.svg"
                 alt="Easy Picsy"
-                className="h-8 w-auto hover:animate-float transition-all duration-300"
+                className="h-8 w-auto transition-all duration-300 cursor-pointer"
               />
             </div>
             <div className="hidden md:flex items-center space-x-6">
@@ -91,7 +332,7 @@ export default function LandingPage() {
               </a>
               <a
                 href="#waitlist"
-                className="bg-easy-yellow text-easy-black px-4 py-2 rounded-xl text-sm font-semibold hover:bg-easy-yellow/90 transition-all duration-300 hover:animate-gentle-bounce"
+                className="bg-easy-yellow text-easy-black px-4 py-2 rounded-xl text-sm font-semibold hover:bg-easy-yellow/90 transition-all duration-300"
               >
                 Join Waitlist
               </a>
@@ -100,11 +341,10 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="pt-32 pb-24 px-4 bg-[#f9fafb] relative overflow-hidden">
         {/* Diagonal Fade Grid Background - Top Right */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 grid-background"
           style={{
             backgroundImage: `
               linear-gradient(to right, #d1d5db 1px, transparent 1px),
@@ -118,51 +358,17 @@ export default function LandingPage() {
           }}
         />
 
-        {/* Floating Background Elements */}
-        <div className="absolute inset-0 opacity-30 z-10">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-easy-yellow/10 rounded-full animate-drift"></div>
-          <div
-            className="absolute top-40 right-20 w-24 h-24 bg-easy-yellow/15 rounded-full animate-subtle-float"
-            style={{ animationDelay: '2s' }}
-          ></div>
-          <div
-            className="absolute bottom-32 left-1/4 w-40 h-40 bg-easy-yellow/8 rounded-full animate-breathe"
-            style={{ animationDelay: '4s' }}
-          ></div>
-          <div
-            className="absolute top-1/2 right-1/3 w-16 h-16 bg-easy-yellow/20 rounded-full animate-gentle-bounce"
-            style={{ animationDelay: '6s' }}
-          ></div>
-          <div
-            className="absolute bottom-20 right-10 w-28 h-28 bg-easy-yellow/12 rounded-full animate-smooth-pulse"
-            style={{ animationDelay: '1s' }}
-          ></div>
-
-          {/* Geometric shapes */}
-          <div className="absolute top-20 right-1/4 w-12 h-12 bg-easy-yellow/15 rotate-45 animate-rotate-slow"></div>
-          <div
-            className="absolute bottom-40 left-10 w-8 h-16 bg-easy-yellow/10 rounded-lg animate-drift"
-            style={{ animationDelay: '3s' }}
-          ></div>
-          <div
-            className="absolute top-1/3 left-1/3 w-6 h-6 bg-easy-yellow/25 rotate-45 animate-gentle-bounce"
-            style={{ animationDelay: '5s' }}
-          ></div>
-        </div>
-
         <div className="container mx-auto max-w-6xl relative z-20">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div className="animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight animate-slide-up">
+            <div ref={heroContentRef}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
                 Professional Photobooth Software
                 <br />
-                <span className="text-easy-yellow">with Cashless Payments</span>
+                <span className="text-easy-yellow bg-gradient-to-r from-easy-yellow to-yellow-400 bg-clip-text text-transparent">
+                  with Cashless Payments
+                </span>
               </h1>
-              <p
-                className="text-xl text-gray-600 mb-8 animate-fade-in"
-                style={{ animationDelay: '0.2s' }}
-              >
+              <p className="text-xl text-gray-600 mb-8">
                 Easy Picsy is the modern photobooth management software that{' '}
                 <span className="font-semibold text-gray-800">
                   automates GCash payments, event branding, and real-time
@@ -171,253 +377,200 @@ export default function LandingPage() {
                 for photobooth rental businesses in the Philippines.
               </p>
 
-              <div
-                className="mb-8 animate-scale-in"
-                style={{ animationDelay: '0.4s' }}
-              >
+              <div className="mb-8">
                 <Button
+                  ref={ctaButtonRef}
                   size="lg"
-                  className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 hover:shadow-lg hover:animate-breathe transition-all duration-300 rounded-2xl group"
+                  className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 hover:shadow-lg transition-all duration-300 rounded-2xl group"
                   onClick={handleJoinWaitlist}
                 >
-                  <span className="group-hover:animate-subtle-float">
-                    Join the waitlist
-                  </span>
+                  <span>Join the waitlist</span>
                 </Button>
               </div>
 
-              <div
-                className="flex items-center gap-2 animate-fade-in"
-                style={{ animationDelay: '0.6s' }}
-              >
+              <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
-                  <Sparkles className="w-4 h-4 text-easy-yellow" />
-                  <Sparkles className="w-4 h-4 text-easy-yellow" />
+                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
+                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
                   <span className="text-sm font-medium text-gray-600 ml-2">
                     Exclusive to the{' '}
                     <span className="font-bold text-gray-800">
                       first 100 suppliers only!
                     </span>
                   </span>
-                  <Sparkles className="w-4 h-4 text-easy-yellow" />
-                  <Sparkles className="w-4 h-4 text-easy-yellow" />
+                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
+                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
                 </div>
               </div>
             </div>
 
-            {/* Right Illustration */}
-            <div
-              className="relative animate-slide-in-right"
-              style={{ animationDelay: '0.8s' }}
-            >
+            <div ref={heroImageRef} className="relative">
               <div className="relative">
-                {/* Main illustration placeholder */}
-                <div className="bg-white rounded-3xl p-8 shadow-lg">
+                <div className="bg-white rounded-3xl p-8 shadow-xl">
                   <div className="aspect-square bg-gradient-to-br from-easy-yellow/20 to-easy-yellow/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
                     <div className="text-center">
-                      <Camera className="w-24 h-24 text-easy-yellow mx-auto mb-4 animate-float group-hover:animate-breathe transition-all duration-300" />
+                      <div ref={floatingCameraRef}>
+                        <Camera className="w-24 h-24 text-easy-yellow mx-auto mb-4" />
+                      </div>
                       <div className="grid grid-cols-3 gap-2 mt-8">
-                        <div className="w-8 h-8 bg-easy-yellow/30 rounded-lg animate-smooth-pulse"></div>
+                        <div className="w-8 h-8 bg-easy-yellow/30 rounded-lg animate-pulse"></div>
                         <div
-                          className="w-8 h-8 bg-easy-yellow/40 rounded-lg animate-smooth-pulse"
+                          className="w-8 h-8 bg-easy-yellow/40 rounded-lg animate-pulse"
                           style={{ animationDelay: '0.5s' }}
                         ></div>
                         <div
-                          className="w-8 h-8 bg-easy-yellow/30 rounded-lg animate-smooth-pulse"
+                          className="w-8 h-8 bg-easy-yellow/30 rounded-lg animate-pulse"
                           style={{ animationDelay: '1s' }}
                         ></div>
                       </div>
                     </div>
-                    {/* Floating decorative elements */}
-                    <div className="absolute top-4 right-4 w-4 h-4 bg-easy-yellow rounded-full animate-gentle-bounce"></div>
-                    <div
-                      className="absolute bottom-6 left-6 w-3 h-3 bg-easy-yellow/60 rounded-full animate-subtle-float"
-                      style={{ animationDelay: '1.5s' }}
-                    ></div>
-                    <div
-                      className="absolute top-1/3 left-4 w-2 h-2 bg-easy-yellow/80 rounded-full animate-smooth-pulse"
-                      style={{ animationDelay: '2s' }}
-                    ></div>
                   </div>
                 </div>
 
-                {/* Background decorative elements */}
-                <div className="absolute -top-6 -right-6 w-16 h-16 bg-easy-yellow/20 rounded-2xl animate-subtle-float"></div>
-                <div
-                  className="absolute -bottom-4 -left-4 w-12 h-12 bg-easy-yellow/15 rounded-full animate-drift"
-                  style={{ animationDelay: '1s' }}
-                ></div>
+                <div className="absolute -top-6 -right-6 w-16 h-16 bg-easy-yellow/20 rounded-2xl blur-xl"></div>
+                <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-easy-yellow/15 rounded-full blur-xl"></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4 animate-slide-up">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">
               Complete Photobooth Business Solution
             </h2>
-            <p
-              className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in"
-              style={{ animationDelay: '0.2s' }}
-            >
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Everything photobooth suppliers need to streamline operations,
               increase revenue, and deliver exceptional guest experiences at
               weddings, parties, and corporate events.
             </p>
           </div>
 
-          {/* Top row - 3 cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.4s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-8 h-8 text-easy-black" />
+          <div ref={featureCardsRef} className="space-y-8">
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <Zap className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  Fast Photobooth Setup
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Launch your photobooth rental in minutes with our
+                  drag-and-drop interface. Perfect for wedding photobooths and
+                  event photography businesses.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Fast Photobooth Setup
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Launch your photobooth rental in minutes with our drag-and-drop
-                interface. Perfect for wedding photobooths and event photography
-                businesses.
-              </p>
-            </div>
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.5s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <DollarSign className="w-8 h-8 text-easy-black" />
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <DollarSign className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  GCash & QRPh Integration
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Accept cashless payments seamlessly with built-in GCash and
+                  QRPh support. Increase revenue by 40% with contactless
+                  photobooth payments.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                GCash & QRPh Integration
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Accept cashless payments seamlessly with built-in GCash and QRPh
-                support. Increase revenue by 40% with contactless photobooth
-                payments.
-              </p>
-            </div>
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.6s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <Globe className="w-8 h-8 text-easy-black" />
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <Globe className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  Cloud-Based Management
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Manage multiple photobooth events remotely through any web
+                  browser. Monitor live bookings and update settings from
+                  anywhere.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Cloud-Based Management
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Manage multiple photobooth events remotely through any web
-                browser. Monitor live bookings and update settings from
-                anywhere.
-              </p>
             </div>
-          </div>
 
-          {/* Bottom row - 3 cards */}
-          <div className="grid md:grid-cols-3 gap-8">
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.7s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <BarChart3 className="w-8 h-8 text-easy-black" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <BarChart3 className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  Business Analytics Dashboard
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Track photobooth usage, revenue metrics, and guest engagement
+                  in real-time. Make data-driven decisions for your rental
+                  business growth.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Business Analytics Dashboard
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Track photobooth usage, revenue metrics, and guest engagement in
-                real-time. Make data-driven decisions for your rental business
-                growth.
-              </p>
-            </div>
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.8s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <Camera className="w-8 h-8 text-easy-black" />
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <Camera className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  Compatible Hardware Support
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Works with your existing DSLR cameras, photo printers, and
+                  tablets. No expensive equipment upgrades needed for your
+                  photobooth business.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Compatible Hardware Support
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Works with your existing DSLR cameras, photo printers, and
-                tablets. No expensive equipment upgrades needed for your
-                photobooth business.
-              </p>
-            </div>
-            <div
-              className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.9s' }}
-            >
-              <div className="w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
-                <Sparkles className="w-8 h-8 text-easy-black" />
+              <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="feature-icon w-16 h-16 bg-easy-yellow rounded-2xl flex items-center justify-center mb-6">
+                  <Sparkles className="w-8 h-8 text-easy-black" />
+                </div>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                  White-Label Branding
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Create custom branded photobooth experiences for weddings and
+                  corporate events. Drag-and-drop editor makes client
+                  customization effortless.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">
-                White-Label Branding
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Create custom branded photobooth experiences for weddings and
-                corporate events. Drag-and-drop editor makes client
-                customization effortless.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works - Contactless Payments */}
       <section id="how-it-works" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4 animate-slide-up">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">
               Cashless Photobooth Payment System
             </h2>
-            <p
-              className="text-lg text-gray-600 animate-fade-in"
-              style={{ animationDelay: '0.2s' }}
-            >
+            <p className="text-lg text-gray-600">
               Streamlined QR code payments for modern photobooth rentals in the
               Philippines
             </p>
           </div>
 
-          {/* For Owners Timeline */}
           <div className="mb-20">
             <div className="text-center mb-12">
-              <div
-                className="inline-block bg-easy-yellow px-6 py-3 rounded-full animate-scale-in"
-                style={{ animationDelay: '0.4s' }}
-              >
-                <h3 className="text-xl font-bold text-easy-black">
-                  For Photobooth Owners
-                </h3>
+              <div className="flex items-center justify-center mb-6">
+                <div className="h-px bg-gradient-to-r from-transparent via-easy-yellow to-transparent w-24"></div>
+                <div className="px-6">
+                  <div className="bg-white border-2 border-easy-yellow/20 px-6 py-3 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-easy-black flex items-center gap-2">
+                      <span className="text-easy-yellow">👑</span>
+                      For Photobooth Owners
+                    </h3>
+                  </div>
+                </div>
+                <div className="h-px bg-gradient-to-r from-transparent via-easy-yellow to-transparent w-24"></div>
               </div>
             </div>
 
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-easy-yellow/30 hidden lg:block"></div>
+            <div ref={timelineRef} className="relative">
+              <div className="timeline-line absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-easy-yellow/30 hidden lg:block"></div>
 
-              {/* Timeline Steps */}
               <div className="space-y-12 lg:space-y-16">
-                {/* Step 1 */}
-                <div
-                  className="relative flex flex-col lg:flex-row items-center animate-slide-in-left"
-                  style={{ animationDelay: '0.6s' }}
-                >
+                <div className="timeline-item relative flex flex-col lg:flex-row items-center">
                   <div className="lg:w-1/2 lg:pr-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                    <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -434,7 +587,7 @@ export default function LandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
+                  <div className="timeline-dot hidden lg:block absolute left-1/2 transform -translate-x-1/2">
                     <div className="w-6 h-6 bg-easy-yellow rounded-full border-4 border-white shadow-lg"></div>
                   </div>
                   <div className="lg:w-1/2 lg:pl-12">
@@ -444,13 +597,9 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Step 2 */}
-                <div
-                  className="relative flex flex-col lg:flex-row-reverse items-center animate-slide-in-right"
-                  style={{ animationDelay: '0.7s' }}
-                >
+                <div className="timeline-item relative flex flex-col lg:flex-row-reverse items-center">
                   <div className="lg:w-1/2 lg:pl-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                    <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -467,7 +616,7 @@ export default function LandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
+                  <div className="timeline-dot hidden lg:block absolute left-1/2 transform -translate-x-1/2">
                     <div className="w-6 h-6 bg-easy-yellow rounded-full border-4 border-white shadow-lg"></div>
                   </div>
                   <div className="lg:w-1/2 lg:pr-12">
@@ -477,13 +626,9 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Step 3 */}
-                <div
-                  className="relative flex flex-col lg:flex-row items-center animate-slide-in-left"
-                  style={{ animationDelay: '0.8s' }}
-                >
+                <div className="timeline-item relative flex flex-col lg:flex-row items-center">
                   <div className="lg:w-1/2 lg:pr-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                    <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -500,7 +645,7 @@ export default function LandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
+                  <div className="timeline-dot hidden lg:block absolute left-1/2 transform -translate-x-1/2">
                     <div className="w-6 h-6 bg-easy-yellow rounded-full border-4 border-white shadow-lg"></div>
                   </div>
                   <div className="lg:w-1/2 lg:pl-12">
@@ -510,13 +655,9 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Step 4 */}
-                <div
-                  className="relative flex flex-col lg:flex-row-reverse items-center animate-slide-in-right"
-                  style={{ animationDelay: '0.9s' }}
-                >
+                <div className="timeline-item relative flex flex-col lg:flex-row-reverse items-center">
                   <div className="lg:w-1/2 lg:pl-12 mb-6 lg:mb-0">
-                    <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                    <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                       <div className="flex items-center mb-4">
                         <div className="w-12 h-12 bg-easy-yellow rounded-full flex items-center justify-center mr-4">
                           <span className="text-xl font-bold text-easy-black">
@@ -533,7 +674,7 @@ export default function LandingPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
+                  <div className="timeline-dot hidden lg:block absolute left-1/2 transform -translate-x-1/2">
                     <div className="w-6 h-6 bg-easy-yellow rounded-full border-4 border-white shadow-lg"></div>
                   </div>
                   <div className="lg:w-1/2 lg:pr-12">
@@ -546,30 +687,28 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* For Guests Timeline */}
           <div>
             <div className="text-center mb-12">
-              <div
-                className="inline-block bg-easy-black px-6 py-3 rounded-full animate-scale-in"
-                style={{ animationDelay: '1s' }}
-              >
-                <h3 className="text-xl font-bold text-white">
-                  For Photobooth Guests
-                </h3>
+              <div className="flex items-center justify-center mb-6">
+                <div className="h-px bg-gradient-to-r from-transparent via-easy-black/30 to-transparent w-24"></div>
+                <div className="px-6">
+                  <div className="bg-easy-black border-2 border-easy-black/10 px-6 py-3 rounded-2xl shadow-sm">
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <span>📸</span>
+                      For Photobooth Guests
+                    </h3>
+                  </div>
+                </div>
+                <div className="h-px bg-gradient-to-r from-transparent via-easy-black/30 to-transparent w-24"></div>
               </div>
             </div>
 
             <div className="relative max-w-4xl mx-auto">
-              {/* Horizontal Timeline Line for Guests */}
               <div className="hidden md:block absolute top-20 left-0 right-0 h-1 bg-easy-black/20"></div>
 
-              <div className="grid md:grid-cols-3 gap-8">
-                {/* Guest Step 1 */}
-                <div
-                  className="text-center relative animate-scale-in"
-                  style={{ animationDelay: '1.1s' }}
-                >
-                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div ref={guestStepsRef} className="grid md:grid-cols-3 gap-8">
+                <div className="text-center relative">
+                  <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">1</span>
                     </div>
@@ -583,12 +722,8 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Guest Step 2 */}
-                <div
-                  className="text-center relative animate-scale-in"
-                  style={{ animationDelay: '1.2s' }}
-                >
-                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="text-center relative">
+                  <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">2</span>
                     </div>
@@ -602,12 +737,8 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Guest Step 3 */}
-                <div
-                  className="text-center relative animate-scale-in"
-                  style={{ animationDelay: '1.3s' }}
-                >
-                  <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border">
+                <div className="text-center relative">
+                  <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
                     <div className="w-16 h-16 bg-easy-black rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                       <span className="text-2xl font-bold text-white">3</span>
                     </div>
@@ -626,7 +757,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Waitlist Section */}
       <section
         id="waitlist"
         className="py-20 bg-[#f8fafc] relative overflow-hidden"
@@ -648,43 +778,34 @@ export default function LandingPage() {
         />
 
         <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
-          <div className="mb-12 animate-fade-in">
+          <div className="mb-12">
             <div className="inline-block bg-easy-yellow/20 px-4 py-2 rounded-full mb-6">
               <span className="text-sm font-semibold text-easy-black flex items-center gap-2">
                 ⚡ Launching Soon
               </span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-easy-black mb-6 animate-slide-up leading-tight">
+            <h2 className="text-3xl md:text-5xl font-bold text-easy-black mb-6 leading-tight">
               Transform Your
               <br />
-              <span className="text-easy-yellow">
+              <span className="text-easy-yellow bg-gradient-to-r from-easy-yellow to-yellow-400 bg-clip-text text-transparent">
                 Photobooth Rental Business
               </span>
             </h2>
-            <p
-              className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in"
-              style={{ animationDelay: '0.2s' }}
-            >
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Join 200+ wedding photographers and event suppliers already using
               Easy Picsy
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <div
-              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.4s' }}
-            >
+            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="text-2xl mb-3">🚀</div>
               <h3 className="font-semibold text-gray-800 mb-2">Early Access</h3>
               <p className="text-sm text-gray-600">
                 Be first to try new features
               </p>
             </div>
-            <div
-              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.5s' }}
-            >
+            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="text-2xl mb-3">💰</div>
               <h3 className="font-semibold text-gray-800 mb-2">
                 Special Pricing
@@ -693,10 +814,7 @@ export default function LandingPage() {
                 Exclusive launch discounts
               </p>
             </div>
-            <div
-              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.6s' }}
-            >
+            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="text-2xl mb-3">🏆</div>
               <h3 className="font-semibold text-gray-800 mb-2">
                 Priority Support
@@ -705,15 +823,13 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="animate-scale-in" style={{ animationDelay: '0.8s' }}>
+          <div>
             <Button
               size="lg"
-              className="px-10 py-4 text-xl font-bold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 hover:animate-glow hover:scale-105 transition-all duration-300 rounded-2xl shadow-lg group"
+              className="px-10 py-4 text-xl font-bold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 transition-all duration-300 rounded-2xl shadow-lg"
               onClick={handleJoinWaitlist}
             >
-              <span className="group-hover:animate-subtle-float">
-                Join the Waitlist
-              </span>
+              <span>Join the Waitlist</span>
             </Button>
             <p className="text-sm text-gray-500 mt-4">
               No spam, just updates on our launch progress
@@ -722,26 +838,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Resources Section */}
-      <section className="py-20">
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4 animate-slide-up">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">
               Resources
             </h2>
-            <p
-              className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in"
-              style={{ animationDelay: '0.2s' }}
-            >
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Tips, guides, and insights for photobooth business owners
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.4s' }}
-            >
+          <div ref={resourceCardsRef} className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
                 <Camera className="w-12 h-12 text-gray-400" />
               </div>
@@ -755,10 +864,7 @@ export default function LandingPage() {
               <div className="text-sm text-gray-500">Coming Soon</div>
             </div>
 
-            <div
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.5s' }}
-            >
+            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
                 <DollarSign className="w-12 h-12 text-gray-400" />
               </div>
@@ -772,10 +878,7 @@ export default function LandingPage() {
               <div className="text-sm text-gray-500">Coming Soon</div>
             </div>
 
-            <div
-              className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 animate-scale-in border"
-              style={{ animationDelay: '0.6s' }}
-            >
+            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
               <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
                 <BarChart3 className="w-12 h-12 text-gray-400" />
               </div>
@@ -792,7 +895,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-8 bg-easy-black text-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center">
@@ -800,7 +902,7 @@ export default function LandingPage() {
               <img
                 src="/logo.svg"
                 alt="Easy Picsy"
-                className="h-8 w-auto brightness-0 invert mx-auto hover:animate-float transition-all duration-300"
+                className="h-8 w-auto brightness-0 invert mx-auto transition-all duration-300"
               />
             </div>
             <p className="text-gray-400 mb-4">
