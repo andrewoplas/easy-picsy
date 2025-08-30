@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "task-master-ai": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+      "env": {
+        "ANTHROPIC_API_KEY": "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",
+        "PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
+        "OPENAI_API_KEY": "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",
+        "GOOGLE_API_KEY": "YOUR_GOOGLE_KEY_HERE",
+        "XAI_API_KEY": "YOUR_XAI_KEY_HERE",
+        "OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
+        "MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
+        "AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
+        "OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
+      }
+    },
+    "puppeteer": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    },
+    "nx-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["nx-mcp@latest"]
+    }
+  }
+}
