@@ -49,3 +49,8 @@ out
 
 test-output
 .vercel
+
+# MCP configuration files
+.mcp.json
+.cursor/mcp.json
+
