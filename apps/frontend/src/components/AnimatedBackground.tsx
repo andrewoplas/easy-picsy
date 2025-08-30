@@ -88,25 +88,25 @@ export default function AnimatedBackground() {
     >
       <div className="absolute inset-0 opacity-50">
         <div
-          ref={el => blobRefs.current[0] = el}
+          ref={el => { blobRefs.current[0] = el }}
           className="absolute w-96 h-96 bg-gradient-to-br from-easy-yellow/20 to-transparent rounded-full blur-3xl"
           style={{ top: '10%', left: '10%' }}
         />
         
         <div
-          ref={el => blobRefs.current[1] = el}
+          ref={el => { blobRefs.current[1] = el }}
           className="absolute w-80 h-80 bg-gradient-to-br from-easy-yellow/15 to-transparent rounded-full blur-3xl"
           style={{ top: '60%', right: '15%' }}
         />
         
         <div
-          ref={el => blobRefs.current[2] = el}
+          ref={el => { blobRefs.current[2] = el }}
           className="absolute w-72 h-72 bg-gradient-to-br from-easy-yellow/10 to-transparent rounded-full blur-3xl"
           style={{ bottom: '20%', left: '30%' }}
         />
         
         <div
-          ref={el => blobRefs.current[3] = el}
+          ref={el => { blobRefs.current[3] = el }}
           className="absolute w-64 h-64 bg-gradient-to-br from-easy-yellow/25 to-transparent rounded-full blur-3xl"
           style={{ top: '30%', right: '40%' }}
         />

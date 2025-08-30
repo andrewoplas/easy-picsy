@@ -11,6 +11,7 @@ import { FilloutPopupEmbed } from '@fillout/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
+  ArrowRight,
   BarChart3,
   Camera,
   Check,
@@ -21,6 +22,7 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -850,47 +852,89 @@ export default function LandingPage() {
           </div>
 
           <div ref={resourceCardsRef} className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
-                <Camera className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                Setting Up Your First Event
-              </h3>
-              <p className="text-gray-600 mb-4">
-                A complete guide to getting your photobooth ready for events,
-                from hardware setup to guest experience optimization.
-              </p>
-              <div className="text-sm text-gray-500">Coming Soon</div>
-            </div>
+            <Link href="/blog/photobooth-business-cost-philippines-2025" className="group block">
+              <article className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <div className="aspect-video overflow-hidden">
+                  <img
+                    src="/blogs/How Much Does It Cost to Build a Photobooth Business in the Philippines (2025 Guide).jpg"
+                    alt="How Much Does It Cost to Build a Photobooth Business"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-easy-black transition-colors leading-tight line-clamp-2">
+                    How Much Does It Cost to Build a Photobooth Business in the Philippines (2025 Guide)
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-6 flex-1 line-clamp-3">
+                    Complete breakdown of photobooth business startup costs in the Philippines for 2025, including equipment, software, and expected ROI timelines.
+                  </p>
+                  <div className="flex items-center gap-2 text-gray-800 font-medium group-hover:gap-3 transition-all duration-300">
+                    <span>Read More</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </article>
+            </Link>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
-                <DollarSign className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                Maximizing Revenue with Cashless Payments
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Learn how cashless payment integration can increase your revenue
-                by 40% and improve guest satisfaction.
-              </p>
-              <div className="text-sm text-gray-500">Coming Soon</div>
-            </div>
+            <Link href="/blog/dslrbooth-lumabooth-easy-picsy-comparison" className="group block">
+              <article className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <div className="aspect-video overflow-hidden">
+                  <img
+                    src="/blogs/DSLRBooth vs. LumaBooth vs. Easy Picsy- Best Photobooth Software Compared.jpg"
+                    alt="DSLRBooth vs. LumaBooth vs. Easy Picsy Comparison"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-easy-black transition-colors leading-tight line-clamp-2">
+                    DSLRBooth vs. LumaBooth vs. Easy Picsy: Best Photobooth Software Compared
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-6 flex-1 line-clamp-3">
+                    Compare the top 3 photobooth software options: DSLRBooth, LumaBooth, and Easy Picsy. Discover features, pricing, and why Easy Picsy is built for the future.
+                  </p>
+                  <div className="flex items-center gap-2 text-gray-800 font-medium group-hover:gap-3 transition-all duration-300">
+                    <span>Read More</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </article>
+            </Link>
 
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="w-full h-48 bg-gray-100 rounded-xl mb-6 flex items-center justify-center">
-                <BarChart3 className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                Using Analytics to Grow Your Business
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Discover which metrics matter most and how to use real-time data
-                to make better business decisions.
-              </p>
-              <div className="text-sm text-gray-500">Coming Soon</div>
-            </div>
+            <Link href="/blog/gen-z-millennials-love-photobooths" className="group block">
+              <article className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <div className="aspect-video overflow-hidden">
+                  <img
+                    src="/blogs/Why Gen Z and Millennials Can't Get Enough of Photobooths.jpg"
+                    alt="Why Gen Z and Millennials Love Photobooths"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-easy-black transition-colors leading-tight line-clamp-2">
+                    Why Gen Z and Millennials Can't Get Enough of Photobooths
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-6 flex-1 line-clamp-3">
+                    Understanding why Gen Z and Millennials are obsessed with photobooths and how to design your rental business to capture this growing market.
+                  </p>
+                  <div className="flex items-center gap-2 text-gray-800 font-medium group-hover:gap-3 transition-all duration-300">
+                    <span>Read More</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </article>
+            </Link>
+
+          </div>
+          
+          {/* View All Posts Link */}
+          <div className="text-center mt-12">
+            <Link 
+              href="/blog" 
+              className="inline-flex items-center gap-2 bg-easy-yellow text-easy-black px-6 py-3 rounded-xl font-semibold hover:bg-easy-yellow/90 transition-all duration-300"
+            >
+              <span>View All Posts</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
