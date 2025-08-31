@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import AuthCallbackHandler from '@/components/AuthCallbackHandler';
 import { Button } from '@/components/ui/button';
@@ -300,7 +301,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen relative" ref={heroRef}>
-      <AuthCallbackHandler />
+      <Suspense fallback={null}>
+        <AuthCallbackHandler />
+      </Suspense>
       <AnimatedBackground />
 
       <script

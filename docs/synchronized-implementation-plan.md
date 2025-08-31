@@ -92,36 +92,63 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
 
 ---
 
-## Module 3: Paymongo Integration & QR Codes
-**Goal**: Generate and manage payment QR codes for events
+## Module 3: Paymongo Integration & Dynamic QR Codes
+**Goal**: Generate and manage dynamic payment QR codes for events with session-based regeneration
 
 ### Backend Tasks
 1. **Payment Schema** (backend-tasks.md: 2.1 payments)
    - Create payments table schema
+   - Add QR code tracking fields
    - Run migrations
 
-2. **Paymongo Service** (backend-tasks.md: 4.1)
-   - Install Paymongo SDK
-   - Create payment service
-   - Generate QR payment method
-   - Add QR generation to event creation
+2. **QR Code Management Schema** (backend-tasks.md: 2.1 qr_codes)
+   - Create qr_codes table for tracking active QR codes
+   - Include expiry timestamps and status tracking
+   - Link to events and sessions
 
-3. **Update Event Endpoints** (backend-tasks.md: 3.3)
-   - Modify POST /api/events to generate Paymongo QR
-   - Add GET /api/events/:id/qr endpoint for QR download
+3. **Paymongo Service** (backend-tasks.md: 4.1)
+   - Install Paymongo SDK
+   - Create payment service with dynamic QR generation
+   - Generate one-time use QR codes with 30-minute expiry
+   - QR code expiry validation and cleanup
+
+4. **Session-Based QR Generation** (backend-tasks.md: 4.4)
+   - Generate QR code on session end
+   - Invalidate previous QR codes
+   - Track QR code lifecycle (active, expired, used)
+   - Automatic cleanup of expired QR codes
+
+5. **Update Event Endpoints** (backend-tasks.md: 3.3)
+   - Modify POST /api/events to generate initial Paymongo QR
+   - Add GET /api/events/:id/qr/current endpoint for active QR
+   - Add POST /api/events/:id/qr/regenerate for manual regeneration
+   - Add GET /api/qr-codes/:id/status for QR validation
 
 ### Frontend Tasks
-1. **QR Code Integration** (frontend-tasks.md: 1.2, 5.1)
-   - Update event creation to show QR generation status
-   - QR code preview in event details
-   - Download QR code functionality
-   - QR Code Display Component
+1. **QR Code Status Monitoring** (frontend-tasks.md: 1.2, 5.1)
+   - Display QR code status and expiry information
+   - QR code expiry countdown display
+   - Real-time QR status updates from backend
+
+2. **QR Code Management Dashboard** (frontend-tasks.md: 5.2)
+   - QR code expiry notifications
+   - QR code history/tracking display
+   - Manual QR regeneration trigger (API call only)
+   - QR code usage analytics display
+
+**Note**: QR code generation and display is handled by the desktop application
 
 ### Testing Checklist
-- [ ] Creating event generates Paymongo QR code
-- [ ] QR code displays in event details
-- [ ] QR code can be downloaded as image
+- [ ] Creating event generates initial Paymongo QR code via API
+- [ ] Desktop app can fetch current QR code via API
+- [ ] QR code status displays correctly in web dashboard
+- [ ] QR code regenerates on session end
+- [ ] Expired QR codes are properly invalidated
+- [ ] QR code status updates in real-time on web dashboard
+- [ ] Manual QR regeneration API works correctly
 - [ ] QR code contains correct payment information
+- [ ] Multiple QR codes for same event are tracked properly
+- [ ] Desktop app receives QR updates via WebSocket
 
 ---
 

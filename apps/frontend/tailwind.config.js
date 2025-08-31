@@ -36,6 +36,7 @@ module.exports = {
         'dash-orange': '#fca311',
         'dash-gray': '#e5e5e5',
         'dash-white': '#ffffff',
+        'destructive': 'red',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

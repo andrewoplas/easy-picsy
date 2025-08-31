@@ -61,4 +61,34 @@ export class UsersService {
     const db = this.databaseService.getDb();
     return await db.select().from(users);
   }
+
+  async findOrCreateUser(supabaseUser: any) {
+    const db = this.databaseService.getDb();
+    
+    // Try to find existing user by supabaseId
+    let user = await db
+      .select()
+      .from(users)
+      .where(eq(users.supabaseId, supabaseUser.id))
+      .limit(1);
+
+    if (user.length) {
+      return user[0];
+    }
+
+    // If user doesn't exist, create them
+    const newUser = await db
+      .insert(users)
+      .values({
+        supabaseId: supabaseUser.id,
+        email: supabaseUser.email,
+        fullName: supabaseUser.user_metadata?.full_name || null,
+        avatarUrl: supabaseUser.user_metadata?.avatar_url || null,
+        role: supabaseUser.user_metadata?.role || 'user',
+        lastLoginAt: new Date(),
+      })
+      .returning();
+
+    return newUser[0];
+  }
 }

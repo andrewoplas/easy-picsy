@@ -86,6 +86,7 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - id (uuid, primary key)
     - event_id (uuid, foreign key)
     - booth_id (uuid, foreign key)
+    - qr_code_id (uuid, foreign key)
     - amount (decimal)
     - currency (string)
     - status (enum: pending, completed, failed, refunded)
@@ -94,6 +95,22 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - payment_method (string)
     - paid_at (timestamp)
     - created_at (timestamp)
+    ```
+  
+  - [ ] `src/db/schema/qr_codes.ts` - QR Code tracking
+    ```typescript
+    - id (uuid, primary key)
+    - event_id (uuid, foreign key)
+    - session_id (uuid, foreign key, nullable)
+    - paymongo_source_id (string, unique)
+    - qr_code_url (string)
+    - amount (decimal)
+    - currency (string)
+    - status (enum: active, expired, used, cancelled)
+    - expires_at (timestamp)
+    - used_at (timestamp, nullable)
+    - created_at (timestamp)
+    - updated_at (timestamp)
     ```
   
   - [ ] `src/db/schema/sessions.ts` - Booth sessions
@@ -156,6 +173,19 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - [ ] POST /api/booths/:id/ping (heartbeat)
     - [ ] DELETE /api/booths/:id (admin only)
 
+- [ ] **3.5 QR Code Management Module**
+  - [ ] Create `src/modules/qr-codes/` structure
+  - [ ] QR Code service with lifecycle management
+  - [ ] QR Code controller with endpoints:
+    - [ ] GET /api/qr-codes/:id
+    - [ ] GET /api/qr-codes/:id/status
+    - [ ] POST /api/qr-codes/:id/cancel
+    - [ ] GET /api/events/:id/qr/current
+    - [ ] POST /api/events/:id/qr/regenerate
+  - [ ] Background service for QR expiry cleanup
+  - [ ] QR code validation middleware
+  - [ ] Integration with Paymongo source management
+
 ### Phase 4: Payment Integration
 **Priority: High | Status: Not Started**
 
@@ -164,9 +194,15 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] Install Paymongo SDK or create HTTP client
   - [ ] Implement payment service:
     - [ ] Create payment intent
-    - [ ] Generate QR payment
+    - [ ] Generate dynamic QR payment (30min expiry)
     - [ ] Check payment status
     - [ ] Process refunds
+    - [ ] Validate QR code expiry
+    - [ ] Cancel/invalidate QR codes
+  - [ ] QR Code lifecycle management:
+    - [ ] Track QR code status
+    - [ ] Cleanup expired QR codes
+    - [ ] Handle one-time use validation
   - [ ] Webhook signature validation
 
 - [ ] **4.2 Payment Endpoints**
@@ -175,12 +211,26 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] POST /api/payments/webhook/paymongo (public)
   - [ ] GET /api/payments/history (authenticated)
   - [ ] POST /api/payments/:id/refund (admin only)
+  - [ ] GET /api/qr-codes/:id/status (check QR validity)
+  - [ ] POST /api/qr-codes/:id/cancel (invalidate QR)
+  - [ ] GET /api/events/:id/qr/current (get active QR)
+  - [ ] POST /api/events/:id/qr/regenerate (create new QR)
 
 - [ ] **4.3 Payment Flow Integration**
-  - [ ] Link payments to events
+  - [ ] Link payments to events and QR codes
   - [ ] Validate payment amounts
   - [ ] Update booth status on payment
   - [ ] Create session records
+  - [ ] Mark QR code as used on successful payment
+  - [ ] Generate new QR code for next session
+
+- [ ] **4.4 Session-Based QR Management**
+  - [ ] Generate QR code on session end
+  - [ ] Invalidate previous QR codes when new one is created
+  - [ ] Automatic QR expiry handling (30 minutes)
+  - [ ] QR code cleanup service (remove expired codes)
+  - [ ] Event-based QR regeneration triggers
+  - [ ] QR code usage analytics and tracking
 
 ### Phase 5: Real-time Communication
 **Priority: Medium | Status: Not Started**
@@ -201,7 +251,11 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - [ ] SessionStarted(sessionId)
     - [ ] SessionEnded(sessionId)
     - [ ] PaymentReceived(paymentId)
-  - [ ] Event broadcasting to specific booths
+    - [ ] QRCodeGenerated(qrCodeId, eventId)
+    - [ ] QRCodeExpiring(qrCodeId, expiresIn)
+    - [ ] QRCodeExpired(qrCodeId)
+    - [ ] QRCodeUsed(qrCodeId, paymentId)
+  - [ ] Event broadcasting to specific booths and admin clients
 
 - [ ] **5.3 Bridge Communication Protocol**
   - [ ] Define message formats
@@ -217,10 +271,12 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] Session service with state management
   - [ ] Session controller endpoints:
     - [ ] POST /api/sessions/start
-    - [ ] POST /api/sessions/:id/end
+    - [ ] POST /api/sessions/:id/end (triggers QR regeneration)
     - [ ] GET /api/sessions/active
     - [ ] GET /api/sessions/history
   - [ ] Auto-timeout for abandoned sessions
+  - [ ] QR code regeneration on session end
+  - [ ] Link sessions to QR codes for tracking
 
 - [ ] **6.2 dslrBooth Integration**
   - [ ] Webhook receiver for dslrBooth events
@@ -337,7 +393,7 @@ graph TD
 
 ```bash
 # Install all dependencies
-npm install drizzle-orm postgres drizzle-kit @supabase/supabase-js @nestjs/config @nestjs/websockets @nestjs/platform-socket.io socket.io helmet @nestjs/throttler class-validator class-transformer qrcode
+npm install drizzle-orm postgres drizzle-kit @supabase/supabase-js @nestjs/config @nestjs/websockets @nestjs/platform-socket.io socket.io helmet @nestjs/throttler class-validator class-transformer qrcode @nestjs/schedule
 
 # Install dev dependencies
 npm install -D @types/pg @types/qrcode
@@ -391,16 +447,16 @@ BRIDGE_API_KEY=your-bridge-api-key
 | Phase | Tasks | Completed | Percentage |
 |-------|-------|-----------|------------|
 | Phase 1 | 11 | 0 | 0% |
-| Phase 2 | 5 | 0 | 0% |
-| Phase 3 | 25 | 0 | 0% |
-| Phase 4 | 12 | 0 | 0% |
-| Phase 5 | 11 | 0 | 0% |
-| Phase 6 | 8 | 0 | 0% |
+| Phase 2 | 6 | 0 | 0% |
+| Phase 3 | 30 | 0 | 0% |
+| Phase 4 | 18 | 0 | 0% |
+| Phase 5 | 15 | 0 | 0% |
+| Phase 6 | 10 | 0 | 0% |
 | Phase 7 | 12 | 0 | 0% |
 | Phase 8 | 11 | 0 | 0% |
 | Phase 9 | 10 | 0 | 0% |
 | Phase 10 | 10 | 0 | 0% |
-| **Total** | **115** | **0** | **0%** |
+| **Total** | **133** | **0** | **0%** |
 
 ## Notes
 

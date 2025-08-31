@@ -1,5 +1,6 @@
 import './global.css';
 import { Passion_One, Jost, Inter } from 'next/font/google';
+import { Toaster } from '@/components/ui/sonner';
 
 const passionOne = Passion_One({
   subsets: ['latin'],
@@ -97,7 +98,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={`${passionOne.variable} ${jost.variable} ${inter.variable} antialiased`}>{children}</body>
+      <body className={`${passionOne.variable} ${jost.variable} ${inter.variable} antialiased`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

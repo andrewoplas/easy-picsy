@@ -2,30 +2,30 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Calendar, 
-  CreditCard, 
-  Monitor, 
-  Users, 
+import {
+  Calendar,
+  CreditCard,
+  Monitor,
+  Users,
   TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
   Clock,
   DollarSign,
   Camera,
-  Star
+  Star,
 } from 'lucide-react';
 
 const stats = [
-  { 
-    name: 'Total Events', 
-    value: '24', 
-    change: '+12%', 
+  {
+    name: 'Total Events',
+    value: '24',
+    change: '+12%',
     trend: 'up',
-    icon: Calendar, 
+    icon: Calendar,
     description: 'Increased from last month',
     bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy'
+    iconColor: 'text-dash-navy',
   },
   {
     name: 'Revenue Today',
@@ -35,27 +35,27 @@ const stats = [
     icon: DollarSign,
     description: 'From 12 sessions',
     bgColor: 'bg-dash-orange/10',
-    iconColor: 'text-dash-orange'
+    iconColor: 'text-dash-orange',
   },
-  { 
-    name: 'Active Booths', 
-    value: '8', 
+  {
+    name: 'Active Booths',
+    value: '8',
     change: '+2',
     trend: 'up',
-    icon: Monitor, 
+    icon: Monitor,
     description: 'Currently online',
     bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy'
+    iconColor: 'text-dash-navy',
   },
-  { 
-    name: 'Sessions Today', 
-    value: '142', 
+  {
+    name: 'Sessions Today',
+    value: '142',
     change: '-4%',
     trend: 'down',
-    icon: Users, 
+    icon: Users,
     description: 'Total sessions',
     bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy'
+    iconColor: 'text-dash-navy',
   },
 ];
 
@@ -65,15 +65,17 @@ const quickActions = [
     description: 'Set up a new photobooth event',
     icon: Calendar,
     color: 'bg-dash-orange',
-    hoverColor: 'hover:bg-dash-orange/90'
+    hoverColor: 'hover:bg-dash-orange/90',
+    href: '/admin/dashboard/events',
   },
   {
     title: 'View Analytics',
     description: 'Check your business insights',
     icon: TrendingUp,
     color: 'bg-dash-navy',
-    hoverColor: 'hover:bg-dash-navy/90'
-  }
+    hoverColor: 'hover:bg-dash-navy/90',
+    href: '/admin/dashboard/analytics',
+  },
 ];
 
 const recentActivity = [
@@ -85,7 +87,7 @@ const recentActivity = [
     time: '2 minutes ago',
     amount: '+$85',
     icon: Camera,
-    status: 'completed'
+    status: 'completed',
   },
   {
     id: 2,
@@ -95,7 +97,7 @@ const recentActivity = [
     time: '15 minutes ago',
     amount: '+$120',
     icon: CreditCard,
-    status: 'completed'
+    status: 'completed',
   },
   {
     id: 3,
@@ -105,7 +107,7 @@ const recentActivity = [
     time: '1 hour ago',
     amount: null,
     icon: Monitor,
-    status: 'active'
+    status: 'active',
   },
   {
     id: 4,
@@ -115,8 +117,8 @@ const recentActivity = [
     time: '2 hours ago',
     amount: null,
     icon: Calendar,
-    status: 'pending'
-  }
+    status: 'pending',
+  },
 ];
 
 const weeklyData = [
@@ -126,15 +128,15 @@ const weeklyData = [
   { day: 'Thu', sessions: 65, revenue: 1800 },
   { day: 'Fri', sessions: 78, revenue: 2150 },
   { day: 'Sat', sessions: 95, revenue: 2650 },
-  { day: 'Sun', sessions: 88, revenue: 2400 }
+  { day: 'Sun', sessions: 88, revenue: 2400 },
 ];
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const firstName = user?.email?.split('@')[0] || 'there';
 
-  const maxRevenue = Math.max(...weeklyData.map(d => d.revenue));
-  const maxSessions = Math.max(...weeklyData.map(d => d.sessions));
+  const maxRevenue = Math.max(...weeklyData.map((d) => d.revenue));
+  const maxSessions = Math.max(...weeklyData.map((d) => d.sessions));
 
   return (
     <div className="space-y-8">
@@ -146,15 +148,20 @@ export default function DashboardPage() {
               Good morning, {firstName}! 👋
             </h1>
             <p className="text-dash-navy/70 text-lg">
-              Here&apos;s what&apos;s happening with your photobooth business today.
+              Here&apos;s what&apos;s happening with your photobooth business
+              today.
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm text-dash-navy/60">Today&apos;s Performance</p>
+              <p className="text-sm text-dash-navy/60">
+                Today&apos;s Performance
+              </p>
               <div className="flex items-center space-x-2">
                 <Star className="w-4 h-4 text-dash-orange fill-current" />
-                <span className="text-lg font-semibold text-dash-navy">Excellent</span>
+                <span className="text-lg font-semibold text-dash-navy">
+                  Excellent
+                </span>
               </div>
             </div>
           </div>
@@ -164,7 +171,10 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.name} className="bg-dash-white border border-dash-gray/50 shadow-sm hover:shadow-md transition-all duration-200 group">
+          <Card
+            key={stat.name}
+            className="bg-dash-white border border-dash-gray/50 shadow-sm hover:shadow-md transition-all duration-200 group"
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -175,11 +185,13 @@ export default function DashboardPage() {
                     {stat.value}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div className={`flex items-center text-sm font-semibold ${
-                      stat.trend === 'up' 
-                        ? 'text-dash-orange' 
-                        : 'text-red-600'
-                    }`}>
+                    <div
+                      className={`flex items-center text-sm font-semibold ${
+                        stat.trend === 'up'
+                          ? 'text-dash-orange'
+                          : 'text-red-600'
+                      }`}
+                    >
                       {stat.trend === 'up' ? (
                         <ArrowUpRight className="w-4 h-4 mr-1" />
                       ) : (
@@ -188,7 +200,9 @@ export default function DashboardPage() {
                       {stat.change}
                     </div>
                   </div>
-                  <p className="text-xs text-dash-navy/50 mt-1">{stat.description}</p>
+                  <p className="text-xs text-dash-navy/50 mt-1">
+                    {stat.description}
+                  </p>
                 </div>
                 <div className={`${stat.bgColor} rounded-xl p-3`}>
                   <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
@@ -200,72 +214,24 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
-        {/* Weekly Performance Chart */}
-        <div className="lg:col-span-8">
-          <Card className="bg-dash-white border border-dash-gray/50 shadow-sm">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold text-dash-navy">Weekly Performance</CardTitle>
-                  <p className="text-sm text-dash-navy/70 mt-1">Sessions and revenue for the past 7 days</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-dash-navy rounded-full"></div>
-                    <span className="text-sm text-dash-navy/70">Sessions</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-dash-orange rounded-full"></div>
-                    <span className="text-sm text-dash-navy/70">Revenue</span>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {weeklyData.map((day) => (
-                  <div key={day.day} className="flex items-center space-x-4">
-                    <div className="w-12 text-sm font-medium text-dash-navy">{day.day}</div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 bg-dash-gray/30 rounded-full h-2 mr-4">
-                          <div 
-                            className="bg-dash-navy h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${(day.sessions / maxSessions) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-dash-navy w-12">{day.sessions}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 bg-dash-gray/30 rounded-full h-2 mr-4">
-                          <div 
-                            className="bg-dash-orange h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${(day.revenue / maxRevenue) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-dash-navy w-12">${day.revenue}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Quick Actions */}
         <div className="lg:col-span-4">
           <Card className="bg-dash-white border border-dash-gray/50 shadow-sm mb-6">
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-dash-navy">Quick Actions</CardTitle>
+              <CardTitle className="text-xl font-bold text-dash-navy">
+                Quick Actions
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {quickActions.map((action) => (
-                <button
+                <a
                   key={action.title}
-                  className="w-full text-left group rounded-xl p-4 transition-all duration-200 hover:shadow-md"
+                  href={action.href}
+                  className="w-full text-left group rounded-xl p-4 transition-all duration-200 hover:shadow-md block"
                 >
-                  <div className={`${action.color} ${action.hoverColor} rounded-xl p-4 transition-all duration-200`}>
+                  <div
+                    className={`${action.color} ${action.hoverColor} rounded-xl p-4 transition-all duration-200`}
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="bg-white/20 rounded-lg p-2">
                         <action.icon className="h-5 w-5 text-white" />
@@ -274,11 +240,13 @@ export default function DashboardPage() {
                         <h3 className="font-semibold text-white">
                           {action.title}
                         </h3>
-                        <p className="text-sm text-white/90">{action.description}</p>
+                        <p className="text-sm text-white/90">
+                          {action.description}
+                        </p>
                       </div>
                     </div>
                   </div>
-                </button>
+                </a>
               ))}
             </CardContent>
           </Card>
@@ -290,8 +258,12 @@ export default function DashboardPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold text-dash-navy">Recent Activity</CardTitle>
-              <p className="text-sm text-dash-navy/70 mt-1">Latest updates from your photobooth network</p>
+              <CardTitle className="text-xl font-bold text-dash-navy">
+                Recent Activity
+              </CardTitle>
+              <p className="text-sm text-dash-navy/70 mt-1">
+                Latest updates from your photobooth network
+              </p>
             </div>
             <button className="text-sm text-dash-navy/70 hover:text-dash-orange font-medium flex items-center space-x-1 transition-colors">
               <span>View all</span>
@@ -302,15 +274,28 @@ export default function DashboardPage() {
         <CardContent>
           <div className="space-y-4">
             {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-center space-x-4 p-4 rounded-lg hover:bg-dash-gray/20 transition-colors group">
-                <div className={`p-2 rounded-lg ${
-                  activity.status === 'completed' ? 'bg-dash-orange/10' :
-                  activity.status === 'active' ? 'bg-dash-gray/30' : 'bg-dash-gray/30'
-                }`}>
-                  <activity.icon className={`w-5 h-5 ${
-                    activity.status === 'completed' ? 'text-dash-orange' :
-                    activity.status === 'active' ? 'text-dash-navy' : 'text-dash-navy'
-                  }`} />
+              <div
+                key={activity.id}
+                className="flex items-center space-x-4 p-4 rounded-lg hover:bg-dash-gray/20 transition-colors group"
+              >
+                <div
+                  className={`p-2 rounded-lg ${
+                    activity.status === 'completed'
+                      ? 'bg-dash-orange/10'
+                      : activity.status === 'active'
+                      ? 'bg-dash-gray/30'
+                      : 'bg-dash-gray/30'
+                  }`}
+                >
+                  <activity.icon
+                    className={`w-5 h-5 ${
+                      activity.status === 'completed'
+                        ? 'text-dash-orange'
+                        : activity.status === 'active'
+                        ? 'text-dash-navy'
+                        : 'text-dash-navy'
+                    }`}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
@@ -318,11 +303,15 @@ export default function DashboardPage() {
                       {activity.title}
                     </p>
                     {activity.amount && (
-                      <span className="text-dash-orange font-semibold">{activity.amount}</span>
+                      <span className="text-dash-orange font-semibold">
+                        {activity.amount}
+                      </span>
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <p className="text-sm text-dash-navy/70">{activity.description}</p>
+                    <p className="text-sm text-dash-navy/70">
+                      {activity.description}
+                    </p>
                     <div className="flex items-center space-x-1 text-xs text-dash-navy/50">
                       <Clock className="w-3 h-3" />
                       <span>{activity.time}</span>

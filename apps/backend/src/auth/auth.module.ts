@@ -7,9 +7,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
