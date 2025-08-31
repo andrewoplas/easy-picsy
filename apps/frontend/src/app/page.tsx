@@ -1,6 +1,7 @@
 'use client';
 
 import AnimatedBackground from '@/components/AnimatedBackground';
+import AuthCallbackHandler from '@/components/AuthCallbackHandler';
 import { Button } from '@/components/ui/button';
 import {
   useFloatingAnimation,
@@ -299,6 +300,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen relative" ref={heroRef}>
+      <AuthCallbackHandler />
       <AnimatedBackground />
 
       <script

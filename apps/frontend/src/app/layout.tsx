@@ -1,5 +1,5 @@
 import './global.css';
-import { Passion_One, Jost } from 'next/font/google';
+import { Passion_One, Jost, Inter } from 'next/font/google';
 
 const passionOne = Passion_One({
   subsets: ['latin'],
@@ -12,6 +12,13 @@ const jost = Jost({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-jost',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
@@ -90,7 +97,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={`${passionOne.variable} ${jost.variable} antialiased`}>{children}</body>
+      <body className={`${passionOne.variable} ${jost.variable} ${inter.variable} antialiased`}>{children}</body>
     </html>
   );
 }

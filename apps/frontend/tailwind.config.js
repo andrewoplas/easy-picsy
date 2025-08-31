@@ -26,6 +26,16 @@ module.exports = {
         'easy-yellow': '#F5D547',
         'easy-yellow-light': '#FFF9E5',
         'easy-black': '#2C2C2C',
+        // Brand colors
+        'brand-cream': '#FFFEFC',
+        'brand-orange': '#FF9A00',
+        'brand-brown': '#4F200D',
+        // Dashboard palette
+        'dash-black': '#000000',
+        'dash-navy': '#14213d',
+        'dash-orange': '#fca311',
+        'dash-gray': '#e5e5e5',
+        'dash-white': '#ffffff',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

@@ -11,6 +11,11 @@ body {
     'Segoe UI', Roboto, sans-serif;
 }
 
+.admin-interface {
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+}
+
 h1,
 h2,
 h3,
