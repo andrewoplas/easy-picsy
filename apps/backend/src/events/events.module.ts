@@ -4,9 +4,10 @@ import { EventsController, PublicEventsController } from './events.controller';
 import { DatabaseModule } from '../database/database.module';
 import { UsersModule } from '../users/users.module';
 import { SupabaseModule } from '../supabase/supabase.module';
+import { QrCodesModule } from '../qr-codes/qr-codes.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, SupabaseModule],
+  imports: [DatabaseModule, UsersModule, SupabaseModule, QrCodesModule],
   controllers: [EventsController, PublicEventsController],
   providers: [EventsService],
   exports: [EventsService],

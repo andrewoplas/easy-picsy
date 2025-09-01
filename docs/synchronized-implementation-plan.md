@@ -152,42 +152,7 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
 
 ---
 
-## Module 4: Booth Management
-**Goal**: Register and monitor booth connections
-
-### Backend Tasks
-1. **Booth Schema** (backend-tasks.md: 2.1 booths)
-   - Create booths table schema
-   - Run migrations
-
-2. **Booths Module** (backend-tasks.md: 3.4)
-   - Booth registration service
-   - Booth endpoints:
-     - POST /api/booths/register
-     - GET /api/booths
-     - GET /api/booths/:id
-     - POST /api/booths/:id/ping
-
-### Frontend Tasks
-1. **Booth Status Dashboard** (frontend-tasks.md: 2.1)
-   - Booth connection status grid
-   - Active event per booth display
-   - Last seen timestamp
-
-2. **Booth Management UI** (frontend-tasks.md: 2.1)
-   - Booth registration interface
-   - Booth details view
-   - Status indicators
-
-### Testing Checklist
-- [ ] Register new booth via API
-- [ ] View all booths in dashboard
-- [ ] Booth status updates on ping
-- [ ] Offline booths show as disconnected
-
----
-
-## Module 5: Real-time Communication
+## Module 4: Real-time Communication
 **Goal**: Enable live updates between backend and frontend
 
 ### Backend Tasks
@@ -197,8 +162,8 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
    - Implement auth for WebSocket
 
 2. **SignalR Hub** (backend-tasks.md: 5.2)
-   - Implement hub methods
-   - Event broadcasting
+   - Implement hub methods for events and QR codes
+   - Event broadcasting to admin clients
    - Connection management
 
 ### Frontend Tasks
@@ -208,19 +173,21 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
    - Connection status indicators
 
 2. **Real-time Features** (frontend-tasks.md: 3.2)
-   - Live booth status updates
-   - Real-time notifications
+   - Live QR code status updates
+   - Real-time payment notifications
+   - Event status updates
 
 ### Testing Checklist
 - [ ] WebSocket connection establishes
-- [ ] Booth status updates in real-time
+- [ ] QR code status updates in real-time
+- [ ] Payment notifications appear instantly
 - [ ] Connection status shows correctly
 - [ ] Auto-reconnection works on disconnect
 
 ---
 
-## Module 6: Payment Processing & Webhooks
-**Goal**: Handle actual payments and unlock booths
+## Module 5: Payment Processing & Webhooks
+**Goal**: Handle actual payments and trigger session management
 
 ### Backend Tasks
 1. **Payment Endpoints** (backend-tasks.md: 4.2)
@@ -229,9 +196,9 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
    - Payment validation logic
 
 2. **Payment Flow Integration** (backend-tasks.md: 4.3)
-   - Link payments to events
-   - Update booth status on payment
-   - Broadcast unlock command via WebSocket
+   - Link payments to events and QR codes
+   - Create session records on successful payment
+   - Broadcast payment success via WebSocket
 
 ### Frontend Tasks
 1. **Payment Activity Feed** (frontend-tasks.md: 2.2)
@@ -247,14 +214,14 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
 ### Testing Checklist
 - [ ] Paymongo webhook receives payment
 - [ ] Payment appears in activity feed
-- [ ] Booth receives unlock command
+- [ ] Session is created on successful payment
 - [ ] Revenue metrics update
 - [ ] Payment history displays correctly
 
 ---
 
-## Module 7: Session Management
-**Goal**: Track photobooth usage sessions
+## Module 6: Session Management
+**Goal**: Track photobooth usage sessions per event
 
 ### Backend Tasks
 1. **Session Schema** (backend-tasks.md: 2.1 sessions)
@@ -267,44 +234,50 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
      - POST /api/sessions/start
      - POST /api/sessions/:id/end
      - GET /api/sessions/active
+     - GET /api/events/:id/sessions
 
-3. **dslrBooth Integration** (backend-tasks.md: 6.2)
-   - Webhook receiver for dslrBooth
+3. **Desktop App Integration** (backend-tasks.md: 6.2)
+   - Webhook receiver for desktop app events
    - Session lifecycle management
+   - QR regeneration on session end
 
 ### Frontend Tasks
 1. **Session Monitoring** (frontend-tasks.md: 2.1)
-   - Active sessions display
-   - Session history
+   - Active sessions per event display
+   - Session history per event
    - Session duration tracking
 
 ### Testing Checklist
-- [ ] Session starts on booth unlock
-- [ ] Session ends on booth lock
-- [ ] Active sessions display correctly
+- [ ] Session starts on successful payment
+- [ ] Session ends when desktop app completes
+- [ ] Active sessions display correctly per event
 - [ ] Session history shows past usage
+- [ ] QR code regenerates on session end
 
 ---
 
-## Module 8: Analytics & Reporting
-**Goal**: Provide business insights and metrics
+## Module 7: Analytics & Reporting
+**Goal**: Provide business insights and metrics per event
 
 ### Backend Tasks
 1. **Analytics Endpoints**
    - GET /api/analytics/revenue
    - GET /api/analytics/usage
    - GET /api/analytics/events
+   - GET /api/events/:id/analytics
 
 ### Frontend Tasks
 1. **Dashboard Metrics** (frontend-tasks.md: 1.3)
-   - Revenue charts
-   - Usage statistics
-   - Event performance
+   - Revenue charts per event
+   - Usage statistics per event
+   - Event performance comparison
+   - QR code usage analytics
 
 ### Testing Checklist
-- [ ] Revenue metrics calculate correctly
-- [ ] Usage statistics display
-- [ ] Charts render with data
+- [ ] Revenue metrics calculate correctly per event
+- [ ] Usage statistics display per event
+- [ ] Charts render with event-specific data
+- [ ] QR code analytics show usage patterns
 
 ---
 
@@ -323,15 +296,16 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
 1. Auth flow (login → protected route → profile)
 2. Event CRUD (create → list → edit → delete)
 3. Payment flow (create event → generate QR → mock payment)
-4. Booth registration (register → ping → status update)
+4. QR code management (generate → expire → regenerate)
 5. Real-time updates (connect → receive updates)
-6. Full payment cycle (payment → unlock → session → lock)
+6. Full payment cycle (payment → session start → session end → QR regeneration)
 
 ### E2E Testing Scenarios
-1. **Happy Path**: Admin login → Create event → Download QR → Mock payment → Booth unlocks
-2. **Multi-booth**: Multiple booths with different events
+1. **Happy Path**: Admin login → Create event → Generate QR → Mock payment → Session starts → QR regenerates
+2. **Multi-event**: Multiple events with separate QR codes
 3. **Error Recovery**: Network disconnection → Reconnection → State sync
 4. **Concurrent Payments**: Multiple payments for same event
+5. **QR Expiry**: QR code expires → Auto-regeneration → Payment validation
 
 ---
 
@@ -341,17 +315,16 @@ This document synchronizes frontend and backend tasks to enable feature-by-featu
 - Module 1: Authentication (Frontend + Backend)
 - Module 2: Event Management (Frontend + Backend)
 
-### Week 2: Payments
-- Module 3: Paymongo Integration
-- Module 4: Booth Management
+### Week 2: Payments & Real-time
+- Module 3: Paymongo Integration & QR Management
+- Module 4: WebSocket/SignalR
 
-### Week 3: Real-time
-- Module 5: WebSocket/SignalR
-- Module 6: Payment Processing
+### Week 3: Processing
+- Module 5: Payment Processing & Webhooks
+- Module 6: Session Management
 
 ### Week 4: Polish
-- Module 7: Session Management
-- Module 8: Analytics
+- Module 7: Analytics & Reporting
 - Testing & Bug Fixes
 
 ---

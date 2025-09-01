@@ -70,22 +70,11 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - updated_at (timestamp)
     ```
   
-  - [ ] `src/db/schema/booths.ts` - Booth registration
-    ```typescript
-    - id (uuid, primary key)
-    - booth_code (string, unique)
-    - name (string)
-    - location (string)
-    - status (enum: online, offline, busy)
-    - last_ping (timestamp)
-    - created_at (timestamp)
-    ```
   
   - [ ] `src/db/schema/payments.ts` - Payment records
     ```typescript
     - id (uuid, primary key)
     - event_id (uuid, foreign key)
-    - booth_id (uuid, foreign key)
     - qr_code_id (uuid, foreign key)
     - amount (decimal)
     - currency (string)
@@ -113,12 +102,12 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - updated_at (timestamp)
     ```
   
-  - [ ] `src/db/schema/sessions.ts` - Booth sessions
+  - [ ] `src/db/schema/sessions.ts` - Event sessions
     ```typescript
     - id (uuid, primary key)
-    - booth_id (uuid, foreign key)
     - event_id (uuid, foreign key)
     - payment_id (uuid, foreign key)
+    - qr_code_id (uuid, foreign key)
     - start_time (timestamp)
     - end_time (timestamp)
     - status (enum: active, completed, cancelled)
@@ -162,18 +151,7 @@ This document tracks the backend implementation tasks for the Photobooth Payment
     - [ ] POST /api/events/:id/deactivate (admin only)
   - [ ] QR code generation service
 
-- [ ] **3.4 Booths Module**
-  - [ ] Create `src/modules/booths/` structure
-  - [ ] Booth registration service
-  - [ ] Booth controller with endpoints:
-    - [ ] POST /api/booths/register
-    - [ ] GET /api/booths (admin only)
-    - [ ] GET /api/booths/:id
-    - [ ] PUT /api/booths/:id
-    - [ ] POST /api/booths/:id/ping (heartbeat)
-    - [ ] DELETE /api/booths/:id (admin only)
-
-- [ ] **3.5 QR Code Management Module**
+- [ ] **3.4 QR Code Management Module**
   - [ ] Create `src/modules/qr-codes/` structure
   - [ ] QR Code service with lifecycle management
   - [ ] QR Code controller with endpoints:
@@ -219,8 +197,7 @@ This document tracks the backend implementation tasks for the Photobooth Payment
 - [ ] **4.3 Payment Flow Integration**
   - [ ] Link payments to events and QR codes
   - [ ] Validate payment amounts
-  - [ ] Update booth status on payment
-  - [ ] Create session records
+  - [ ] Create session records on successful payment
   - [ ] Mark QR code as used on successful payment
   - [ ] Generate new QR code for next session
 
@@ -239,23 +216,19 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] Install `@nestjs/websockets @nestjs/platform-socket.io socket.io`
   - [ ] Create WebSocket gateway
   - [ ] Implement authentication for WebSocket connections
-  - [ ] Create room management for booths
+  - [ ] Create room management for events
 
 - [ ] **5.2 SignalR Hub Implementation**
   - [ ] Create `src/modules/realtime/` structure
   - [ ] Implement hub methods:
-    - [ ] RegisterBooth(boothId, eventId)
-    - [ ] UnregisterBooth(boothId)
-    - [ ] UnlockBooth(sessionId)
-    - [ ] LockBooth(boothId)
-    - [ ] SessionStarted(sessionId)
-    - [ ] SessionEnded(sessionId)
-    - [ ] PaymentReceived(paymentId)
+    - [ ] SessionStarted(sessionId, eventId)
+    - [ ] SessionEnded(sessionId, eventId)
+    - [ ] PaymentReceived(paymentId, eventId)
     - [ ] QRCodeGenerated(qrCodeId, eventId)
     - [ ] QRCodeExpiring(qrCodeId, expiresIn)
     - [ ] QRCodeExpired(qrCodeId)
     - [ ] QRCodeUsed(qrCodeId, paymentId)
-  - [ ] Event broadcasting to specific booths and admin clients
+  - [ ] Event broadcasting to admin clients and desktop apps
 
 - [ ] **5.3 Bridge Communication Protocol**
   - [ ] Define message formats
@@ -278,9 +251,9 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] QR code regeneration on session end
   - [ ] Link sessions to QR codes for tracking
 
-- [ ] **6.2 dslrBooth Integration**
-  - [ ] Webhook receiver for dslrBooth events
-  - [ ] POST /api/webhooks/dslrbooth (local only)
+- [ ] **6.2 Desktop App Integration**
+  - [ ] Webhook receiver for desktop app events
+  - [ ] POST /api/webhooks/desktop-app (local only)
   - [ ] Handle session lifecycle events
   - [ ] File upload tracking
 
@@ -315,7 +288,7 @@ This document tracks the backend implementation tasks for the Photobooth Payment
   - [ ] Auth service tests
   - [ ] Event service tests
   - [ ] Payment service tests
-  - [ ] Booth service tests
+  - [ ] QR code service tests
   - [ ] Session service tests
 
 - [ ] **8.2 Integration Tests**
@@ -326,8 +299,8 @@ This document tracks the backend implementation tasks for the Photobooth Payment
 
 - [ ] **8.3 E2E Tests**
   - [ ] Complete payment flow
-  - [ ] Booth registration and operation
-  - [ ] Session lifecycle
+  - [ ] QR code lifecycle management
+  - [ ] Session lifecycle per event
   - [ ] Error scenarios
 
 ### Phase 9: Documentation
@@ -447,16 +420,16 @@ BRIDGE_API_KEY=your-bridge-api-key
 | Phase | Tasks | Completed | Percentage |
 |-------|-------|-----------|------------|
 | Phase 1 | 11 | 0 | 0% |
-| Phase 2 | 6 | 0 | 0% |
-| Phase 3 | 30 | 0 | 0% |
+| Phase 2 | 5 | 0 | 0% |
+| Phase 3 | 25 | 0 | 0% |
 | Phase 4 | 18 | 0 | 0% |
-| Phase 5 | 15 | 0 | 0% |
+| Phase 5 | 11 | 0 | 0% |
 | Phase 6 | 10 | 0 | 0% |
 | Phase 7 | 12 | 0 | 0% |
 | Phase 8 | 11 | 0 | 0% |
 | Phase 9 | 10 | 0 | 0% |
 | Phase 10 | 10 | 0 | 0% |
-| **Total** | **133** | **0** | **0%** |
+| **Total** | **123** | **0** | **0%** |
 
 ## Notes
 

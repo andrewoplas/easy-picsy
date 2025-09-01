@@ -1,19 +1,20 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { AnalyticsChart } from '@/components/dashboard/AnalyticsChart';
+import { CircularProgress } from '@/components/dashboard/CircularProgress';
+import { ProjectTasks } from '@/components/dashboard/ProjectTasks';
+import { RemindersSection } from '@/components/dashboard/RemindersSection';
+import { TeamCollaboration } from '@/components/dashboard/TeamCollaboration';
+import { TimeTracker } from '@/components/dashboard/TimeTracker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  Calendar,
-  CreditCard,
-  Monitor,
-  Users,
-  TrendingUp,
-  ArrowUpRight,
   ArrowDownRight,
-  Clock,
-  DollarSign,
+  ArrowUpRight,
+  Calendar,
   Camera,
-  Star,
+  Clock,
+  CreditCard,
+  Monitor
 } from 'lucide-react';
 
 const stats = [
@@ -24,57 +25,34 @@ const stats = [
     trend: 'up',
     icon: Calendar,
     description: 'Increased from last month',
-    bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy',
+    isPrimary: true,
   },
   {
-    name: 'Revenue Today',
-    value: '$2,847',
-    change: '+18%',
+    name: 'Ended Events',
+    value: '10',
+    change: '+8%',
     trend: 'up',
-    icon: DollarSign,
-    description: 'From 12 sessions',
-    bgColor: 'bg-dash-orange/10',
-    iconColor: 'text-dash-orange',
+    icon: Calendar,
+    description: 'Increased from last month',
+    isPrimary: false,
   },
   {
-    name: 'Active Booths',
-    value: '8',
-    change: '+2',
+    name: 'Running Events',
+    value: '12',
+    change: '+4%',
     trend: 'up',
     icon: Monitor,
-    description: 'Currently online',
-    bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy',
+    description: 'Increased from last month',
+    isPrimary: false,
   },
   {
-    name: 'Sessions Today',
-    value: '142',
-    change: '-4%',
-    trend: 'down',
-    icon: Users,
-    description: 'Total sessions',
-    bgColor: 'bg-dash-gray/30',
-    iconColor: 'text-dash-navy',
-  },
-];
-
-const quickActions = [
-  {
-    title: 'Create New Event',
-    description: 'Set up a new photobooth event',
-    icon: Calendar,
-    color: 'bg-dash-orange',
-    hoverColor: 'hover:bg-dash-orange/90',
-    href: '/admin/dashboard/events',
-  },
-  {
-    title: 'View Analytics',
-    description: 'Check your business insights',
-    icon: TrendingUp,
-    color: 'bg-dash-navy',
-    hoverColor: 'hover:bg-dash-navy/90',
-    href: '/admin/dashboard/analytics',
+    name: 'Pending Events',
+    value: '2',
+    change: '0%',
+    trend: 'up',
+    icon: Clock,
+    description: 'On Discuss',
+    isPrimary: false,
   },
 ];
 
@@ -132,39 +110,17 @@ const weeklyData = [
 ];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const firstName = user?.email?.split('@')[0] || 'there';
 
-  const maxRevenue = Math.max(...weeklyData.map((d) => d.revenue));
-  const maxSessions = Math.max(...weeklyData.map((d) => d.sessions));
 
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
+      {/* Dashboard Title Section */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-dash-navy mb-2">
-              Good morning, {firstName}! 👋
-            </h1>
-            <p className="text-dash-navy/70 text-lg">
-              Here&apos;s what&apos;s happening with your photobooth business
-              today.
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="text-right">
-              <p className="text-sm text-dash-navy/60">
-                Today&apos;s Performance
-              </p>
-              <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4 text-dash-orange fill-current" />
-                <span className="text-lg font-semibold text-dash-navy">
-                  Excellent
-                </span>
-              </div>
-            </div>
-          </div>
+        <div>
+          <h1 className="text-4xl font-normal text-dash-navy mb-2 tracking-wide">Dashboard</h1>
+          <p className="text-dash-navy/60 text-lg">
+            Plan, prioritize, and accomplish your photobooth business with ease.
+          </p>
         </div>
       </div>
 
@@ -173,25 +129,29 @@ export default function DashboardPage() {
         {stats.map((stat) => (
           <Card
             key={stat.name}
-            className="bg-dash-white border border-dash-gray/50 shadow-sm hover:shadow-md transition-all duration-200 group"
+            className={`hover:bg-gray-50/50 transition-all duration-200 group ${stat.isPrimary
+              ? 'bg-gradient-to-br from-dash-orange to-easy-yellow text-white'
+              : 'bg-dash-white'
+              }`}
           >
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-dash-navy/70 mb-2">
+                  <p className={`text-sm font-medium mb-2 ${stat.isPrimary ? 'text-white/80' : 'text-dash-navy/70'
+                    }`}>
                     {stat.name}
                   </p>
-                  <p className="text-3xl font-bold text-dash-navy mb-3">
+                  <p className={`text-3xl font-bold mb-3 ${stat.isPrimary ? 'text-white' : 'text-dash-navy'
+                    }`}>
                     {stat.value}
                   </p>
                   <div className="flex items-center justify-between">
-                    <div
-                      className={`flex items-center text-sm font-semibold ${
-                        stat.trend === 'up'
-                          ? 'text-dash-orange'
-                          : 'text-red-600'
-                      }`}
-                    >
+                    <div className={`flex items-center text-sm font-semibold ${stat.isPrimary
+                      ? 'text-white'
+                      : stat.trend === 'up'
+                        ? 'text-easy-yellow'
+                        : 'text-red-600'
+                      }`}>
                       {stat.trend === 'up' ? (
                         <ArrowUpRight className="w-4 h-4 mr-1" />
                       ) : (
@@ -200,12 +160,19 @@ export default function DashboardPage() {
                       {stat.change}
                     </div>
                   </div>
-                  <p className="text-xs text-dash-navy/50 mt-1">
+                  <p className={`text-xs mt-1 ${stat.isPrimary ? 'text-white/70' : 'text-dash-navy/50'
+                    }`}>
                     {stat.description}
                   </p>
                 </div>
-                <div className={`${stat.bgColor} rounded-xl p-3`}>
-                  <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                <div className={`rounded-xl p-3 ${stat.isPrimary
+                  ? 'bg-white/20'
+                  : 'bg-easy-yellow/10'
+                  }`}>
+                  <stat.icon className={`h-6 w-6 ${stat.isPrimary
+                    ? 'text-white'
+                    : 'text-easy-yellow'
+                    }`} />
                 </div>
               </div>
             </CardContent>
@@ -213,116 +180,106 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Main Dashboard Grid */}
       <div className="grid lg:grid-cols-12 gap-8">
-        {/* Quick Actions */}
+        {/* Left Column - Analytics */}
         <div className="lg:col-span-4">
-          <Card className="bg-dash-white border border-dash-gray/50 shadow-sm mb-6">
+          <AnalyticsChart data={weeklyData} />
+        </div>
+
+        {/* Center Column - Team & Reminders */}
+        <div className="lg:col-span-4 space-y-8">
+          <TeamCollaboration />
+          <RemindersSection />
+        </div>
+
+        {/* Right Column - Progress & Tasks */}
+        <div className="lg:col-span-4 space-y-8">
+          <CircularProgress
+            percentage={41}
+            title="Event Progress"
+            subtitle="Overall completion status"
+          />
+          <ProjectTasks />
+        </div>
+      </div>
+
+      {/* Bottom Row - Time Tracker */}
+      <div className="grid lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-4">
+          <TimeTracker />
+        </div>
+        <div className="lg:col-span-8">
+          {/* Keep the recent activity section */}
+          <Card className="bg-dash-white">
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-dash-navy">
-                Quick Actions
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-normal text-dash-navy tracking-wide">
+                    Recent Activity
+                  </CardTitle>
+                  <p className="text-sm text-dash-navy/70 mt-1">
+                    Latest updates from your photobooth network
+                  </p>
+                </div>
+                <button className="text-sm text-dash-navy/70 hover:text-easy-yellow font-medium flex items-center space-x-1 transition-colors">
+                  <span>View all</span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {quickActions.map((action) => (
-                <a
-                  key={action.title}
-                  href={action.href}
-                  className="w-full text-left group rounded-xl p-4 transition-all duration-200 hover:shadow-md block"
-                >
+            <CardContent>
+              <div className="space-y-4">
+                {recentActivity.map((activity) => (
                   <div
-                    className={`${action.color} ${action.hoverColor} rounded-xl p-4 transition-all duration-200`}
+                    key={activity.id}
+                    className="flex items-center space-x-4 p-4 rounded-lg hover:bg-dash-gray/20 transition-colors group"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-white/20 rounded-lg p-2">
-                        <action.icon className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-white">
-                          {action.title}
-                        </h3>
-                        <p className="text-sm text-white/90">
-                          {action.description}
+                    <div
+                      className={`p-2 rounded-lg ${activity.status === 'completed'
+                        ? 'bg-easy-yellow/10'
+                        : activity.status === 'active'
+                          ? 'bg-dash-gray/30'
+                          : 'bg-dash-gray/30'
+                        }`}
+                    >
+                      <activity.icon
+                        className={`w-5 h-5 ${activity.status === 'completed'
+                          ? 'text-easy-yellow'
+                          : activity.status === 'active'
+                            ? 'text-dash-navy'
+                            : 'text-dash-navy'
+                          }`}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-dash-navy group-hover:text-dash-navy/80">
+                          {activity.title}
                         </p>
+                        {activity.amount && (
+                          <span className="text-easy-yellow font-semibold">
+                            {activity.amount}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-sm text-dash-navy/70">
+                          {activity.description}
+                        </p>
+                        <div className="flex items-center space-x-1 text-xs text-dash-navy/50">
+                          <Clock className="w-3 h-3" />
+                          <span>{activity.time}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </a>
-              ))}
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
-      {/* Recent Activity */}
-      <Card className="bg-dash-white border border-dash-gray/50 shadow-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-bold text-dash-navy">
-                Recent Activity
-              </CardTitle>
-              <p className="text-sm text-dash-navy/70 mt-1">
-                Latest updates from your photobooth network
-              </p>
-            </div>
-            <button className="text-sm text-dash-navy/70 hover:text-dash-orange font-medium flex items-center space-x-1 transition-colors">
-              <span>View all</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div
-                key={activity.id}
-                className="flex items-center space-x-4 p-4 rounded-lg hover:bg-dash-gray/20 transition-colors group"
-              >
-                <div
-                  className={`p-2 rounded-lg ${
-                    activity.status === 'completed'
-                      ? 'bg-dash-orange/10'
-                      : activity.status === 'active'
-                      ? 'bg-dash-gray/30'
-                      : 'bg-dash-gray/30'
-                  }`}
-                >
-                  <activity.icon
-                    className={`w-5 h-5 ${
-                      activity.status === 'completed'
-                        ? 'text-dash-orange'
-                        : activity.status === 'active'
-                        ? 'text-dash-navy'
-                        : 'text-dash-navy'
-                    }`}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-dash-navy group-hover:text-dash-navy/80">
-                      {activity.title}
-                    </p>
-                    {activity.amount && (
-                      <span className="text-dash-orange font-semibold">
-                        {activity.amount}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className="text-sm text-dash-navy/70">
-                      {activity.description}
-                    </p>
-                    <div className="flex items-center space-x-1 text-xs text-dash-navy/50">
-                      <Clock className="w-3 h-3" />
-                      <span>{activity.time}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

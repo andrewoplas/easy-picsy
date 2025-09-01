@@ -76,7 +76,7 @@ export function EditEventModal({ isOpen, onClose, event, onSubmit }: EditEventMo
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Event</DialogTitle>
+          <DialogTitle className="font-normal tracking-wide">Edit Event</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

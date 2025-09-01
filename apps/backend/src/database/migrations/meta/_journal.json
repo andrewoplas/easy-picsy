@@ -8,6 +8,13 @@
       "when": 1756645371992,
       "tag": "0000_sweet_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1756667027489,
+      "tag": "0001_spooky_deadpool",
+      "breakpoints": true
     }
   ]
 }

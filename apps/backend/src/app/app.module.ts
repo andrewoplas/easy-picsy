@@ -7,6 +7,9 @@ import { SupabaseModule } from '../supabase/supabase.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { EventsModule } from '../events/events.module';
+import { PaymongoModule } from '../paymongo/paymongo.module';
+import { QrCodesModule } from '../qr-codes/qr-codes.module';
+import { RealtimeModule } from '../realtime/realtime.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { EventsModule } from '../events/events.module';
     AuthModule,
     UsersModule,
     EventsModule,
+    PaymongoModule,
+    QrCodesModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

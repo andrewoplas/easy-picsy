@@ -63,7 +63,7 @@ export function CreateEventModal({ isOpen, onClose, onSubmit }: CreateEventModal
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Event</DialogTitle>
+          <DialogTitle className="font-normal tracking-wide">Create New Event</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

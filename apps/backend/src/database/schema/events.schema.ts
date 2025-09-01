@@ -8,7 +8,6 @@ export const events = pgTable('events', {
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   currency: varchar('currency', { length: 3 }).notNull().default('PHP'),
   isActive: boolean('is_active').notNull().default(true),
-  qrCodeUrl: text('qr_code_url'),
   createdBy: uuid('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

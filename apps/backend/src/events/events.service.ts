@@ -1,15 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
+import { QrCodesService } from '../qr-codes/qr-codes.service';
 import { events, Event, NewEvent } from '../database/schema';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  private readonly logger = new Logger(EventsService.name);
 
-  async create(createEventDto: CreateEventDto, userId: string): Promise<Event> {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly qrCodesService: QrCodesService,
+  ) {}
+
+  async create(createEventDto: CreateEventDto, userId: string): Promise<Event & { qrCode?: any }> {
     const newEvent: NewEvent = {
       name: createEventDto.name,
       description: createEventDto.description,
@@ -24,15 +30,16 @@ export class EventsService {
       .values(newEvent)
       .returning();
 
-    // Generate QR code URL after creation
-    const qrCodeUrl = `${process.env.FRONTEND_URL}/pay?event=${createdEvent.id}`;
-    
-    await this.databaseService.db
-      .update(events)
-      .set({ qrCodeUrl })
-      .where(eq(events.id, createdEvent.id));
-
-    return { ...createdEvent, qrCodeUrl };
+    // Generate initial QR code for the event using Paymongo
+    try {
+      const qrCode = await this.qrCodesService.generateQRCode(createdEvent.id, userId);
+      this.logger.log(`QR code generated for new event ${createdEvent.id}`);
+      return { ...createdEvent, qrCode };
+    } catch (error) {
+      this.logger.error(`Failed to generate QR code for event ${createdEvent.id}:`, error);
+      // Return the event even if QR generation fails
+      return createdEvent;
+    }
   }
 
   async findAll(userId: string): Promise<Event[]> {

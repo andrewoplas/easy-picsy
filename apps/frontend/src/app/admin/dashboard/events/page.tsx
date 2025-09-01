@@ -14,14 +14,15 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  History,
 } from 'lucide-react';
 import { CreateEventModal } from '@/components/events/CreateEventModal';
 import { EditEventModal } from '@/components/events/EditEventModal';
 import { QRCodeModal } from '@/components/events/QRCodeModal';
+import { QRCodeHistoryModal } from '@/components/events/QRCodeHistoryModal';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
@@ -39,6 +40,7 @@ export default function EventsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showQRHistoryModal, setShowQRHistoryModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   // Search state
@@ -135,6 +137,11 @@ export default function EventsPage() {
     setShowQRModal(true);
   };
 
+  const openQRHistoryModal = (event: Event) => {
+    setSelectedEvent(event);
+    setShowQRHistoryModal(true);
+  };
+
   // Pagination logic
   const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
   const startIndex = (currentPage - 1) * eventsPerPage;
@@ -150,7 +157,7 @@ export default function EventsPage() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-dash-navy">Events</h1>
+            <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Events</h1>
             <p className="text-dash-navy/70">Manage your photobooth events</p>
           </div>
           <div className="w-32 h-10 bg-dash-gray/30 rounded-lg animate-pulse"></div>
@@ -173,7 +180,7 @@ export default function EventsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-dash-navy">Events</h1>
+          <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Events</h1>
           <p className="text-dash-navy/70">
             Manage your photobooth events and QR codes
           </p>
@@ -189,14 +196,14 @@ export default function EventsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-dash-white border border-dash-gray/50">
+        <Card className="bg-dash-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-dash-navy/70">
                   Total Events
                 </p>
-                <p className="text-2xl font-bold text-dash-navy">
+                <p className="text-2xl font-normal text-dash-navy tracking-wide">
                   {events.length}
                 </p>
               </div>
@@ -206,14 +213,14 @@ export default function EventsPage() {
         </Card>
 
 
-        <Card className="bg-dash-white border border-dash-gray/50">
+        <Card className="bg-dash-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-dash-navy/70">
                   Avg. Price
                 </p>
-                <p className="text-2xl font-bold text-dash-navy">
+                <p className="text-2xl font-normal text-dash-navy tracking-wide">
                   ₱
                   {events.length > 0
                     ? (
@@ -253,10 +260,10 @@ export default function EventsPage() {
       {/* Events List */}
       <div className="space-y-4">
         {filteredEvents.length === 0 ? (
-          <Card className="bg-dash-white border border-dash-gray/50">
+          <Card className="bg-dash-white">
             <CardContent className="p-12 text-center">
               <Calendar className="h-12 w-12 text-dash-navy/30 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-dash-navy mb-2">
+              <h3 className="text-lg font-normal text-dash-navy mb-2 tracking-wide">
                 {events.length === 0 ? 'No events yet' : 'No events found'}
               </h3>
               <p className="text-dash-navy/70 mb-4">
@@ -279,13 +286,13 @@ export default function EventsPage() {
           currentEvents.map((event) => (
             <Card
               key={event.id}
-              className="bg-dash-white border border-dash-gray/50 hover:shadow-md transition-shadow"
+              className="bg-dash-white hover:bg-gray-50/50 transition-colors"
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-semibold text-dash-navy">
+                      <h3 className="text-xl font-normal text-dash-navy tracking-wide">
                         {event.name}
                       </h3>
                     </div>
@@ -311,6 +318,22 @@ export default function EventsPage() {
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View QR Code</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openQRHistoryModal(event)}
+                          className="border-dash-gray/50 hover:bg-dash-gray/10"
+                        >
+                          <History className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>QR Code History</p>
                       </TooltipContent>
                     </Tooltip>
 
@@ -433,6 +456,15 @@ export default function EventsPage() {
             isOpen={showQRModal}
             onClose={() => {
               setShowQRModal(false);
+              setSelectedEvent(null);
+            }}
+            event={selectedEvent}
+          />
+
+          <QRCodeHistoryModal
+            isOpen={showQRHistoryModal}
+            onClose={() => {
+              setShowQRHistoryModal(false);
               setSelectedEvent(null);
             }}
             event={selectedEvent}
