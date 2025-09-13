@@ -1,0 +1,24 @@
+{
+  "actionButtons": {
+    "defaultColor": "#ff0034",
+    "loadNpmCommands": false,
+    "reloadButton": null,
+    "commands": [
+      {
+        "cwd": "${workspaceFolder}",
+        "name": "🌐 Frontend",
+        "color": "#007ACC",
+        "singleInstance": true,
+        "command": "nx dev frontend --port=4200"
+      },
+      {
+        "cwd": "${workspaceFolder}",
+        "name": "⚙️ Backend",
+        "color": "#28A745",
+        "singleInstance": true,
+        "command": "npx nx serve backend"
+      }
+    ]
+  },
+  "nxConsole.generateAiAgentRules": true
+}

@@ -24,10 +24,10 @@ import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User login',
     description: 'Authenticate user with email and password using Supabase'
   })
@@ -57,7 +57,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User registration',
     description: 'Register new user with email and password using Supabase'
   })
@@ -89,7 +89,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(SupabaseAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User logout',
     description: 'Logout user and invalidate JWT token'
   })
@@ -110,7 +110,7 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Refresh access token',
     description: 'Generate new access token using refresh token'
   })
@@ -142,7 +142,7 @@ export class AuthController {
   @Get('profile')
   @UseGuards(SupabaseAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get user profile',
     description: 'Retrieve current user profile information'
   })
@@ -161,13 +161,13 @@ export class AuthController {
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async getProfile(@Request() req: any) {
-    return this.authService.getProfile(req.user.id);
+    return this.authService.getProfile(req.user.supabaseId);
   }
 
   @Get('verify')
   @UseGuards(SupabaseAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Verify JWT token',
     description: 'Validate current JWT token and return user information'
   })

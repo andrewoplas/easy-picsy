@@ -49,7 +49,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
       const ctx = canvas.getContext('2d');
       canvas.width = 300;
       canvas.height = 300;
-      
+
       if (ctx) {
         // Simple QR code placeholder - in production use a proper QR library
         ctx.fillStyle = 'white';
@@ -61,7 +61,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
         ctx.fillText(event.name, 150, 150);
         ctx.fillText(`₱${event.price.toFixed(2)}`, 150, 170);
       }
-      
+
       canvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob);
@@ -89,7 +89,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
   useEffect(() => {
     if (qrStatus?.isValid && qrStatus.timeUntilExpiry) {
       setTimeUntilExpiry(qrStatus.timeUntilExpiry);
-      
+
       const interval = setInterval(() => {
         setTimeUntilExpiry((prev) => {
           if (prev === null || prev <= 1000) {
@@ -104,8 +104,8 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
 
       return () => clearInterval(interval);
     }
-    
-    return () => {}; // Empty cleanup function for when condition is not met
+
+    return () => { }; // Empty cleanup function for when condition is not met
   }, [qrStatus]);
 
   const loadCurrentQRCode = async () => {
@@ -113,7 +113,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
     try {
       const currentQrCode = await eventsApi.qr.getCurrent(event.id);
       setQrCode(currentQrCode);
-      
+
       if (currentQrCode) {
         const status = await eventsApi.qr.getStatus(currentQrCode.id);
         setQrStatus(status);
@@ -133,10 +133,10 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
     try {
       const newQrCode = await eventsApi.qr.regenerate(event.id);
       setQrCode(newQrCode);
-      
+
       const status = await eventsApi.qr.getStatus(newQrCode.id);
       setQrStatus(status);
-      
+
       toast.success('QR code regenerated successfully');
     } catch (error) {
       console.error('Failed to regenerate QR code:', error);
@@ -181,7 +181,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
           ${event.name}
         </text>
         <text x="100" y="120" text-anchor="middle" font-family="monospace" font-size="8" fill="gray">
-          ₱${event.price.toFixed(2)}
+          ₱${Number(event.price || 0).toFixed(2)}
         </text>
         <text x="100" y="140" text-anchor="middle" font-family="monospace" font-size="6" fill="gray">
           Scan to Pay
@@ -206,7 +206,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
         <DialogHeader>
           <DialogTitle className="font-normal tracking-wide">QR Code</DialogTitle>
         </DialogHeader>
-        
+
         <div className="text-center space-y-6">
           {/* Event Info */}
           <div>
@@ -215,9 +215,9 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
               <p className="text-sm text-dash-navy/70 mb-2">{event.description}</p>
             )}
             <p className="text-xl font-bold text-dash-orange">
-              ₱{event.price.toFixed(2)}
+              ₱{Number(event.price || 0).toFixed(2)}
             </p>
-            
+
             {/* QR Code Status */}
             {qrCode && qrStatus && (
               <div className="flex justify-center items-center gap-2 mt-2">
@@ -245,8 +245,8 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
               </div>
             ) : qrCode && qrStatus?.isValid ? (
               <div className="p-4 bg-white rounded-lg border-2 border-dash-gray/30">
-                <img 
-                  src={generateQRCodeDataUrl(qrCode.qrData)} 
+                <img
+                  src={generateQRCodeDataUrl(qrCode.qrData)}
                   alt={`QR Code for ${event.name}`}
                   className="w-48 h-48"
                 />

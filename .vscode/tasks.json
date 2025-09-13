@@ -1,0 +1,187 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🌐 Start Frontend",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "serve", "frontend"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "detail": "Start the Next.js frontend on port 4200"
+    },
+    {
+      "label": "⚙️ Start Backend",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "serve", "backend"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "detail": "Start the NestJS backend on port 3000"
+    },
+    {
+      "label": "🚀 Start Both Services",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "run-many", "--target=serve", "--projects=frontend,backend", "--parallel"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "detail": "Start both frontend and backend services in parallel"
+    },
+    {
+      "label": "🗄️ Database Studio",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "db:studio"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "detail": "Open Drizzle Studio for database management"
+    },
+    {
+      "label": "📊 Database Push",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "db:push"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Push database schema changes"
+    },
+    {
+      "label": "🌱 Seed Database",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "db:seed"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Seed the database with initial data"
+    },
+    {
+      "label": "🔄 Generate DB Types",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "db:generate"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Generate Drizzle database types and migrations"
+    },
+    {
+      "label": "🧪 Run Tests",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "run-many", "--target=test", "--all"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Run all tests across the workspace"
+    },
+    {
+      "label": "🔍 Lint All",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "run-many", "--target=lint", "--all"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Lint all projects in the workspace"
+    },
+    {
+      "label": "🏗️ Build All",
+      "type": "shell",
+      "command": "npx",
+      "args": ["nx", "run-many", "--target=build", "--all"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [],
+      "detail": "Build all projects in the workspace"
+    }
+  ]
+}

@@ -340,7 +340,7 @@ export default function LandingPage() {
     '@type': 'SoftwareApplication',
     name: 'Easy Picsy - Cashless Payment System for dslrBooth',
     description:
-      'Add cashless payments to your existing dslrBooth setup. Accept GCash, PayMaya, and QR code payments without replacing your current photobooth system.',
+      'Add cashless payments to your existing dslrBooth setup. Accept GCash, Maya, and 30+ Philippine banks and e-wallets through the official QRPh standard without replacing your current photobooth system.',
     url: 'https://easypicsy.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Windows',
@@ -359,9 +359,11 @@ export default function LandingPage() {
     },
     featureList: [
       'Works with existing dslrBooth installations',
-      'GCash and QRPh payment integration',
+      'Official QRPh standard with 30+ payment options',
+      'GCash, Maya, and all major Philippine banks',
       'Automatic booth unlock and control',
       'Real-time payment processing',
+      'BSP-supervised secure payment system',
       'Simple desktop app integration',
       'No hardware changes required',
     ],
@@ -449,7 +451,7 @@ export default function LandingPage() {
             <div ref={heroContentRef}>
               <div className="inline-block bg-easy-yellow/20 px-4 py-2 rounded-full mb-6">
                 <span className="text-sm font-semibold text-easy-black flex items-center gap-2">
-                  ⚡ Works with Your Existing dslrBooth
+                  ⚡ Official QRPh Standard - Works with Your Existing dslrBooth
                 </span>
               </div>
 
@@ -466,7 +468,7 @@ export default function LandingPage() {
                 <span className="font-semibold text-gray-800">
                   add QR code payments in minutes
                 </span>
-                . Accept GCash, PayMaya, and other digital payments without replacing any hardware.
+                . Accept GCash, Maya, and 30+ other Philippine banks and e-wallets without replacing any hardware.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -542,8 +544,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Supported Payment Methods Section - Hidden while gathering images */}
-      {/* 
+      {/* Supported Payment Methods Section */}
       <section className="py-16 bg-white border-t border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
@@ -551,7 +552,7 @@ export default function LandingPage() {
               Accepts All Major Philippine Payment Methods
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Your customers can pay with their preferred method - from e-wallets to bank apps
+              Your customers can pay with their preferred method using QRPh - the official Philippine QR code standard supervised by BSP
             </p>
           </div>
           
@@ -560,13 +561,7 @@ export default function LandingPage() {
               <span className="text-blue-600 font-bold text-xl">GCash</span>
             </div>
             <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
-              <span className="text-green-600 font-bold text-xl">PayMaya</span>
-            </div>
-            <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
-              <span className="text-purple-600 font-bold text-lg">QRPh</span>
-            </div>
-            <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
-              <span className="text-red-600 font-bold text-lg">UnionBank</span>
+              <span className="text-green-600 font-bold text-xl">Maya</span>
             </div>
             <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
               <span className="text-blue-500 font-bold text-lg">BPI</span>
@@ -575,21 +570,26 @@ export default function LandingPage() {
               <span className="text-orange-600 font-bold text-lg">BDO</span>
             </div>
             <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
-              <span className="text-teal-600 font-bold text-lg">Coins.ph</span>
+              <span className="text-red-600 font-bold text-lg">UnionBank</span>
             </div>
             <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
-              <span className="text-indigo-600 font-bold text-lg">GrabPay</span>
+              <span className="text-purple-600 font-bold text-lg">MetroBank</span>
+            </div>
+            <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
+              <span className="text-indigo-600 font-bold text-lg">RCBC</span>
+            </div>
+            <div className="payment-logo bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-center min-w-[100px] h-16 hover:shadow-md transition-all duration-200">
+              <span className="text-teal-600 font-bold text-lg">PNB</span>
             </div>
           </div>
 
           <div className="text-center mt-8">
             <p className="text-sm text-gray-500">
-              And many more payment options through our secure payment gateway
+              And 22+ more banks and e-wallets through the official QRPh payment network
             </p>
           </div>
         </div>
       </section>
-      */}
 
       {/* How It Works Section */}
       <section id="how-it-works" className="py-20 bg-white">
@@ -661,7 +661,7 @@ export default function LandingPage() {
                   Guest Pays with Phone
                 </h3>
                 <p className="text-gray-600">
-                  Guest scans QR code and pays instantly with GCash or PayMaya
+                  Guest scans QR code and pays instantly with GCash, Maya, or any Philippine bank app
                 </p>
               </div>
 
@@ -747,7 +747,7 @@ export default function LandingPage() {
                 Guarantee Payment Before Use
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Every person who uses your booth has paid first. No more guests skipping payment or using the booth for free
+                Every person who uses your booth has paid first through the secure, BSP-supervised QRPh system. No more guests skipping payment
               </p>
             </div>
 
@@ -804,10 +804,10 @@ export default function LandingPage() {
                 <Sparkles className="w-8 h-8 text-red-600" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-800">
-                Real-time Earnings
+                Government-Standard Security
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Watch your money come in live during events. See exactly how much you're earning
+                Trust the official QRPh payment standard supervised by BSP. Secure, tamper-proof payments with instant confirmation
               </p>
             </div>
           </div>
@@ -827,12 +827,12 @@ export default function LandingPage() {
           </div>
 
           <div ref={benefitCardsRef} className="grid md:grid-cols-3 gap-8">
-            <div className="benefit-card text-center">
+            <div className="benefit-card ">
               <div className="bg-easy-yellow/10 rounded-3xl p-8 hover:bg-easy-yellow/20 transition-all duration-300 hover:shadow-lg">
                 <div className="card-icon w-20 h-20 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">👑</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">
                   For Business Owners
                 </h3>
                 <ul className="text-gray-600 space-y-2">
@@ -856,12 +856,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="benefit-card text-center">
+            <div className="benefit-card ">
               <div className="bg-blue-50 rounded-3xl p-8 hover:bg-blue-100 transition-all duration-300 hover:shadow-lg">
                 <div className="card-icon w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">😊</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">
                   For Your Guests
                 </h3>
                 <ul className="text-gray-600 space-y-2">
@@ -875,7 +875,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    Use their favorite payment app
+                    Use any Philippine bank or e-wallet app
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -885,12 +885,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="benefit-card text-center">
+            <div className="benefit-card ">
               <div className="bg-purple-50 rounded-3xl p-8 hover:bg-purple-100 transition-all duration-300 hover:shadow-lg">
                 <div className="card-icon w-20 h-20 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">🎉</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800">
+                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">
                   For Your Events
                 </h3>
                 <ul className="text-gray-600 space-y-2">

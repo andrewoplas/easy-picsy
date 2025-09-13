@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   History,
+  BarChart,
 } from 'lucide-react';
 import { CreateEventModal } from '@/components/events/CreateEventModal';
 import { EditEventModal } from '@/components/events/EditEventModal';
@@ -34,6 +36,7 @@ import {
 } from '@/lib/api/events';
 
 export default function EventsPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -140,6 +143,10 @@ export default function EventsPage() {
   const openQRHistoryModal = (event: Event) => {
     setSelectedEvent(event);
     setShowQRHistoryModal(true);
+  };
+
+  const openAnalytics = (event: Event) => {
+    router.push(`/admin/dashboard/events/${event.id}/analytics`);
   };
 
   // Pagination logic
@@ -342,6 +349,22 @@ export default function EventsPage() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => openAnalytics(event)}
+                          className="border-dash-gray/50 hover:bg-dash-gray/10"
+                        >
+                          <BarChart className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View Analytics</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => openEditModal(event)}
                           className="border-dash-gray/50 hover:bg-dash-gray/10"
                         >
@@ -469,6 +492,7 @@ export default function EventsPage() {
             }}
             event={selectedEvent}
           />
+
         </>
       )}
       </div>

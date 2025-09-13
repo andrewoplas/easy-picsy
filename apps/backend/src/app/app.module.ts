@@ -10,6 +10,8 @@ import { EventsModule } from '../events/events.module';
 import { PaymongoModule } from '../paymongo/paymongo.module';
 import { QrCodesModule } from '../qr-codes/qr-codes.module';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { WebhooksModule } from '../webhooks/webhooks.module';
+import { LoggingModule } from '../logging/logging.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { RealtimeModule } from '../realtime/realtime.module';
     PaymongoModule,
     QrCodesModule,
     RealtimeModule,
+    WebhooksModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

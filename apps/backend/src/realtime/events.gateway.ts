@@ -163,4 +163,31 @@ export class EventsGateway
       timestamp: new Date().toISOString(),
     });
   }
+
+  /**
+   * Broadcast payment success to event room
+   */
+  broadcastPaymentSuccess(eventId: string, payment: {
+    qrCodeId: string;
+    eventId: string;
+    paymentId: string;
+    amount: number;
+    currency: string;
+  }) {
+    this.server.to(`event_${eventId}`).emit('paymentSuccess', payment);
+    this.logger.log(`Broadcasted payment success for event ${eventId}: ${payment.paymentId}`);
+  }
+
+  /**
+   * Broadcast payment failure to event room
+   */
+  broadcastPaymentFailed(eventId: string, payment: {
+    qrCodeId: string;
+    eventId: string;
+    paymentId: string;
+    failureReason: string;
+  }) {
+    this.server.to(`event_${eventId}`).emit('paymentFailed', payment);
+    this.logger.log(`Broadcasted payment failure for event ${eventId}: ${payment.failureReason}`);
+  }
 }

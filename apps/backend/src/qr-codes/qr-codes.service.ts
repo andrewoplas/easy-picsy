@@ -1,11 +1,12 @@
 import { Injectable, Logger, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { PaymongoService, CreatePaymentLinkRequest } from '../paymongo/paymongo.service';
+import { PaymongoService, CreatePaymentIntentRequest } from '../paymongo/paymongo.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { qrCodes, QrCode, NewQrCode } from '../database/schema/qr_codes.schema';
 import { events } from '../database/schema/events.schema';
 import { eq, and, desc } from 'drizzle-orm';
 import * as cron from 'node-cron';
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export class QrCodesService {
@@ -25,7 +26,7 @@ export class QrCodesService {
    * Generate a new QR code for an event
    */
   async generateQRCode(eventId: string, userId: string): Promise<QrCode> {
-    const db = this.databaseService.getDatabase();
+    const db = this.databaseService.getDb();
 
     try {
       // First, get the event details
@@ -42,26 +43,66 @@ export class QrCodesService {
       // Invalidate any existing active QR codes for this event
       await this.invalidateActiveQRCodes(eventId);
 
-      // Create Paymongo payment link
-      const paymentLinkRequest: CreatePaymentLinkRequest = {
+      // Create Paymongo payment intent with QR Ph
+      const paymentIntentRequest: CreatePaymentIntentRequest = {
         amount: Math.round(parseFloat(event.price) * 100), // Convert to cents
         currency: event.currency,
         description: `Payment for ${event.name}`,
         reference_number: `EVENT_${eventId}_${Date.now()}`,
-        remarks: `QR code payment for event: ${event.name}`,
+        payment_method_allowed: ['qrph'],
       };
 
+      const paymentIntent = await this.paymongoService.createPaymentIntentWithQR(paymentIntentRequest);
+      
+      // Create and attach QR Ph payment method to get the actual QR code image
+      const qrResult = await this.paymongoService.createAndAttachQRPaymentMethod(paymentIntent.id);
+      let qrCodeImage = qrResult?.qrImage;
+      let qrphId = qrResult?.qrphId;
+      
+      // Also create a payment link for web testing (optional)
+      const paymentLinkRequest = {
+        amount: Math.round(parseFloat(event.price) * 100),
+        currency: event.currency,
+        description: `Payment for ${event.name}`,
+        reference_number: `LINK_${eventId}_${Date.now()}`
+      };
+      
       const paymentLink = await this.paymongoService.createPaymentLink(paymentLinkRequest);
       
+      // If PayMongo doesn't provide QR image, generate one with payment info (fallback)
+      if (!qrCodeImage) {
+        this.logger.warn('PayMongo did not provide QR image, using fallback generation');
+        const qrPayload = {
+          paymentIntentId: paymentIntent.id,
+          amount: paymentIntent.attributes.amount,
+          currency: paymentIntent.attributes.currency,
+          description: paymentIntent.attributes.description,
+          eventId: eventId,
+        };
+        
+        qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrPayload), {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        
+        // For fallback QR codes, use payment intent ID as qrph ID
+        qrphId = qrphId || paymentIntent.id;
+      }
+
       // Generate expiry time (30 minutes from now)
       const expiresAt = this.paymongoService.generateExpiryTime(30);
-      
+
       // Create QR code record in database
       const newQrCode: NewQrCode = {
         eventId: eventId,
-        qrData: paymentLink.attributes.checkout_url,
-        paymongoLinkId: paymentLink.id,
-        paymongoLinkUrl: paymentLink.attributes.checkout_url,
+        qrData: qrCodeImage || '', // Store the base64 QR code image
+        paymongoLinkId: paymentIntent.id, // Store payment intent ID
+        paymongoLinkUrl: paymentLink.attributes.checkout_url, // Payment link for web testing
+        paymongoQrphId: qrphId, // Store QR Ph resource ID for expiry tracking
         status: 'active',
         expiresAt: expiresAt,
         usageCount: 0,
@@ -77,7 +118,8 @@ export class QrCodesService {
       this.realtimeService.notifyQRCodeGenerated(eventId, {
         qrCodeId: createdQrCode.id,
         eventId: eventId,
-        checkoutUrl: paymentLink.attributes.checkout_url,
+        checkoutUrl: paymentLink.attributes.checkout_url, // Payment link for web testing
+        qrCodeImage: qrCodeImage, // Include the base64 QR code image
         expiresAt: expiresAt.toISOString(),
         amount: parseFloat(event.price),
         currency: event.currency,
@@ -95,7 +137,7 @@ export class QrCodesService {
    * Get the current active QR code for an event
    */
   async getCurrentQRCode(eventId: string, userId: string): Promise<QrCode | null> {
-    const db = this.databaseService.getDatabase();
+    const db = this.databaseService.getDb();
 
     try {
       // Verify event ownership
@@ -125,7 +167,7 @@ export class QrCodesService {
 
       // Check if QR code is expired
       if (qrCode && new Date() > new Date(qrCode.expiresAt)) {
-        await this.markQRCodeExpired(qrCode.id);
+        await this.markQRCodeExpired(qrCode.id, eventId);
         return null;
       }
 
@@ -145,7 +187,7 @@ export class QrCodesService {
     isValid: boolean;
     timeUntilExpiry?: number;
   }> {
-    const db = this.databaseService.getDatabase();
+    const db = this.databaseService.getDb();
 
     const [qrCode] = await db
       .select()
@@ -181,7 +223,7 @@ export class QrCodesService {
    * Get QR code history for an event
    */
   async getQRCodeHistory(eventId: string, userId: string): Promise<QrCode[]> {
-    const db = this.databaseService.getDatabase();
+    const db = this.databaseService.getDb();
 
     // Verify event ownership
     const [event] = await db
@@ -210,17 +252,17 @@ export class QrCodesService {
   }
 
   /**
-   * Mark QR code as used
+   * Mark QR code as used (deprecated - use markQRCodePaid instead)
    */
   async markQRCodeUsed(qrCodeId: string, eventId: string): Promise<void> {
-    const db = this.databaseService.getDatabase();
-    
+    const db = this.databaseService.getDb();
+
     await db
       .update(qrCodes)
       .set({
         status: 'used',
         usedAt: new Date(),
-        usageCount: db.select().from(qrCodes).where(eq(qrCodes.id, qrCodeId)),
+        usageCount: 1,
       })
       .where(eq(qrCodes.id, qrCodeId));
 
@@ -235,11 +277,63 @@ export class QrCodesService {
   }
 
   /**
+   * Mark QR code as paid (successful payment)
+   */
+  async markQRCodePaid(qrCodeId: string, eventId: string): Promise<void> {
+    const db = this.databaseService.getDb();
+
+    await db
+      .update(qrCodes)
+      .set({
+        status: 'paid',
+        usedAt: new Date(),
+        usageCount: 1,
+        isActive: false,
+      })
+      .where(eq(qrCodes.id, qrCodeId));
+
+    this.logger.log(`QR code ${qrCodeId} marked as paid`);
+
+    // Broadcast QR code status update
+    this.realtimeService.notifyQRStatusUpdate(eventId, {
+      qrCodeId,
+      eventId,
+      status: 'paid',
+    });
+  }
+
+  /**
+   * Mark QR code as failed (failed payment)
+   */
+  async markQRCodeFailed(qrCodeId: string, eventId: string, failureReason?: string): Promise<void> {
+    const db = this.databaseService.getDb();
+
+    await db
+      .update(qrCodes)
+      .set({
+        status: 'failed',
+        usageCount: 1,
+        isActive: false,
+      })
+      .where(eq(qrCodes.id, qrCodeId));
+
+    this.logger.log(`QR code ${qrCodeId} marked as failed`, { failureReason });
+
+    // Broadcast QR code status update
+    this.realtimeService.notifyQRStatusUpdate(eventId, {
+      qrCodeId,
+      eventId,
+      status: 'failed',
+      failureReason,
+    });
+  }
+
+  /**
    * Mark QR code as expired
    */
   private async markQRCodeExpired(qrCodeId: string, eventId: string): Promise<void> {
-    const db = this.databaseService.getDatabase();
-    
+    const db = this.databaseService.getDb();
+
     await db
       .update(qrCodes)
       .set({
@@ -262,8 +356,8 @@ export class QrCodesService {
    * Invalidate all active QR codes for an event
    */
   private async invalidateActiveQRCodes(eventId: string): Promise<void> {
-    const db = this.databaseService.getDatabase();
-    
+    const db = this.databaseService.getDb();
+
     // Get all active QR codes for this event
     const activeQrCodes = await db
       .select()
@@ -275,12 +369,20 @@ export class QrCodesService {
         )
       );
 
-    // Archive them in Paymongo and mark as invalidated in our DB
+    // Cancel them in PayMongo and mark as invalidated in our DB
     for (const qrCode of activeQrCodes) {
       try {
-        await this.paymongoService.archivePaymentLink(qrCode.paymongoLinkId);
+        // Check if it's a payment intent (pi_xxx) or payment link (link_xxx)
+        if (qrCode.paymongoLinkId.startsWith('pi_')) {
+          await this.paymongoService.cancelPaymentIntent(qrCode.paymongoLinkId);
+        } else if (qrCode.paymongoLinkId.startsWith('link_')) {
+          await this.paymongoService.archivePaymentLink(qrCode.paymongoLinkId);
+        } else {
+          this.logger.warn(`Unknown PayMongo resource type: ${qrCode.paymongoLinkId}`);
+        }
       } catch (error) {
-        this.logger.warn(`Failed to archive payment link ${qrCode.paymongoLinkId}:`, error);
+        // Don't block QR generation if cleanup fails
+        this.logger.warn(`Failed to invalidate PayMongo resource ${qrCode.paymongoLinkId}:`, error.message);
       }
     }
 
@@ -321,7 +423,7 @@ export class QrCodesService {
    * Find and mark expired QR codes
    */
   private async cleanupExpiredQRCodes(): Promise<void> {
-    const db = this.databaseService.getDatabase();
+    const db = this.databaseService.getDb();
     const now = new Date();
 
     const expiredQrCodes = await db

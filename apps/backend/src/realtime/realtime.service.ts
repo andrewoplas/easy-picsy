@@ -46,4 +46,31 @@ export class RealtimeService {
     this.logger.log(`Notifying connection status: ${status}`);
     this.eventsGateway.broadcastConnectionStatus(status);
   }
+
+  /**
+   * Notify about successful payment
+   */
+  notifyPaymentSuccess(eventId: string, payment: {
+    qrCodeId: string;
+    eventId: string;
+    paymentId: string;
+    amount: number;
+    currency: string;
+  }) {
+    this.logger.log(`Notifying payment success for event ${eventId}`);
+    this.eventsGateway.broadcastPaymentSuccess(eventId, payment);
+  }
+
+  /**
+   * Notify about failed payment
+   */
+  notifyPaymentFailed(eventId: string, payment: {
+    qrCodeId: string;
+    eventId: string;
+    paymentId: string;
+    failureReason: string;
+  }) {
+    this.logger.log(`Notifying payment failed for event ${eventId}`);
+    this.eventsGateway.broadcastPaymentFailed(eventId, payment);
+  }
 }

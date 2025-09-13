@@ -12,7 +12,6 @@ import {
   CreditCard,
   Monitor,
   Users,
-  BarChart,
   Settings,
   LogOut,
   Menu,
@@ -23,10 +22,8 @@ import LogoSvg from '../../../assets/logo.svg';
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
   { name: 'Events', href: '/admin/dashboard/events', icon: Calendar },
-  { name: 'Payments', href: '/admin/dashboard/payments', icon: CreditCard },
-  { name: 'Booths', href: '/admin/dashboard/booths', icon: Monitor },
+  { name: 'Payments', href: '/admin/dashboard/payments', icon: Monitor },
   { name: 'Sessions', href: '/admin/dashboard/sessions', icon: Users },
-  { name: 'Analytics', href: '/admin/dashboard/analytics', icon: BarChart },
   { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];
 
@@ -167,13 +164,6 @@ export default function DashboardLayout({
             >
               <Menu className="h-6 w-6" />
             </button>
-
-            {/* Page Title */}
-            <div className="flex-1 lg:flex-none">
-              <h2 className="text-xl font-normal text-dash-navy tracking-wide">
-                {navigation.find(item => item.href === pathname)?.name || 'Dashboard'}
-              </h2>
-            </div>
 
             {/* Right side - User Profile */}
             <div className="flex items-center space-x-4">
