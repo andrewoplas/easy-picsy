@@ -5,14 +5,13 @@ All URIs are relative to *http://localhost:3000*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**qrCodesControllerGetCurrentQRCode**](#qrcodescontrollergetcurrentqrcode) | **GET** /api/qr-codes/event/{eventId}/current | Get current active QR code|
-|[**qrCodesControllerGetPaymentLink**](#qrcodescontrollergetpaymentlink) | **GET** /api/qr-codes/{qrCodeId}/payment-link | Get payment link URL for testing|
 |[**qrCodesControllerGetQRCodeHistory**](#qrcodescontrollergetqrcodehistory) | **GET** /api/qr-codes/event/{eventId}/history | Get QR code history|
 |[**qrCodesControllerGetQRCodeImage**](#qrcodescontrollergetqrcodeimage) | **GET** /api/qr-codes/{qrCodeId}/image | Get QR code image|
 |[**qrCodesControllerGetQRCodeStatus**](#qrcodescontrollergetqrcodestatus) | **GET** /api/qr-codes/{qrCodeId}/status | Get QR code status|
 |[**qrCodesControllerRegenerateQRCode**](#qrcodescontrollerregenerateqrcode) | **POST** /api/qr-codes/event/{eventId}/regenerate | Regenerate QR code|
 
 # **qrCodesControllerGetCurrentQRCode**
-> QrCodesControllerGetCurrentQRCode200Response qrCodesControllerGetCurrentQRCode()
+> QrCodeResponseDto qrCodesControllerGetCurrentQRCode()
 
 Retrieve the currently active QR code for a specific event (if any)
 
@@ -43,7 +42,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetCurrentQRCode(
 
 ### Return type
 
-**QrCodesControllerGetCurrentQRCode200Response**
+**QrCodeResponseDto**
 
 ### Authorization
 
@@ -64,60 +63,8 @@ const { status, data } = await apiInstance.qrCodesControllerGetCurrentQRCode(
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **qrCodesControllerGetPaymentLink**
-> QrCodesControllerGetPaymentLink200Response qrCodesControllerGetPaymentLink()
-
-Get the PayMongo checkout URL for web-based payment testing
-
-### Example
-
-```typescript
-import {
-    QRCodesApi,
-    Configuration
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new QRCodesApi(configuration);
-
-let qrCodeId: string; //QR Code UUID (default to undefined)
-
-const { status, data } = await apiInstance.qrCodesControllerGetPaymentLink(
-    qrCodeId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **qrCodeId** | [**string**] | QR Code UUID | defaults to undefined|
-
-
-### Return type
-
-**QrCodesControllerGetPaymentLink200Response**
-
-### Authorization
-
-[JWT-auth](../README.md#JWT-auth)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Payment link URL retrieved successfully |  -  |
-|**404** | QR code not found |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **qrCodesControllerGetQRCodeHistory**
-> Array<QrCodesControllerGetQRCodeHistory200ResponseInner> qrCodesControllerGetQRCodeHistory()
+> Array<QrCodeResponseDto> qrCodesControllerGetQRCodeHistory()
 
 Retrieve complete QR code generation history for a specific event
 
@@ -148,7 +95,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeHistory(
 
 ### Return type
 
-**Array<QrCodesControllerGetQRCodeHistory200ResponseInner>**
+**Array<QrCodeResponseDto>**
 
 ### Authorization
 
@@ -170,9 +117,9 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeHistory(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **qrCodesControllerGetQRCodeImage**
-> File qrCodesControllerGetQRCodeImage()
+> string qrCodesControllerGetQRCodeImage()
 
-Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.
+Retrieve the QR code as base64-encoded string.
 
 ### Example
 
@@ -201,7 +148,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeImage(
 
 ### Return type
 
-**File**
+**string**
 
 ### Authorization
 
@@ -210,19 +157,19 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeImage(
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: image/png, application/json
+ - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-|**200** | QR code image retrieved successfully |  -  |
+|**200** | QR code retrieved successfully |  -  |
 |**404** | QR code not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **qrCodesControllerGetQRCodeStatus**
-> QrCodesControllerGetQRCodeStatus200Response qrCodesControllerGetQRCodeStatus()
+> QrCodeStatusResponseDto qrCodesControllerGetQRCodeStatus()
 
 Check the current status of a specific QR code by its ID
 
@@ -253,7 +200,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeStatus(
 
 ### Return type
 
-**QrCodesControllerGetQRCodeStatus200Response**
+**QrCodeStatusResponseDto**
 
 ### Authorization
 
@@ -274,7 +221,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeStatus(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **qrCodesControllerRegenerateQRCode**
-> QrCodesControllerRegenerateQRCode201Response qrCodesControllerRegenerateQRCode()
+> QrCodeResponseDto qrCodesControllerRegenerateQRCode()
 
 Generate new QR code for an event (manual regeneration). Invalidates current QR code if active.
 
@@ -305,7 +252,7 @@ const { status, data } = await apiInstance.qrCodesControllerRegenerateQRCode(
 
 ### Return type
 
-**QrCodesControllerRegenerateQRCode201Response**
+**QrCodeResponseDto**
 
 ### Authorization
 

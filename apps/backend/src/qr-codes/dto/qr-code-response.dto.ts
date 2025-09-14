@@ -18,38 +18,46 @@ export class QrCodeResponseDto {
   @ApiPropertyOptional({ 
     description: 'Session ID (for future use)',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid'
+    format: 'uuid',
+    type: 'string',
+    nullable: true
   })
   sessionId?: string | null;
 
   @ApiPropertyOptional({ 
     description: 'Payment ID if payment was made',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid'
+    format: 'uuid',
+    type: 'string',
+    nullable: true
   })
   paymentId?: string | null;
 
   @ApiProperty({ 
     description: 'QR code data/content (PayMongo checkout URL)',
-    example: 'https://checkout.paymongo.com/checkout?id=cs_test_...'
+    example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...'
   })
   qrData: string;
 
   @ApiProperty({ 
-    description: 'PayMongo Payment Intent ID for QR Ph payments',
+    description: 'PayMongo payment intent ID',
     example: 'pi_test_123456789'
   })
   paymentIntentId: string;
 
   @ApiPropertyOptional({ 
-    description: 'PayMongo payment link URL (deprecated)',
-    example: 'https://links.paymongo.com/link_test_123456789'
+    description: 'PayMongo payment link URL',
+    example: 'https://links.paymongo.com/link_test_123456789',
+    type: 'string',
+    nullable: true
   })
   paymongoLinkUrl?: string | null;
 
   @ApiPropertyOptional({ 
     description: 'PayMongo QR Ph resource ID',
-    example: 'qrph_test_123456789'
+    example: 'qrph_test_123456789',
+    type: 'string',
+    nullable: true
   })
   paymongoQrphId?: string | null;
 
@@ -95,14 +103,18 @@ export class QrCodeResponseDto {
   @ApiPropertyOptional({ 
     description: 'QR code usage timestamp',
     example: '2023-01-01T00:30:00.000Z',
-    format: 'date-time'
+    format: 'date-time',
+    type: 'string',
+    nullable: true
   })
   usedAt?: Date | null;
 
   @ApiPropertyOptional({ 
     description: 'QR code invalidation timestamp',
     example: '2023-01-01T00:45:00.000Z',
-    format: 'date-time'
+    format: 'date-time',
+    type: 'string',
+    nullable: true
   })
   invalidatedAt?: Date | null;
 }

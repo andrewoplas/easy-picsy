@@ -1,0 +1,25 @@
+{
+  "dateLibrary": "date-time",
+  "typescriptThreePlus": true,
+  "supportsES6": true,
+  "modelPropertyNaming": "original",
+  "enumPropertyNaming": "original",
+  "stringEnums": true,
+  "ensureUniqueParams": true,
+  "sortParamsByRequiredFlag": true,
+  "removeEnumValuePrefix": true,
+  "prependFormOrBodyParameters": true,
+  "nullSafeAdditionalProps": true,
+  "useRxJS": false,
+  "platform": "browser",
+  "withInterfaces": true,
+  "typeMapping": {
+    "DateTime": "Date",
+    "Date": "Date",
+    "date": "Date",
+    "date-time": "Date"
+  },
+  "customTemplateParameters": {
+    "handleNullableDateFields": true
+  }
+}

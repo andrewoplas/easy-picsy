@@ -32,7 +32,7 @@ export interface PaymentNotification {
 export interface QRCodeGenerated {
   qrCodeId: string;
   eventId: string;
-  checkoutUrl: string;
+  checkoutUrl: string | null;
   qrCodeImage: string;
   expiresAt: string;
   amount: number;

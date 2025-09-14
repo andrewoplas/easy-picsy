@@ -24,7 +24,14 @@
         "color": "#FFA500",
         "singleInstance": true,
         "command": "npm run update-sources"
-      }
+      },
+      {
+        "cwd": "${workspaceFolder}",
+        "name": "🔄 Serve Tunnel",
+        "color": "#FFA500",
+        "singleInstance": true,
+        "command": "ssh -p 443 -R0:localhost:3000 -L4300:localhost:4300 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 dJM7hHCqHg3@pro.pinggy.io"
+      },
     ]
   },
   "nxConsole.generateAiAgentRules": true

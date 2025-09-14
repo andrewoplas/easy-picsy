@@ -155,10 +155,10 @@ export interface CreateEventResponseDto {
     'name': string;
     /**
      * Event description
-     * @type {object}
+     * @type {string}
      * @memberof CreateEventResponseDto
      */
-    'description'?: object;
+    'description'?: string;
     /**
      * Price per photobooth session
      * @type {string}
@@ -235,10 +235,10 @@ export interface EventResponseDto {
     'name': string;
     /**
      * Event description
-     * @type {object}
+     * @type {string}
      * @memberof EventResponseDto
      */
-    'description'?: object;
+    'description'?: string;
     /**
      * Price per photobooth session
      * @type {string}
@@ -613,16 +613,16 @@ export interface QrCodeResponseDto {
     'eventId': string;
     /**
      * Session ID (for future use)
-     * @type {object}
+     * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'sessionId'?: object;
+    'sessionId'?: string | null;
     /**
      * Payment ID if payment was made
-     * @type {object}
+     * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'paymentId'?: object;
+    'paymentId'?: string | null;
     /**
      * QR code data/content (PayMongo checkout URL)
      * @type {string}
@@ -630,23 +630,23 @@ export interface QrCodeResponseDto {
      */
     'qrData': string;
     /**
-     * PayMongo payment link ID
+     * PayMongo payment intent ID
      * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'paymongoLinkId': string;
+    'paymentIntentId': string;
     /**
      * PayMongo payment link URL
      * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'paymongoLinkUrl': string;
+    'paymongoLinkUrl'?: string | null;
     /**
      * PayMongo QR Ph resource ID
-     * @type {object}
+     * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'paymongoQrphId'?: object;
+    'paymongoQrphId'?: string | null;
     /**
      * QR code status
      * @type {string}
@@ -685,16 +685,16 @@ export interface QrCodeResponseDto {
     'createdAt': string;
     /**
      * QR code usage timestamp
-     * @type {object}
+     * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'usedAt'?: object;
+    'usedAt'?: string | null;
     /**
      * QR code invalidation timestamp
-     * @type {object}
+     * @type {string}
      * @memberof QrCodeResponseDto
      */
-    'invalidatedAt'?: object;
+    'invalidatedAt'?: string | null;
 }
 
 export const QrCodeResponseDtoStatusEnum = {
@@ -711,286 +711,28 @@ export type QrCodeResponseDtoStatusEnum = typeof QrCodeResponseDtoStatusEnum[key
 /**
  * 
  * @export
- * @interface QrCodesControllerGetCurrentQRCode200Response
+ * @interface QrCodeStatusResponseDto
  */
-export interface QrCodesControllerGetCurrentQRCode200Response {
+export interface QrCodeStatusResponseDto {
     /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
+     * QR code details
+     * @type {QrCodeResponseDto}
+     * @memberof QrCodeStatusResponseDto
      */
-    'id'?: string;
+    'qrCode': QrCodeResponseDto;
     /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'eventId'?: string;
-    /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'qrData'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'paymongoLinkId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'status'?: QrCodesControllerGetCurrentQRCode200ResponseStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetCurrentQRCode200Response
-     */
-    'createdAt'?: string;
-}
-
-export const QrCodesControllerGetCurrentQRCode200ResponseStatusEnum = {
-    Active: 'active',
-    Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated'
-} as const;
-
-export type QrCodesControllerGetCurrentQRCode200ResponseStatusEnum = typeof QrCodesControllerGetCurrentQRCode200ResponseStatusEnum[keyof typeof QrCodesControllerGetCurrentQRCode200ResponseStatusEnum];
-
-/**
- * 
- * @export
- * @interface QrCodesControllerGetPaymentLink200Response
- */
-export interface QrCodesControllerGetPaymentLink200Response {
-    /**
-     * PayMongo checkout URL for testing
-     * @type {string}
-     * @memberof QrCodesControllerGetPaymentLink200Response
-     */
-    'checkoutUrl'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetPaymentLink200Response
-     */
-    'qrCodeId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetPaymentLink200Response
-     */
-    'eventId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetPaymentLink200Response
-     */
-    'expiresAt'?: string;
-}
-/**
- * 
- * @export
- * @interface QrCodesControllerGetQRCodeHistory200ResponseInner
- */
-export interface QrCodesControllerGetQRCodeHistory200ResponseInner {
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'eventId'?: string;
-    /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'qrData'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'paymongoLinkId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'status'?: QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'createdAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
-     */
-    'updatedAt'?: string;
-}
-
-export const QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum = {
-    Active: 'active',
-    Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated'
-} as const;
-
-export type QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum = typeof QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum[keyof typeof QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum];
-
-/**
- * 
- * @export
- * @interface QrCodesControllerGetQRCodeImage200Response
- */
-export interface QrCodesControllerGetQRCodeImage200Response {
-    /**
-     * Base64-encoded PNG image
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeImage200Response
-     */
-    'qrCodeImage'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeImage200Response
-     */
-    'format'?: string;
-}
-/**
- * 
- * @export
- * @interface QrCodesControllerGetQRCodeStatus200Response
- */
-export interface QrCodesControllerGetQRCodeStatus200Response {
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
-     */
-    'eventId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
-     */
-    'status'?: QrCodesControllerGetQRCodeStatus200ResponseStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
-     */
-    'createdAt'?: string;
-    /**
-     * Whether QR code is currently active and usable
+     * Whether the QR code is currently valid and usable
      * @type {boolean}
-     * @memberof QrCodesControllerGetQRCodeStatus200Response
+     * @memberof QrCodeStatusResponseDto
      */
-    'isActive'?: boolean;
+    'isValid': boolean;
+    /**
+     * Time until QR code expiry in milliseconds
+     * @type {number}
+     * @memberof QrCodeStatusResponseDto
+     */
+    'timeUntilExpiry'?: number;
 }
-
-export const QrCodesControllerGetQRCodeStatus200ResponseStatusEnum = {
-    Active: 'active',
-    Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated'
-} as const;
-
-export type QrCodesControllerGetQRCodeStatus200ResponseStatusEnum = typeof QrCodesControllerGetQRCodeStatus200ResponseStatusEnum[keyof typeof QrCodesControllerGetQRCodeStatus200ResponseStatusEnum];
-
-/**
- * 
- * @export
- * @interface QrCodesControllerRegenerateQRCode201Response
- */
-export interface QrCodesControllerRegenerateQRCode201Response {
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'eventId'?: string;
-    /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'qrData'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'paymongoLinkId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'status'?: QrCodesControllerRegenerateQRCode201ResponseStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof QrCodesControllerRegenerateQRCode201Response
-     */
-    'createdAt'?: string;
-}
-
-export const QrCodesControllerRegenerateQRCode201ResponseStatusEnum = {
-    Active: 'active'
-} as const;
-
-export type QrCodesControllerRegenerateQRCode201ResponseStatusEnum = typeof QrCodesControllerRegenerateQRCode201ResponseStatusEnum[keyof typeof QrCodesControllerRegenerateQRCode201ResponseStatusEnum];
-
 /**
  * 
  * @export
@@ -2963,44 +2705,6 @@ export const QRCodesApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Get the PayMongo checkout URL for web-based payment testing
-         * @summary Get payment link URL for testing
-         * @param {string} qrCodeId QR Code UUID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        qrCodesControllerGetPaymentLink: async (qrCodeId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'qrCodeId' is not null or undefined
-            assertParamExists('qrCodesControllerGetPaymentLink', 'qrCodeId', qrCodeId)
-            const localVarPath = `/api/qr-codes/{qrCodeId}/payment-link`
-                .replace(`{${"qrCodeId"}}`, encodeURIComponent(String(qrCodeId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication JWT-auth required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Retrieve complete QR code generation history for a specific event
          * @summary Get QR code history
          * @param {string} eventId Event UUID
@@ -3039,7 +2743,7 @@ export const QRCodesApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.
+         * Retrieve the QR code as base64-encoded string.
          * @summary Get QR code image
          * @param {string} qrCodeId QR Code UUID
          * @param {*} [options] Override http request option.
@@ -3169,23 +2873,10 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerGetCurrentQRCode200Response>> {
+        async qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetCurrentQRCode(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetCurrentQRCode']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * Get the PayMongo checkout URL for web-based payment testing
-         * @summary Get payment link URL for testing
-         * @param {string} qrCodeId QR Code UUID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async qrCodesControllerGetPaymentLink(qrCodeId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerGetPaymentLink200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetPaymentLink(qrCodeId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetPaymentLink']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3195,20 +2886,20 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<QrCodesControllerGetQRCodeHistory200ResponseInner>>> {
+        async qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<QrCodeResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetQRCodeHistory(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetQRCodeHistory']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.
+         * Retrieve the QR code as base64-encoded string.
          * @summary Get QR code image
          * @param {string} qrCodeId QR Code UUID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetQRCodeImage(qrCodeId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>> {
+        async qrCodesControllerGetQRCodeImage(qrCodeId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetQRCodeImage(qrCodeId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetQRCodeImage']?.[localVarOperationServerIndex]?.url;
@@ -3221,7 +2912,7 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetQRCodeStatus(qrCodeId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerGetQRCodeStatus200Response>> {
+        async qrCodesControllerGetQRCodeStatus(qrCodeId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeStatusResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetQRCodeStatus(qrCodeId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetQRCodeStatus']?.[localVarOperationServerIndex]?.url;
@@ -3234,7 +2925,7 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerRegenerateQRCode201Response>> {
+        async qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerRegenerateQRCode(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerRegenerateQRCode']?.[localVarOperationServerIndex]?.url;
@@ -3257,18 +2948,8 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerGetCurrentQRCode200Response> {
+        qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
             return localVarFp.qrCodesControllerGetCurrentQRCode(eventId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Get the PayMongo checkout URL for web-based payment testing
-         * @summary Get payment link URL for testing
-         * @param {string} qrCodeId QR Code UUID
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        qrCodesControllerGetPaymentLink(qrCodeId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerGetPaymentLink200Response> {
-            return localVarFp.qrCodesControllerGetPaymentLink(qrCodeId, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieve complete QR code generation history for a specific event
@@ -3277,17 +2958,17 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<QrCodesControllerGetQRCodeHistory200ResponseInner>> {
+        qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<QrCodeResponseDto>> {
             return localVarFp.qrCodesControllerGetQRCodeHistory(eventId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.
+         * Retrieve the QR code as base64-encoded string.
          * @summary Get QR code image
          * @param {string} qrCodeId QR Code UUID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetQRCodeImage(qrCodeId: string, options?: RawAxiosRequestConfig): AxiosPromise<File> {
+        qrCodesControllerGetQRCodeImage(qrCodeId: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
             return localVarFp.qrCodesControllerGetQRCodeImage(qrCodeId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3297,7 +2978,7 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetQRCodeStatus(qrCodeId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerGetQRCodeStatus200Response> {
+        qrCodesControllerGetQRCodeStatus(qrCodeId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeStatusResponseDto> {
             return localVarFp.qrCodesControllerGetQRCodeStatus(qrCodeId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3307,7 +2988,7 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerRegenerateQRCode201Response> {
+        qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
             return localVarFp.qrCodesControllerRegenerateQRCode(eventId, options).then((request) => request(axios, basePath));
         },
     };
@@ -3333,18 +3014,6 @@ export class QRCodesApi extends BaseAPI {
     }
 
     /**
-     * Get the PayMongo checkout URL for web-based payment testing
-     * @summary Get payment link URL for testing
-     * @param {string} qrCodeId QR Code UUID
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof QRCodesApi
-     */
-    public qrCodesControllerGetPaymentLink(qrCodeId: string, options?: RawAxiosRequestConfig) {
-        return QRCodesApiFp(this.configuration).qrCodesControllerGetPaymentLink(qrCodeId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * Retrieve complete QR code generation history for a specific event
      * @summary Get QR code history
      * @param {string} eventId Event UUID
@@ -3357,7 +3026,7 @@ export class QRCodesApi extends BaseAPI {
     }
 
     /**
-     * Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.
+     * Retrieve the QR code as base64-encoded string.
      * @summary Get QR code image
      * @param {string} qrCodeId QR Code UUID
      * @param {*} [options] Override http request option.

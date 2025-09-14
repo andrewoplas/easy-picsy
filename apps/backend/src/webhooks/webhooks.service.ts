@@ -284,10 +284,12 @@ export class WebhooksService {
     // The payment intent ID is nested in: paymentData.attributes.payment_intent_id
     const paymentIntentId = paymentData.attributes.payment_intent_id;
     const paymentId = paymentData.id;
+    const origin = paymentData.attributes.origin;
 
     this.logger.log(`Processing payment.paid for payment intent: ${paymentIntentId}`, {
       paymentId,
       paymentIntentId,
+      origin,
       dataType: paymentData.type,
       hasAttributes: !!paymentData.attributes,
       status: paymentData.attributes?.status,
@@ -296,24 +298,52 @@ export class WebhooksService {
     });
 
     try {
-      // Find QR code by payment intent ID
       const db = this.databaseService.getDb();
-      const [qrCode] = await db
-        .select()
-        .from(qrCodes)
-        .where(eq(qrCodes.paymongoLinkId, paymentIntentId))
-        .limit(1);
+      let qrCode = null;
+
+      if (paymentIntentId) {
+        // QR Ph payment via Payment Intent (this is what we want)
+        this.logger.log(`Looking for QR code with Payment Intent ID: ${paymentIntentId}`);
+        [qrCode] = await db
+          .select()
+          .from(qrCodes)
+          .where(eq(qrCodes.paymentIntentId, paymentIntentId))
+          .limit(1);
+      } else {
+        // Handle legacy payment link cases (should not happen anymore)
+        this.logger.warn(`Payment without payment_intent_id (origin: ${origin}), this should not happen with QR Ph only flow`);
+        return;
+      }
 
       if (!qrCode) {
         this.logger.warn(`QR code not found for payment intent: ${paymentIntentId}`, {
-          searchField: 'paymongoLinkId',
+          searchField: 'paymentIntentId',
           paymentIntentId,
           paymentId,
+          origin,
           dataStructure: Object.keys(paymentData.attributes),
+        });
+        
+        // Debug: Let's see what QR codes exist
+        const allActiveQrCodes = await db
+          .select()
+          .from(qrCodes)
+          .where(eq(qrCodes.status, 'active'))
+          .limit(5);
+        
+        this.logger.debug('Active QR codes in database:', {
+          count: allActiveQrCodes.length,
+          qrCodes: allActiveQrCodes.map(qr => ({
+            id: qr.id,
+            paymentIntentId: qr.paymentIntentId,
+            status: qr.status,
+            createdAt: qr.createdAt
+          }))
         });
         return;
       }
 
+      this.logger.log(`Found QR code ${qrCode.id} for payment intent ${paymentIntentId}`);
       await this.processPaymentSuccess(qrCode, paymentData, webhookLogId, db);
 
     } catch (error) {
@@ -386,12 +416,12 @@ export class WebhooksService {
       const [qrCode] = await db
         .select()
         .from(qrCodes)
-        .where(eq(qrCodes.paymongoLinkId, paymentIntentId))
+        .where(eq(qrCodes.paymentIntentId, paymentIntentId))
         .limit(1);
 
       if (!qrCode) {
         this.logger.warn(`QR code not found for payment intent: ${paymentIntentId}`, {
-          searchField: 'paymongoLinkId',
+          searchField: 'paymentIntentId',
           paymentIntentId,
           paymentId,
           failureReason: paymentData.attributes.failed_message,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UseGuards, Request, HttpCode, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Request, HttpCode, HttpStatus, NotFoundException } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -8,9 +8,11 @@ import {
   ApiUnauthorizedResponse,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { AuthenticatedRequest } from '../types/auth.types';
 import { QrCodesService } from './qr-codes.service';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
+import { QrCodeResponseDto } from './dto/qr-code-response.dto';
+import { QrCodeStatusResponseDto } from './dto/qr-code-status-response.dto';
 
 @ApiTags('QR Codes')
 @ApiBearerAuth('JWT-auth')
@@ -32,23 +34,12 @@ export class QrCodesController {
   @ApiResponse({
     status: 200,
     description: 'Active QR code retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        qrData: { type: 'string', description: 'PayMongo checkout URL' },
-        paymongoLinkId: { type: 'string' },
-        status: { type: 'string', enum: ['active', 'expired', 'used', 'invalidated'] },
-        expiresAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: QrCodeResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found or no active QR code' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getCurrentQRCode(@Param('eventId') eventId: string, @Request() req: any) {
-    return await this.qrCodesService.getCurrentQRCode(eventId, req.user.sub);
+  async getCurrentQRCode(@Param('eventId') eventId: string, @Request() req: AuthenticatedRequest): Promise<QrCodeResponseDto | null> {
+    return await this.qrCodesService.getCurrentQRCode(eventId, req.user.supabaseId);
   }
 
   @Post('event/:eventId/regenerate')
@@ -65,23 +56,12 @@ export class QrCodesController {
   @ApiResponse({
     status: 201,
     description: 'New QR code generated successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        qrData: { type: 'string', description: 'PayMongo checkout URL' },
-        paymongoLinkId: { type: 'string' },
-        status: { type: 'string', enum: ['active'] },
-        expiresAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: QrCodeResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async regenerateQRCode(@Param('eventId') eventId: string, @Request() req: any) {
-    return await this.qrCodesService.regenerateQRCode(eventId, req.user.sub);
+  async regenerateQRCode(@Param('eventId') eventId: string, @Request() req: AuthenticatedRequest): Promise<QrCodeResponseDto> {
+    return await this.qrCodesService.regenerateQRCode(eventId, req.user.supabaseId);
   }
 
   @Get('event/:eventId/history')
@@ -97,27 +77,12 @@ export class QrCodesController {
   @ApiResponse({
     status: 200,
     description: 'QR code history retrieved successfully',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          eventId: { type: 'string', format: 'uuid' },
-          qrData: { type: 'string', description: 'PayMongo checkout URL' },
-          paymongoLinkId: { type: 'string' },
-          status: { type: 'string', enum: ['active', 'expired', 'used', 'invalidated'] },
-          expiresAt: { type: 'string', format: 'date-time' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
-        }
-      }
-    }
+    type: [QrCodeResponseDto]
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getQRCodeHistory(@Param('eventId') eventId: string, @Request() req: any) {
-    return await this.qrCodesService.getQRCodeHistory(eventId, req.user.sub);
+  async getQRCodeHistory(@Param('eventId') eventId: string, @Request() req: AuthenticatedRequest): Promise<QrCodeResponseDto[]> {
+    return await this.qrCodesService.getQRCodeHistory(eventId, req.user.supabaseId);
   }
 
   @Get(':qrCodeId/status')
@@ -133,63 +98,18 @@ export class QrCodesController {
   @ApiResponse({
     status: 200,
     description: 'QR code status retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        status: { type: 'string', enum: ['active', 'expired', 'used', 'invalidated'] },
-        expiresAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-        isActive: { type: 'boolean', description: 'Whether QR code is currently active and usable' }
-      }
-    }
+    type: QrCodeStatusResponseDto
   })
   @ApiNotFoundResponse({ description: 'QR code not found' })
-  async getQRCodeStatus(@Param('qrCodeId') qrCodeId: string) {
+  async getQRCodeStatus(@Param('qrCodeId') qrCodeId: string): Promise<QrCodeStatusResponseDto> {
     return await this.qrCodesService.getQRCodeStatus(qrCodeId);
   }
 
-  @Get(':qrCodeId/payment-link')
-  @ApiOperation({ 
-    summary: 'Get payment link URL for testing',
-    description: 'Get the PayMongo checkout URL for web-based payment testing'
-  })
-  @ApiParam({ 
-    name: 'qrCodeId', 
-    description: 'QR Code UUID',
-    example: '456e7890-e12c-34d5-b678-901234567890'
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Payment link URL retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        checkoutUrl: { type: 'string', description: 'PayMongo checkout URL for testing' },
-        qrCodeId: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        expiresAt: { type: 'string', format: 'date-time' }
-      }
-    }
-  })
-  @ApiNotFoundResponse({ description: 'QR code not found' })
-  async getPaymentLink(@Param('qrCodeId') qrCodeId: string) {
-    const result = await this.qrCodesService.getQRCodeStatus(qrCodeId);
-    
-    return {
-      checkoutUrl: result.qrCode.paymongoLinkUrl,
-      qrCodeId: result.qrCode.id,
-      eventId: result.qrCode.eventId,
-      expiresAt: result.qrCode.expiresAt,
-      isValid: result.isValid
-    };
-  }
 
   @Get(':qrCodeId/image')
   @ApiOperation({ 
     summary: 'Get QR code image',
-    description: 'Retrieve the QR code image as PNG. Returns base64-encoded QR code image for display in frontend.'
+    description: 'Retrieve the QR code as base64-encoded string.'
   })
   @ApiParam({ 
     name: 'qrCodeId', 
@@ -198,66 +118,21 @@ export class QrCodesController {
   })
   @ApiResponse({
     status: 200,
-    description: 'QR code image retrieved successfully',
-    content: {
-      'image/png': {
-        schema: {
-          type: 'string',
-          format: 'binary'
-        }
-      },
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            qrCodeImage: { 
-              type: 'string', 
-              description: 'Base64-encoded PNG image' 
-            },
-            format: { 
-              type: 'string', 
-              example: 'data:image/png;base64' 
-            }
-          }
-        }
-      }
+    description: 'QR code retrieved successfully',
+    schema: {
+      type: 'string',
+      description: 'Base64-encoded QR code',
+      example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...'
     }
   })
   @ApiNotFoundResponse({ description: 'QR code not found' })
-  async getQRCodeImage(
-    @Param('qrCodeId') qrCodeId: string, 
-    @Request() req: any,
-    @Res() res: Response
-  ) {
+  async getQRCodeImage(@Param('qrCodeId') qrCodeId: string): Promise<string> {
     const result = await this.qrCodesService.getQRCodeStatus(qrCodeId);
     
     if (!result.qrCode.qrData) {
-      return res.status(404).json({ message: 'QR code image not found' });
+      throw new NotFoundException('QR code image not found');
     }
 
-    // Check if client wants JSON response or image
-    const acceptHeader = req.headers.accept;
-    
-    if (acceptHeader?.includes('application/json')) {
-      // Return JSON with base64 data
-      return res.json({
-        qrCodeImage: result.qrCode.qrData,
-        format: 'data:image/png;base64',
-        expiresAt: result.qrCode.expiresAt,
-        isValid: result.isValid
-      });
-    } else {
-      // Return raw image
-      const base64Data = result.qrCode.qrData.replace(/^data:image\/png;base64,/, '');
-      const imageBuffer = Buffer.from(base64Data, 'base64');
-      
-      res.set({
-        'Content-Type': 'image/png',
-        'Content-Length': imageBuffer.length.toString(),
-        'Cache-Control': 'public, max-age=300' // 5 minutes cache
-      });
-      
-      return res.send(imageBuffer);
-    }
+    return result.qrCode.qrData;
   }
 }

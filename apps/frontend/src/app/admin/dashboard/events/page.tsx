@@ -176,7 +176,7 @@ export default function EventsPage() {
                   ₱
                   {events.length > 0
                     ? (
-                        events.reduce((sum, e) => sum + (e.price || 0), 0) /
+                        events.reduce((sum, e) => sum + (Number(e.price) || 0), 0) /
                         events.length
                       ).toFixed(0)
                     : '0'}

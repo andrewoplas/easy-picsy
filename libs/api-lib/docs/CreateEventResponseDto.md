@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **string** | Event unique identifier | [default to undefined]
 **name** | **string** | Event name | [default to undefined]
-**description** | **object** | Event description | [optional] [default to undefined]
+**description** | **string** | Event description | [optional] [default to undefined]
 **price** | **string** | Price per photobooth session | [default to undefined]
 **currency** | **string** | Currency code | [default to undefined]
 **isActive** | **boolean** | Whether the event is active | [default to undefined]

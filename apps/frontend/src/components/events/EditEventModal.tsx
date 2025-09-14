@@ -5,14 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-interface Event {
-  id: string;
-  name: string;
-  price: number;
-  qrCodeUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Event } from '@/lib/api/events';
 
 interface UpdateEventData {
   name?: string;

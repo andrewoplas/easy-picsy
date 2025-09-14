@@ -3,13 +3,14 @@ import {
   QRCodesApi,
   PublicEventsApi,
   Configuration,
-  EventsControllerFindAll200ResponseInner,
-  EventsControllerGetCurrentQRCode200Response as QrCode,
-  EventsControllerGetQRCodeHistory200ResponseInner as QrCodeHistory,
+  EventResponseDto,
+  CreateEventResponseDto,
+  QrCodeResponseDto,
+  PublicEventResponseDto,
   CreateEventDto,
   UpdateEventDto,
 } from '@org/api-lib';
-import axiosInstance from './client2';
+import axiosInstance from './client';
 import { AxiosError } from 'axios';
 
 const config = new Configuration();
@@ -17,8 +18,12 @@ const eventsApiInstance = new EventsApi(config, undefined, axiosInstance);
 const qrCodesApiInstance = new QRCodesApi(config, undefined, axiosInstance);
 const publicEventsApiInstance = new PublicEventsApi(config, undefined, axiosInstance);
 
-export type Event = EventsControllerFindAll200ResponseInner;
-export type { QrCode, QrCodeHistory, CreateEventDto, UpdateEventDto };
+export type Event = EventResponseDto;
+export type CreateEventResponse = CreateEventResponseDto;
+export type QrCode = QrCodeResponseDto;
+export type QrCodeHistory = QrCodeResponseDto;
+export type PublicEvent = PublicEventResponseDto;
+export type { CreateEventDto, UpdateEventDto };
 
 export interface QrCodeStatus {
   qrCode: QrCode;
@@ -37,7 +42,7 @@ export const eventsApi = {
     return response.data;
   },
 
-  async create(data: CreateEventDto): Promise<Event> {
+  async create(data: CreateEventDto): Promise<CreateEventResponse> {
     const response = await eventsApiInstance.eventsControllerCreate(data);
     return response.data;
   },
@@ -56,7 +61,7 @@ export const eventsApi = {
     await eventsApiInstance.eventsControllerRemove(id);
   },
 
-  async getPublicEvent(id: string): Promise<Event> {
+  async getPublicEvent(id: string): Promise<PublicEvent> {
     const response = await publicEventsApiInstance.publicEventsControllerGetEventForPayment(id);
     return response.data;
   },
@@ -76,7 +81,7 @@ export const eventsApi = {
 
     async getCurrentByEventId(eventId: string): Promise<QrCode | null> {
       try {
-        const response = await qrCodesApiInstance.qrCodesControllerGetCurrentQRCode(eventId);
+        const response = await eventsApiInstance.eventsControllerGetCurrentQRCode(eventId);
         return response.data;
       } catch (error) {
         if (error instanceof AxiosError && error.response?.status === 404) {
@@ -98,12 +103,16 @@ export const eventsApi = {
 
     async getStatus(qrCodeId: string): Promise<QrCodeStatus> {
       const response = await qrCodesApiInstance.qrCodesControllerGetQRCodeStatus(qrCodeId);
+      
+      // The backend returns a nested structure: {qrCode: {...}, isValid: boolean, timeUntilExpiry: number}
+      // We should use the backend's calculated values instead of recalculating
+      const backendResponse = response.data as any;
+      const qrCode = backendResponse.qrCode as QrCode;
+      
       return {
-        qrCode: response.data as unknown as QrCode,
-        isValid: response.data.status === 'active',
-        timeUntilExpiry: 0, // TODO: Calculate time difference between now and expiresAt (ISO string from API).
-        // QR codes expire after 30 minutes. This should return remaining seconds,
-        // or 0 if expired. Used by UI to show countdown timer.
+        qrCode,
+        isValid: backendResponse.isValid || false,
+        timeUntilExpiry: backendResponse.timeUntilExpiry || 0,
       };
     },
 
@@ -113,9 +122,5 @@ export const eventsApi = {
       return imageResponse.qrCodeImage || '';
     },
 
-    async getPaymentLink(qrCodeId: string): Promise<string> {
-      const response = await qrCodesApiInstance.qrCodesControllerGetPaymentLink(qrCodeId);
-      return response.data.checkoutUrl || '';
-    },
   },
 };

@@ -21,31 +21,39 @@ export function CreateEventModal({ isOpen, onClose, onSubmit }: CreateEventModal
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) newErrors.name = 'Event name is required';
-    if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = 'Price must be greater than 0';
+    if (!formData.price || parseFloat(formData.price) < 20) newErrors.price = 'Price must be ₱20 or more';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    onSubmit({
-      name: formData.name.trim(),
-      price: parseFloat(formData.price)
-    });
+    try {
+      setIsLoading(true);
+      await onSubmit({
+        name: formData.name.trim(),
+        price: parseFloat(formData.price)
+      });
 
-    // Reset form
-    setFormData({
-      name: '',
-      price: ''
-    });
-    setErrors({});
+      // Reset form
+      setFormData({
+        name: '',
+        price: ''
+      });
+      setErrors({});
+    } catch (error) {
+      console.error('Failed to create event:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = (open: boolean) => {
@@ -107,8 +115,9 @@ export function CreateEventModal({ isOpen, onClose, onSubmit }: CreateEventModal
               <Button
                 type="submit"
                 className="bg-dash-orange hover:bg-dash-orange/90 text-white"
+                disabled={isLoading}
               >
-                Create Event
+                {isLoading ? 'Creating...' : 'Create Event'}
               </Button>
             </div>
           </form>

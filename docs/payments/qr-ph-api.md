@@ -10,7 +10,7 @@
 
 QR Ph is the Philippine's QR code standard supervised by the BSP and aims to provide a quick and secure way to accept payments from multiple banks and e-wallets, all using one QR Ph code.
 
-To learn more about QR Ph and its features, you may refer to our <Anchor label="QR Ph guide" target="_blank" href="https://developers.paymongo.com/v2_sample_guides_section_template/update/docs/qr-ph#/">QR Ph guide</Anchor>. For this guide, we will be diving into the API integration implementation.
+To learn more about QR Ph and its features, you may refer to our [QR Ph guide](https://developers.paymongo.com/v2_sample_guides_section_template/update/docs/qr-ph#/). For this guide, we will be diving into the API integration implementation.
 
 # Setup & Prerequisites
 
@@ -273,7 +273,7 @@ The [payment intent workflow](https://developers.paymongo.com/docs/pipm-workflo
   * For failed QR Ph payments, a webhook call will be made to the nominated and registered webhook endpoint subscribed to the `payment.failed` event. You may also check the status of the payment intent through the [Retrieve a Payment Intent API](https://developers.paymongo.com/reference/retrieve-a-paymentintent)
   * For expired QR Ph codes, a webhook call will be made to the nominated and registered webhook endpoint subscribed to the `qrph.expired` event.
 
-```http Webhook Event (payment.failed)
+```json Webhook Event (payment.failed)
 {
   "data": {
     "id": "evt_123",
@@ -338,7 +338,7 @@ The [payment intent workflow](https://developers.paymongo.com/docs/pipm-workflo
   }
 }
 ```
-```http GET Payment Intent Response (failed payment)
+```json GET Payment Intent Response (failed payment)
 {
     "data": {
         "id": "pi_cufYwN1b9mzrvKpXXQLknRiB",
@@ -428,7 +428,7 @@ The [payment intent workflow](https://developers.paymongo.com/docs/pipm-workflo
     }
 }
 ```
-```http Webhook Event (qrph.expired)
+```json Webhook Event (qrph.expired)
 {
     "data": {
         "id": "evt_Y4BLNd6MhCDc4SYCWngSAq2Y",
@@ -479,11 +479,11 @@ The [payment intent workflow](https://developers.paymongo.com/docs/pipm-workflo
 }
 ```
 
-| Attribute      | Description                                                                             |
-| :------------- | :-------------------------------------------------------------------------------------- |
-| qr\_image      | Base64-encoded, data/image URL of the QR image generated using the generated QR string. |
-| mobile\_number | Recipient of the SMS notification we send out for every payment made using the code     |
-| name           | Store name that will appear when scanning the QRPH code. Applies to all providers       |
+| Attribute     | Description                                                                             |
+| :------------ | :-------------------------------------------------------------------------------------- |
+| qr_image      | Base64-encoded, data/image URL of the QR image generated using the generated QR string. |
+| mobile_number | Recipient of the SMS notification we send out for every payment made using the code     |
+| name          | Store name that will appear when scanning the QRPH code. Applies to all providers       |
 
 ### Creating a Static QR Ph Code
 
@@ -614,11 +614,11 @@ a.action-button:hover{
 
 * To determine if the QR Ph payment has already been paid, a webhook call will be made to the nominated and registered webhook endpoint subscribed to the `payment.paid` event.
 
-* \[For CS] Any additional information needed by merchant/dev for the product
+* [For CS] Any additional information needed by merchant/dev for the product
   * How are edge cases handled/reported (for expired source, but ACTC)
   * Creating a Static QR Ph Code
   * Should we mention that amount is entered by payer?
-  * Clarify primary use cases for dynamic QR vs in store static QR\
+  * Clarify primary use cases for dynamic QR vs in store static QR
     [https://paymongo.help/en/articles/9759731-getting-to-know-the-in-store-qr-ph-dashboard](https://paymongo.help/en/articles/9759731-getting-to-know-the-in-store-qr-ph-dashboard)
     How will I be notified of a successful payment via my In-store QR Ph code?
     [https://paymongo.help/en/articles/9759751-how-will-i-be-notified-of-a-successful-payment-via-my-in-store-qr-ph-code](https://paymongo.help/en/articles/9759751-how-will-i-be-notified-of-a-successful-payment-via-my-in-store-qr-ph-code)

@@ -26,12 +26,7 @@ docs/PublicEventResponseDto.md
 docs/PublicEventsApi.md
 docs/QRCodesApi.md
 docs/QrCodeResponseDto.md
-docs/QrCodesControllerGetCurrentQRCode200Response.md
-docs/QrCodesControllerGetPaymentLink200Response.md
-docs/QrCodesControllerGetQRCodeHistory200ResponseInner.md
-docs/QrCodesControllerGetQRCodeImage200Response.md
-docs/QrCodesControllerGetQRCodeStatus200Response.md
-docs/QrCodesControllerRegenerateQRCode201Response.md
+docs/QrCodeStatusResponseDto.md
 docs/RefreshTokenRequestDto.md
 docs/RefreshTokenResponseDto.md
 docs/RegisterDto.md

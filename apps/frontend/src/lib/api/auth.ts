@@ -6,7 +6,7 @@ import {
   AuthenticationApi,
   VerifyTokenResponseDto,
 } from '@org/api-lib';
-import axiosInstance from './client2';
+import axiosInstance from './client';
 
 const usersApi = new UsersApi(new Configuration(), undefined, axiosInstance);
 const authenticationApi = new AuthenticationApi(new Configuration(), undefined, axiosInstance);

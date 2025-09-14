@@ -44,7 +44,7 @@ export class EventsController {
   })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async create(@Body() createEventDto: CreateEventDto, @Request() req: any): Promise<CreateEventResponseDto> {
+  async create(@Body() createEventDto: CreateEventDto, @Request() req: { user: { sub: string } }): Promise<CreateEventResponseDto> {
     return await this.eventsService.create(createEventDto, req.user.sub);
   }
 
@@ -59,7 +59,7 @@ export class EventsController {
     type: [EventResponseDto]
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findAll(@Request() req: any): Promise<EventResponseDto[]> {
+  async findAll(@Request() req: { user: { sub: string } }): Promise<EventResponseDto[]> {
     return await this.eventsService.findAll(req.user.sub);
   }
 
@@ -80,7 +80,7 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findOne(@Param('id') id: string, @Request() req: any): Promise<EventResponseDto> {
+  async findOne(@Param('id') id: string, @Request() req: { user: { sub: string } }): Promise<EventResponseDto> {
     return await this.eventsService.findOne(id, req.user.sub);
   }
 
@@ -103,7 +103,7 @@ export class EventsController {
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any): Promise<EventResponseDto> {
+  async update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: { user: { sub: string } }): Promise<EventResponseDto> {
     return await this.eventsService.update(id, updateEventDto, req.user.sub);
   }
 
@@ -126,7 +126,7 @@ export class EventsController {
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async replace(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any): Promise<EventResponseDto> {
+  async replace(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: { user: { sub: string } }): Promise<EventResponseDto> {
     return await this.eventsService.update(id, updateEventDto, req.user.sub);
   }
 
@@ -147,7 +147,7 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async remove(@Param('id') id: string, @Request() req: any): Promise<EventDeleteResponseDto> {
+  async remove(@Param('id') id: string, @Request() req: { user: { sub: string } }): Promise<EventDeleteResponseDto> {
     await this.eventsService.remove(id, req.user.sub);
     return { message: 'Event deleted successfully' };
   }
@@ -169,7 +169,7 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found or no active QR code' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getCurrentQRCode(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto> {
+  async getCurrentQRCode(@Param('id') eventId: string, @Request() req: { user: { sub: string } }): Promise<QrCodeResponseDto> {
     const qrCode = await this.qrCodesService.getCurrentQRCode(eventId, req.user.sub);
     if (!qrCode) {
       throw new NotFoundException('No active QR code found for this event');
@@ -194,7 +194,7 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async regenerateQRCode(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto> {
+  async regenerateQRCode(@Param('id') eventId: string, @Request() req: { user: { sub: string } }): Promise<QrCodeResponseDto> {
     return await this.qrCodesService.regenerateQRCode(eventId, req.user.sub);
   }
 
@@ -215,7 +215,7 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getQRCodeHistory(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto[]> {
+  async getQRCodeHistory(@Param('id') eventId: string, @Request() req: { user: { sub: string } }): Promise<QrCodeResponseDto[]> {
     return await this.qrCodesService.getQRCodeHistory(eventId, req.user.sub);
   }
 }

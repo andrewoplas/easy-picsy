@@ -1,63 +1,63 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class EventResponseDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Event unique identifier',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid'
+    format: 'uuid',
   })
   id: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Event name',
-    example: 'Birthday Party Photobooth'
+    example: 'Birthday Party Photobooth',
   })
   name: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Event description',
-    example: 'Capture memories at John\'s 25th birthday celebration'
+    example: "Capture memories at John's 25th birthday celebration",
   })
-  description?: string | null;
+  description?: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Price per photobooth session',
     example: '50.00',
     type: 'string',
-    format: 'decimal'
+    format: 'decimal',
   })
   price: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Currency code',
-    example: 'PHP'
+    example: 'PHP',
   })
   currency: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Whether the event is active',
-    example: true
+    example: true,
   })
   isActive: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User ID who created the event',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    format: 'uuid'
+    format: 'uuid',
   })
   createdBy: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Event creation timestamp',
     example: '2023-01-01T00:00:00.000Z',
-    format: 'date-time'
+    format: 'date-time',
   })
   createdAt: Date;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Event last update timestamp',
     example: '2023-01-01T00:00:00.000Z',
-    format: 'date-time'
+    format: 'date-time',
   })
   updatedAt: Date;
 }

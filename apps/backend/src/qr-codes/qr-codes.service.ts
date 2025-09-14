@@ -2,11 +2,13 @@ import { Injectable, Logger, NotFoundException, Inject, forwardRef } from '@nest
 import { DatabaseService } from '../database/database.service';
 import { PaymongoService, CreatePaymentIntentRequest } from '../paymongo/paymongo.service';
 import { RealtimeService } from '../realtime/realtime.service';
-import { qrCodes, QrCode, NewQrCode, QrCodeStatus } from '../database/schema/qr_codes.schema';
+import { qrCodes, NewQrCode, QrCodeStatus } from '../database/schema/qr_codes.schema';
 import { events } from '../database/schema/events.schema';
 import { eq, and, desc } from 'drizzle-orm';
 import * as cron from 'node-cron';
 import * as QRCode from 'qrcode';
+import { QrCodeResponseDto } from './dto/qr-code-response.dto';
+import { QrCodeStatusResponseDto } from './dto/qr-code-status-response.dto';
 
 @Injectable()
 export class QrCodesService {
@@ -25,7 +27,7 @@ export class QrCodesService {
   /**
    * Generate a new QR code for an event
    */
-  async generateQRCode(eventId: string, userId: string): Promise<QrCode> {
+  async generateQRCode(eventId: string, userId: string): Promise<QrCodeResponseDto> {
     const db = this.databaseService.getDb();
 
     try {
@@ -43,72 +45,70 @@ export class QrCodesService {
       // Invalidate any existing active QR codes for this event
       await this.invalidateActiveQRCodes(eventId);
 
-      // Create Paymongo payment intent with QR Ph
-      const paymentIntentRequest: CreatePaymentIntentRequest = {
-        amount: Math.round(parseFloat(event.price) * 100), // Convert to cents
-        currency: event.currency,
-        description: `Payment for ${event.name}`,
-        reference_number: `EVENT_${eventId}_${Date.now()}`,
-        payment_method_allowed: ['qrph'],
-      };
+    // Validate minimum amount for QR Ph (PHP 20.00 = 2000 centavos)
+    const amountInCentavos = Math.round(parseFloat(event.price) * 100);
+    const minimumAmount = 2000; // PHP 20.00
+    
+    if (amountInCentavos < minimumAmount) {
+      throw new Error(`Amount must be at least PHP 20.00 for QR Ph payments. Current amount: PHP ${parseFloat(event.price).toFixed(2)}`);
+    }
 
-      const paymentIntent = await this.paymongoService.createPaymentIntentWithQR(paymentIntentRequest);
-      
-      // Create and attach QR Ph payment method to get the actual QR code image
-      const qrResult = await this.paymongoService.createAndAttachQRPaymentMethod(paymentIntent.id);
-      let qrCodeImage = qrResult?.qrImage;
-      let qrphId = qrResult?.qrphId;
-      
-      // Also create a payment link for web testing (optional)
-      const paymentLinkRequest = {
-        amount: Math.round(parseFloat(event.price) * 100),
-        currency: event.currency,
-        description: `Payment for ${event.name}`,
-        reference_number: `LINK_${eventId}_${Date.now()}`
-      };
-      
-      const paymentLink = await this.paymongoService.createPaymentLink(paymentLinkRequest);
-      
-      // If PayMongo doesn't provide QR image, generate one with payment info (fallback)
-      if (!qrCodeImage) {
-        this.logger.warn('PayMongo did not provide QR image, using fallback generation');
-        const qrPayload = {
-          paymentIntentId: paymentIntent.id,
-          amount: paymentIntent.attributes.amount,
-          currency: paymentIntent.attributes.currency,
-          description: paymentIntent.attributes.description,
-          eventId: eventId,
-        };
-        
-        qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrPayload), {
-          width: 300,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        });
-        
-        // For fallback QR codes, use payment intent ID as qrph ID
-        qrphId = qrphId || paymentIntent.id;
-      }
+    // Create Paymongo payment intent with QR Ph only (no payment links)
+    const paymentIntentRequest: CreatePaymentIntentRequest = {
+      amount: amountInCentavos,
+      currency: event.currency,
+      description: `Payment for ${event.name}`,
+      reference_number: `EVENT_${eventId}_${Date.now()}`,
+      payment_method_allowed: ['qrph'],
+    };
 
-      // Generate expiry time (30 minutes from now)
-      const expiresAt = this.paymongoService.generateExpiryTime(30);
-
-      // Create QR code record in database
-      const newQrCode: NewQrCode = {
+    const paymentIntent = await this.paymongoService.createPaymentIntentWithQR(paymentIntentRequest);
+    
+    // Create and attach QR Ph payment method to get the actual QR code image
+    const qrResult = await this.paymongoService.createAndAttachQRPaymentMethod(paymentIntent.id);
+    let qrCodeImage = qrResult?.qrImage;
+    let qrphId = qrResult?.qrphId;
+    
+    // If PayMongo doesn't provide QR image, generate one with payment info (fallback)
+    if (!qrCodeImage) {
+      this.logger.warn('PayMongo did not provide QR image, using fallback generation');
+      const qrPayload = {
+        paymentIntentId: paymentIntent.id,
+        amount: paymentIntent.attributes.amount,
+        currency: paymentIntent.attributes.currency,
+        description: paymentIntent.attributes.description,
         eventId: eventId,
-        qrData: qrCodeImage || '', // Store the base64 QR code image
-        paymongoLinkId: paymentIntent.id, // Store payment intent ID
-        paymongoLinkUrl: paymentLink.attributes.checkout_url, // Payment link for web testing
-        paymongoQrphId: qrphId, // Store QR Ph resource ID for expiry tracking
-        status: 'active',
-        expiresAt: expiresAt,
-        usageCount: 0,
-        maxUsage: 1,
-        isActive: true,
       };
+      
+      qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrPayload), {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      // For fallback QR codes, use payment intent ID as qrph ID
+      qrphId = qrphId || paymentIntent.id;
+    }
+
+    // Generate expiry time (30 minutes from now as per PayMongo QR Ph spec)
+    const expiresAt = this.paymongoService.generateExpiryTime(30);
+
+    // Create QR code record in database
+    const newQrCode: NewQrCode = {
+      eventId: eventId,
+      qrData: qrCodeImage || '', // Store the base64 QR code image
+      paymentIntentId: paymentIntent.id, // Store payment intent ID for webhook matching
+      paymongoLinkUrl: null, // No longer creating payment links
+      paymongoQrphId: qrphId, // Store QR Ph resource ID for expiry tracking
+      status: 'active',
+      expiresAt: expiresAt,
+      usageCount: 0,
+      maxUsage: 1,
+      isActive: true,
+    };
 
       const [createdQrCode] = await db.insert(qrCodes).values(newQrCode).returning();
 
@@ -118,7 +118,7 @@ export class QrCodesService {
       this.realtimeService.notifyQRCodeGenerated(eventId, {
         qrCodeId: createdQrCode.id,
         eventId: eventId,
-        checkoutUrl: paymentLink.attributes.checkout_url, // Payment link for web testing
+        checkoutUrl: null, // No longer using payment links - QR Ph scanning only
         qrCodeImage: qrCodeImage, // Include the base64 QR code image
         expiresAt: expiresAt.toISOString(),
         amount: parseFloat(event.price),
@@ -136,7 +136,7 @@ export class QrCodesService {
   /**
    * Get the current active QR code for an event
    */
-  async getCurrentQRCode(eventId: string, userId: string): Promise<QrCode | null> {
+  async getCurrentQRCode(eventId: string, userId: string): Promise<QrCodeResponseDto | null> {
     const db = this.databaseService.getDb();
 
     try {
@@ -182,11 +182,7 @@ export class QrCodesService {
   /**
    * Get QR code by ID with status check
    */
-  async getQRCodeStatus(qrCodeId: string): Promise<{
-    qrCode: QrCode;
-    isValid: boolean;
-    timeUntilExpiry?: number;
-  }> {
+  async getQRCodeStatus(qrCodeId: string): Promise<QrCodeStatusResponseDto> {
     const db = this.databaseService.getDb();
 
     const [qrCode] = await db
@@ -222,7 +218,7 @@ export class QrCodesService {
   /**
    * Get QR code history for an event
    */
-  async getQRCodeHistory(eventId: string, userId: string): Promise<QrCode[]> {
+  async getQRCodeHistory(eventId: string, userId: string): Promise<QrCodeResponseDto[]> {
     const db = this.databaseService.getDb();
 
     // Verify event ownership
@@ -246,7 +242,7 @@ export class QrCodesService {
   /**
    * Manually regenerate QR code for an event
    */
-  async regenerateQRCode(eventId: string, userId: string): Promise<QrCode> {
+  async regenerateQRCode(eventId: string, userId: string): Promise<QrCodeResponseDto> {
     this.logger.log(`Manually regenerating QR code for event ${eventId}`);
     return await this.generateQRCode(eventId, userId);
   }
@@ -373,16 +369,14 @@ export class QrCodesService {
     for (const qrCode of activeQrCodes) {
       try {
         // Check if it's a payment intent (pi_xxx) or payment link (link_xxx)
-        if (qrCode.paymongoLinkId.startsWith('pi_')) {
-          await this.paymongoService.cancelPaymentIntent(qrCode.paymongoLinkId);
-        } else if (qrCode.paymongoLinkId.startsWith('link_')) {
-          await this.paymongoService.archivePaymentLink(qrCode.paymongoLinkId);
+        if (qrCode.paymentIntentId.startsWith('pi_')) {
+          await this.paymongoService.cancelPaymentIntent(qrCode.paymentIntentId);
         } else {
-          this.logger.warn(`Unknown PayMongo resource type: ${qrCode.paymongoLinkId}`);
+          this.logger.warn(`Unknown PayMongo resource type: ${qrCode.paymentIntentId}`);
         }
       } catch (error) {
         // Don't block QR generation if cleanup fails
-        this.logger.warn(`Failed to invalidate PayMongo resource ${qrCode.paymongoLinkId}:`, (error as Error).message);
+        this.logger.warn(`Failed to invalidate PayMongo resource ${qrCode.paymentIntentId}:`, (error as Error).message);
       }
     }
 
