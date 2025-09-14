@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,19 +27,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { toast } from 'sonner';
-import {
-  eventsApi,
-  Event,
-  CreateEventData,
-  UpdateEventData,
-} from '@/lib/api/events';
+import type { Event, CreateEventDto, UpdateEventDto } from '@/lib/api/events';
+import { useEvents } from '@/hooks/useEvents';
 
 export default function EventsPage() {
   const router = useRouter();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
@@ -53,76 +46,34 @@ export default function EventsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [eventsPerPage] = useState(6);
 
-  // Load events from API
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        setLoading(true);
-        const eventsData = await eventsApi.getAll();
-        setEvents(eventsData);
-      } catch (error) {
-        console.error('Error loading events:', error);
-      } finally {
-        setLoading(false);
+  // Filter events based on search
+  const filteredEvents = events.filter((event) =>
+    searchQuery.trim()
+      ? event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
+      : true
+  );
+
+  const handleCreateEvent = (newEventData: CreateEventDto) => {
+    createEvent(newEventData, {
+      onSuccess: () => setShowCreateModal(false),
+    });
+  };
+
+  const handleEditEvent = (eventId: string, updateData: UpdateEventDto) => {
+    updateEvent(
+      { id: eventId, data: updateData },
+      {
+        onSuccess: () => {
+          setShowEditModal(false);
+          setSelectedEvent(null);
+        },
       }
-    };
-
-    loadEvents();
-  }, []);
-
-  // Filter and search events
-  useEffect(() => {
-    let filtered = events;
-
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (event) =>
-          event.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    setFilteredEvents(filtered);
-    setCurrentPage(1);
-  }, [events, searchQuery]);
-
-  const handleCreateEvent = async (newEventData: CreateEventData) => {
-    try {
-      const newEvent = await eventsApi.create(newEventData);
-      setEvents([newEvent, ...events]);
-      setShowCreateModal(false);
-      toast.success('Event created successfully!');
-    } catch (error) {
-      console.error('Error creating event:', error);
-      toast.error('Failed to create event. Please try again.');
-    }
+    );
   };
 
-  const handleEditEvent = async (
-    eventId: string,
-    updateData: UpdateEventData
-  ) => {
-    try {
-      const updatedEvent = await eventsApi.update(eventId, updateData);
-      setEvents(events.map((e) => (e.id === eventId ? updatedEvent : e)));
-      setShowEditModal(false);
-      setSelectedEvent(null);
-      toast.success('Event updated successfully!');
-    } catch (error) {
-      console.error('Error updating event:', error);
-      toast.error('Failed to update event. Please try again.');
-    }
-  };
-
-  const handleDeleteEvent = async (eventId: string) => {
+  const handleDeleteEvent = (eventId: string) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
-      try {
-        await eventsApi.delete(eventId);
-        setEvents(events.filter((e) => e.id !== eventId));
-        toast.success('Event deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting event:', error);
-        toast.error('Failed to delete event. Please try again.');
-      }
+      deleteEvent(eventId);
     }
   };
 
@@ -155,7 +106,7 @@ export default function EventsPage() {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -225,7 +176,7 @@ export default function EventsPage() {
                   ₱
                   {events.length > 0
                     ? (
-                        events.reduce((sum, e) => sum + e.price, 0) /
+                        events.reduce((sum, e) => sum + (e.price || 0), 0) /
                         events.length
                       ).toFixed(0)
                     : '0'}
@@ -374,7 +325,7 @@ export default function EventsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteEvent(event.id)}
+                          onClick={() => event.id && handleDeleteEvent(event.id)}
                           className="border-red-200 hover:bg-red-50 text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -417,7 +368,7 @@ export default function EventsPage() {
                   Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                 if (page > totalPages) return null;
 
-                return (
+                const pageButton = (
                   <Button
                     key={page}
                     variant={page === currentPage ? 'default' : 'outline'}
@@ -432,7 +383,9 @@ export default function EventsPage() {
                     {page}
                   </Button>
                 );
-              })}
+
+                return pageButton;
+              }).filter(Boolean)}
             </div>
 
             <Button

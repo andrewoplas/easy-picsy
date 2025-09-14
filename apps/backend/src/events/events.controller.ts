@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Put, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Put, Param, Delete, UseGuards, Request, NotFoundException } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -14,6 +14,11 @@ import { EventsService } from './events.service';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventResponseDto } from './dto/create-event-response.dto';
+import { EventResponseDto } from './dto/event-response.dto';
+import { EventDeleteResponseDto } from './dto/event-delete-response.dto';
+import { QrCodeResponseDto } from './dto/qr-code-response.dto';
+import { PublicEventResponseDto } from './dto/public-event-response.dto';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
 
 @ApiTags('Events')
@@ -35,24 +40,11 @@ export class EventsController {
   @ApiResponse({
     status: 201,
     description: 'Event created successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        price: { type: 'number', format: 'decimal' },
-        currency: { type: 'string', example: 'PHP' },
-        isActive: { type: 'boolean' },
-        userId: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: CreateEventResponseDto
   })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async create(@Body() createEventDto: CreateEventDto, @Request() req: any) {
+  async create(@Body() createEventDto: CreateEventDto, @Request() req: any): Promise<CreateEventResponseDto> {
     return await this.eventsService.create(createEventDto, req.user.sub);
   }
 
@@ -64,26 +56,10 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Events retrieved successfully',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          name: { type: 'string' },
-          description: { type: 'string' },
-          price: { type: 'number', format: 'decimal' },
-          currency: { type: 'string', example: 'PHP' },
-          isActive: { type: 'boolean' },
-          userId: { type: 'string' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
-        }
-      }
-    }
+    type: [EventResponseDto]
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findAll(@Request() req: any) {
+  async findAll(@Request() req: any): Promise<EventResponseDto[]> {
     return await this.eventsService.findAll(req.user.sub);
   }
 
@@ -100,24 +76,11 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Event retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        price: { type: 'number', format: 'decimal' },
-        currency: { type: 'string', example: 'PHP' },
-        isActive: { type: 'boolean' },
-        userId: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: EventResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findOne(@Param('id') id: string, @Request() req: any) {
+  async findOne(@Param('id') id: string, @Request() req: any): Promise<EventResponseDto> {
     return await this.eventsService.findOne(id, req.user.sub);
   }
 
@@ -135,25 +98,12 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Event updated successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        price: { type: 'number', format: 'decimal' },
-        currency: { type: 'string', example: 'PHP' },
-        isActive: { type: 'boolean' },
-        userId: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: EventResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any) {
+  async update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any): Promise<EventResponseDto> {
     return await this.eventsService.update(id, updateEventDto, req.user.sub);
   }
 
@@ -171,25 +121,12 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Event replaced successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        price: { type: 'number', format: 'decimal' },
-        currency: { type: 'string', example: 'PHP' },
-        isActive: { type: 'boolean' },
-        userId: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: EventResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiBadRequestResponse({ description: 'Invalid input data' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async replace(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any) {
+  async replace(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto, @Request() req: any): Promise<EventResponseDto> {
     return await this.eventsService.update(id, updateEventDto, req.user.sub);
   }
 
@@ -206,16 +143,11 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Event deleted successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Event deleted successfully' }
-      }
-    }
+    type: EventDeleteResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async remove(@Param('id') id: string, @Request() req: any) {
+  async remove(@Param('id') id: string, @Request() req: any): Promise<EventDeleteResponseDto> {
     await this.eventsService.remove(id, req.user.sub);
     return { message: 'Event deleted successfully' };
   }
@@ -233,23 +165,16 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'Active QR code retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        qrData: { type: 'string', description: 'PayMongo checkout URL' },
-        paymongoLinkId: { type: 'string' },
-        status: { type: 'string', enum: ['active', 'expired', 'used', 'invalidated'] },
-        expiresAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: QrCodeResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found or no active QR code' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getCurrentQRCode(@Param('id') eventId: string, @Request() req: any) {
-    return await this.qrCodesService.getCurrentQRCode(eventId, req.user.sub);
+  async getCurrentQRCode(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto> {
+    const qrCode = await this.qrCodesService.getCurrentQRCode(eventId, req.user.sub);
+    if (!qrCode) {
+      throw new NotFoundException('No active QR code found for this event');
+    }
+    return qrCode;
   }
 
   @Post(':id/qr/regenerate')
@@ -265,22 +190,11 @@ export class EventsController {
   @ApiResponse({
     status: 201,
     description: 'New QR code generated successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        eventId: { type: 'string', format: 'uuid' },
-        qrData: { type: 'string', description: 'PayMongo checkout URL' },
-        paymongoLinkId: { type: 'string' },
-        status: { type: 'string', enum: ['active'] },
-        expiresAt: { type: 'string', format: 'date-time' },
-        createdAt: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: QrCodeResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async regenerateQRCode(@Param('id') eventId: string, @Request() req: any) {
+  async regenerateQRCode(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto> {
     return await this.qrCodesService.regenerateQRCode(eventId, req.user.sub);
   }
 
@@ -297,26 +211,11 @@ export class EventsController {
   @ApiResponse({
     status: 200,
     description: 'QR code history retrieved successfully',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          eventId: { type: 'string', format: 'uuid' },
-          qrData: { type: 'string', description: 'PayMongo checkout URL' },
-          paymongoLinkId: { type: 'string' },
-          status: { type: 'string', enum: ['active', 'expired', 'used', 'invalidated'] },
-          expiresAt: { type: 'string', format: 'date-time' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
-        }
-      }
-    }
+    type: [QrCodeResponseDto]
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getQRCodeHistory(@Param('id') eventId: string, @Request() req: any) {
+  async getQRCodeHistory(@Param('id') eventId: string, @Request() req: any): Promise<QrCodeResponseDto[]> {
     return await this.qrCodesService.getQRCodeHistory(eventId, req.user.sub);
   }
 }
@@ -339,20 +238,10 @@ export class PublicEventsController {
   @ApiResponse({
     status: 200,
     description: 'Event details retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        name: { type: 'string' },
-        description: { type: 'string' },
-        price: { type: 'number', format: 'decimal' },
-        currency: { type: 'string', example: 'PHP' },
-        isActive: { type: 'boolean' },
-      }
-    }
+    type: PublicEventResponseDto
   })
   @ApiNotFoundResponse({ description: 'Event not found or not accessible' })
-  async getEventForPayment(@Param('id') id: string) {
+  async getEventForPayment(@Param('id') id: string): Promise<PublicEventResponseDto> {
     return await this.eventsService.findByQrCode(id);
   }
 }

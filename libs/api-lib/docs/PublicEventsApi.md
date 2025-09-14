@@ -7,7 +7,7 @@ All URIs are relative to *http://localhost:3000*
 |[**publicEventsControllerGetEventForPayment**](#publiceventscontrollergeteventforpayment) | **GET** /api/public/events/{id} | Get event for payment|
 
 # **publicEventsControllerGetEventForPayment**
-> PublicEventsControllerGetEventForPayment200Response publicEventsControllerGetEventForPayment()
+> PublicEventResponseDto publicEventsControllerGetEventForPayment()
 
 Public endpoint to retrieve event details for QR code payment processing
 
@@ -38,7 +38,7 @@ const { status, data } = await apiInstance.publicEventsControllerGetEventForPaym
 
 ### Return type
 
-**PublicEventsControllerGetEventForPayment200Response**
+**PublicEventResponseDto**
 
 ### Authorization
 

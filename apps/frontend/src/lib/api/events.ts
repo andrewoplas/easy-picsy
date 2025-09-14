@@ -3,7 +3,7 @@ import {
   QRCodesApi,
   PublicEventsApi,
   Configuration,
-  EventsControllerFindAll200ResponseInner as Event,
+  EventsControllerFindAll200ResponseInner,
   EventsControllerGetCurrentQRCode200Response as QrCode,
   EventsControllerGetQRCodeHistory200ResponseInner as QrCodeHistory,
   CreateEventDto,
@@ -17,7 +17,8 @@ const eventsApiInstance = new EventsApi(config, undefined, axiosInstance);
 const qrCodesApiInstance = new QRCodesApi(config, undefined, axiosInstance);
 const publicEventsApiInstance = new PublicEventsApi(config, undefined, axiosInstance);
 
-export type { Event, QrCode, QrCodeHistory, CreateEventDto, UpdateEventDto };
+export type Event = EventsControllerFindAll200ResponseInner;
+export type { QrCode, QrCodeHistory, CreateEventDto, UpdateEventDto };
 
 export interface QrCodeStatus {
   qrCode: QrCode;
@@ -101,8 +102,8 @@ export const eventsApi = {
         qrCode: response.data as unknown as QrCode,
         isValid: response.data.status === 'active',
         timeUntilExpiry: 0, // TODO: Calculate time difference between now and expiresAt (ISO string from API).
-                              // QR codes expire after 30 minutes. This should return remaining seconds,
-                              // or 0 if expired. Used by UI to show countdown timer.
+        // QR codes expire after 30 minutes. This should return remaining seconds,
+        // or 0 if expired. Used by UI to show countdown timer.
       };
     },
 

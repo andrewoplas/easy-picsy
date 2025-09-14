@@ -2,9 +2,12 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
-import { events, Event, NewEvent } from '../database/schema';
+import { events, NewEvent } from '../database/schema';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventResponseDto } from './dto/create-event-response.dto';
+import { EventResponseDto } from './dto/event-response.dto';
+import { PublicEventResponseDto } from './dto/public-event-response.dto';
 
 @Injectable()
 export class EventsService {
@@ -15,7 +18,7 @@ export class EventsService {
     private readonly qrCodesService: QrCodesService,
   ) {}
 
-  async create(createEventDto: CreateEventDto, userId: string): Promise<Event & { qrCode?: any }> {
+  async create(createEventDto: CreateEventDto, userId: string): Promise<CreateEventResponseDto> {
     const newEvent: NewEvent = {
       name: createEventDto.name,
       description: createEventDto.description,
@@ -42,7 +45,7 @@ export class EventsService {
     }
   }
 
-  async findAll(userId: string): Promise<Event[]> {
+  async findAll(userId: string): Promise<EventResponseDto[]> {
     return await this.databaseService.db
       .select()
       .from(events)
@@ -50,7 +53,7 @@ export class EventsService {
       .orderBy(events.createdAt);
   }
 
-  async findOne(id: string, userId: string): Promise<Event> {
+  async findOne(id: string, userId: string): Promise<EventResponseDto> {
     const [event] = await this.databaseService.db
       .select()
       .from(events)
@@ -63,8 +66,9 @@ export class EventsService {
     return event;
   }
 
-  async update(id: string, updateEventDto: UpdateEventDto, userId: string): Promise<Event> {
-    const existingEvent = await this.findOne(id, userId);
+  async update(id: string, updateEventDto: UpdateEventDto, userId: string): Promise<EventResponseDto> {
+    // Verify the event exists and user owns it
+    await this.findOne(id, userId);
 
     const { price, ...rest } = updateEventDto;
     const updateData: Partial<NewEvent> = {
@@ -90,7 +94,7 @@ export class EventsService {
       .where(eq(events.id, id));
   }
 
-  async findByQrCode(eventId: string): Promise<Event> {
+  async findByQrCode(eventId: string): Promise<PublicEventResponseDto> {
     const [event] = await this.databaseService.db
       .select()
       .from(events)

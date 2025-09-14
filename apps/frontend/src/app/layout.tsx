@@ -1,6 +1,7 @@
 import './global.css';
 import { Passion_One, Jost, Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 const passionOne = Passion_One({
   subsets: ['latin'],
@@ -99,8 +100,10 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={`${passionOne.variable} ${jost.variable} ${inter.variable} antialiased`}>
-        {children}
-        <Toaster />
+        <QueryProvider>
+          {children}
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );

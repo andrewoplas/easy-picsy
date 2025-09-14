@@ -1,4 +1,3 @@
-import { IsString, IsNumber, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthUserBasicDto {
@@ -6,14 +5,12 @@ export class AuthUserBasicDto {
     description: 'User unique identifier',
     example: '123e4567-e89b-12d3-a456-426614174000'
   })
-  @IsString()
   id: string;
 
   @ApiProperty({ 
     description: 'User email address',
     example: 'user@example.com'
   })
-  @IsString()
   email: string;
 }
 
@@ -22,27 +19,23 @@ export class AuthResponseDto {
     description: 'JWT access token',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
   })
-  @IsString()
   access_token: string;
 
   @ApiProperty({ 
     description: 'JWT refresh token',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
   })
-  @IsString()
   refresh_token: string;
 
   @ApiProperty({ 
     description: 'Token expiration time in seconds',
     example: 3600
   })
-  @IsNumber()
   expires_in: number;
 
   @ApiProperty({ 
     description: 'User information',
     type: AuthUserBasicDto
   })
-  @IsObject()
   user: AuthUserBasicDto;
 }

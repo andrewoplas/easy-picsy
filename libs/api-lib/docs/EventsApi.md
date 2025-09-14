@@ -15,7 +15,7 @@ All URIs are relative to *http://localhost:3000*
 |[**eventsControllerUpdate**](#eventscontrollerupdate) | **PATCH** /api/events/{id} | Partially update event|
 
 # **eventsControllerCreate**
-> EventsControllerFindAll200ResponseInner eventsControllerCreate(createEventDto)
+> CreateEventResponseDto eventsControllerCreate(createEventDto)
 
 Create a new photobooth event with pricing information
 
@@ -47,7 +47,7 @@ const { status, data } = await apiInstance.eventsControllerCreate(
 
 ### Return type
 
-**EventsControllerFindAll200ResponseInner**
+**CreateEventResponseDto**
 
 ### Authorization
 
@@ -69,7 +69,7 @@ const { status, data } = await apiInstance.eventsControllerCreate(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerFindAll**
-> Array<EventsControllerFindAll200ResponseInner> eventsControllerFindAll()
+> Array<EventResponseDto> eventsControllerFindAll()
 
 Retrieve all events created by the authenticated user
 
@@ -93,7 +93,7 @@ This endpoint does not have any parameters.
 
 ### Return type
 
-**Array<EventsControllerFindAll200ResponseInner>**
+**Array<EventResponseDto>**
 
 ### Authorization
 
@@ -114,7 +114,7 @@ This endpoint does not have any parameters.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerFindOne**
-> EventsControllerFindAll200ResponseInner eventsControllerFindOne()
+> EventResponseDto eventsControllerFindOne()
 
 Retrieve a specific event by its UUID
 
@@ -145,7 +145,7 @@ const { status, data } = await apiInstance.eventsControllerFindOne(
 
 ### Return type
 
-**EventsControllerFindAll200ResponseInner**
+**EventResponseDto**
 
 ### Authorization
 
@@ -167,7 +167,7 @@ const { status, data } = await apiInstance.eventsControllerFindOne(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerGetCurrentQRCode**
-> EventsControllerGetCurrentQRCode200Response eventsControllerGetCurrentQRCode()
+> QrCodeResponseDto eventsControllerGetCurrentQRCode()
 
 Get the currently active QR code for this event
 
@@ -198,7 +198,7 @@ const { status, data } = await apiInstance.eventsControllerGetCurrentQRCode(
 
 ### Return type
 
-**EventsControllerGetCurrentQRCode200Response**
+**QrCodeResponseDto**
 
 ### Authorization
 
@@ -220,7 +220,7 @@ const { status, data } = await apiInstance.eventsControllerGetCurrentQRCode(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerGetQRCodeHistory**
-> Array<EventsControllerGetQRCodeHistory200ResponseInner> eventsControllerGetQRCodeHistory()
+> Array<QrCodeResponseDto> eventsControllerGetQRCodeHistory()
 
 Get complete QR code generation history for this event
 
@@ -251,7 +251,7 @@ const { status, data } = await apiInstance.eventsControllerGetQRCodeHistory(
 
 ### Return type
 
-**Array<EventsControllerGetQRCodeHistory200ResponseInner>**
+**Array<QrCodeResponseDto>**
 
 ### Authorization
 
@@ -273,7 +273,7 @@ const { status, data } = await apiInstance.eventsControllerGetQRCodeHistory(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerRegenerateQRCode**
-> EventsControllerRegenerateQRCode201Response eventsControllerRegenerateQRCode()
+> QrCodeResponseDto eventsControllerRegenerateQRCode()
 
 Generate new QR code for this event (invalidates current one)
 
@@ -304,7 +304,7 @@ const { status, data } = await apiInstance.eventsControllerRegenerateQRCode(
 
 ### Return type
 
-**EventsControllerRegenerateQRCode201Response**
+**QrCodeResponseDto**
 
 ### Authorization
 
@@ -326,7 +326,7 @@ const { status, data } = await apiInstance.eventsControllerRegenerateQRCode(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerRemove**
-> EventsControllerRemove200Response eventsControllerRemove()
+> EventDeleteResponseDto eventsControllerRemove()
 
 Permanently delete an event and all associated data
 
@@ -357,7 +357,7 @@ const { status, data } = await apiInstance.eventsControllerRemove(
 
 ### Return type
 
-**EventsControllerRemove200Response**
+**EventDeleteResponseDto**
 
 ### Authorization
 
@@ -379,7 +379,7 @@ const { status, data } = await apiInstance.eventsControllerRemove(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerReplace**
-> EventsControllerFindAll200ResponseInner eventsControllerReplace(updateEventDto)
+> EventResponseDto eventsControllerReplace(updateEventDto)
 
 Completely replace an event with new data
 
@@ -414,7 +414,7 @@ const { status, data } = await apiInstance.eventsControllerReplace(
 
 ### Return type
 
-**EventsControllerFindAll200ResponseInner**
+**EventResponseDto**
 
 ### Authorization
 
@@ -437,7 +437,7 @@ const { status, data } = await apiInstance.eventsControllerReplace(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerUpdate**
-> EventsControllerFindAll200ResponseInner eventsControllerUpdate(updateEventDto)
+> EventResponseDto eventsControllerUpdate(updateEventDto)
 
 Update specific fields of an event
 
@@ -472,7 +472,7 @@ const { status, data } = await apiInstance.eventsControllerUpdate(
 
 ### Return type
 
-**EventsControllerFindAll200ResponseInner**
+**EventResponseDto**
 
 ### Authorization
 

@@ -12,7 +12,7 @@ All URIs are relative to *http://localhost:3000*
 |[**qrCodesControllerRegenerateQRCode**](#qrcodescontrollerregenerateqrcode) | **POST** /api/qr-codes/event/{eventId}/regenerate | Regenerate QR code|
 
 # **qrCodesControllerGetCurrentQRCode**
-> EventsControllerGetCurrentQRCode200Response qrCodesControllerGetCurrentQRCode()
+> QrCodesControllerGetCurrentQRCode200Response qrCodesControllerGetCurrentQRCode()
 
 Retrieve the currently active QR code for a specific event (if any)
 
@@ -43,7 +43,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetCurrentQRCode(
 
 ### Return type
 
-**EventsControllerGetCurrentQRCode200Response**
+**QrCodesControllerGetCurrentQRCode200Response**
 
 ### Authorization
 
@@ -117,7 +117,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetPaymentLink(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **qrCodesControllerGetQRCodeHistory**
-> Array<EventsControllerGetQRCodeHistory200ResponseInner> qrCodesControllerGetQRCodeHistory()
+> Array<QrCodesControllerGetQRCodeHistory200ResponseInner> qrCodesControllerGetQRCodeHistory()
 
 Retrieve complete QR code generation history for a specific event
 
@@ -148,7 +148,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeHistory(
 
 ### Return type
 
-**Array<EventsControllerGetQRCodeHistory200ResponseInner>**
+**Array<QrCodesControllerGetQRCodeHistory200ResponseInner>**
 
 ### Authorization
 
@@ -274,7 +274,7 @@ const { status, data } = await apiInstance.qrCodesControllerGetQRCodeStatus(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **qrCodesControllerRegenerateQRCode**
-> EventsControllerRegenerateQRCode201Response qrCodesControllerRegenerateQRCode()
+> QrCodesControllerRegenerateQRCode201Response qrCodesControllerRegenerateQRCode()
 
 Generate new QR code for an event (manual regeneration). Invalidates current QR code if active.
 
@@ -305,7 +305,7 @@ const { status, data } = await apiInstance.qrCodesControllerRegenerateQRCode(
 
 ### Return type
 
-**EventsControllerRegenerateQRCode201Response**
+**QrCodesControllerRegenerateQRCode201Response**
 
 ### Authorization
 

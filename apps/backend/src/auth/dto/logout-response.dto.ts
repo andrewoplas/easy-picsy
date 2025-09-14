@@ -1,4 +1,3 @@
-import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LogoutResponseDto {
@@ -6,6 +5,5 @@ export class LogoutResponseDto {
     description: 'Logout status message',
     example: 'Logout successful'
   })
-  @IsString()
   message: string;
 }

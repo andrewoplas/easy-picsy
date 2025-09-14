@@ -138,256 +138,143 @@ export interface CreateEventDto {
 /**
  * 
  * @export
- * @interface EventsControllerFindAll200ResponseInner
+ * @interface CreateEventResponseDto
  */
-export interface EventsControllerFindAll200ResponseInner {
+export interface CreateEventResponseDto {
     /**
-     * 
+     * Event unique identifier
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'id'?: string;
+    'id': string;
     /**
-     * 
+     * Event name
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'name'?: string;
+    'name': string;
     /**
-     * 
+     * Event description
+     * @type {object}
+     * @memberof CreateEventResponseDto
+     */
+    'description'?: object;
+    /**
+     * Price per photobooth session
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'description'?: string;
+    'price': string;
     /**
-     * 
-     * @type {number}
-     * @memberof EventsControllerFindAll200ResponseInner
-     */
-    'price'?: number;
-    /**
-     * 
+     * Currency code
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'currency'?: string;
+    'currency': string;
     /**
-     * 
+     * Whether the event is active
      * @type {boolean}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'isActive'?: boolean;
+    'isActive': boolean;
     /**
-     * 
+     * User ID who created the event
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'userId'?: string;
+    'createdBy': string;
     /**
-     * 
+     * Event creation timestamp
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'createdAt'?: string;
+    'createdAt': string;
     /**
-     * 
+     * Event last update timestamp
      * @type {string}
-     * @memberof EventsControllerFindAll200ResponseInner
+     * @memberof CreateEventResponseDto
      */
-    'updatedAt'?: string;
+    'updatedAt': string;
+    /**
+     * Generated QR code for the event (if successful)
+     * @type {QrCodeResponseDto}
+     * @memberof CreateEventResponseDto
+     */
+    'qrCode'?: QrCodeResponseDto;
 }
 /**
  * 
  * @export
- * @interface EventsControllerGetCurrentQRCode200Response
+ * @interface EventDeleteResponseDto
  */
-export interface EventsControllerGetCurrentQRCode200Response {
+export interface EventDeleteResponseDto {
     /**
-     * 
+     * Deletion confirmation message
      * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
+     * @memberof EventDeleteResponseDto
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'eventId'?: string;
-    /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'qrData'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'paymongoLinkId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'status'?: EventsControllerGetCurrentQRCode200ResponseStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetCurrentQRCode200Response
-     */
-    'createdAt'?: string;
+    'message': string;
 }
-
-export const EventsControllerGetCurrentQRCode200ResponseStatusEnum = {
-    Active: 'active',
-    Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated'
-} as const;
-
-export type EventsControllerGetCurrentQRCode200ResponseStatusEnum = typeof EventsControllerGetCurrentQRCode200ResponseStatusEnum[keyof typeof EventsControllerGetCurrentQRCode200ResponseStatusEnum];
-
 /**
  * 
  * @export
- * @interface EventsControllerGetQRCodeHistory200ResponseInner
+ * @interface EventResponseDto
  */
-export interface EventsControllerGetQRCodeHistory200ResponseInner {
+export interface EventResponseDto {
     /**
-     * 
+     * Event unique identifier
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'id'?: string;
+    'id': string;
     /**
-     * 
+     * Event name
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'eventId'?: string;
+    'name': string;
     /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * Event description
+     * @type {object}
+     * @memberof EventResponseDto
      */
-    'qrData'?: string;
+    'description'?: object;
     /**
-     * 
+     * Price per photobooth session
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'paymongoLinkId'?: string;
+    'price': string;
     /**
-     * 
+     * Currency code
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'status'?: EventsControllerGetQRCodeHistory200ResponseInnerStatusEnum;
+    'currency': string;
     /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * Whether the event is active
+     * @type {boolean}
+     * @memberof EventResponseDto
      */
-    'expiresAt'?: string;
+    'isActive': boolean;
     /**
-     * 
+     * User ID who created the event
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'createdAt'?: string;
+    'createdBy': string;
     /**
-     * 
+     * Event creation timestamp
      * @type {string}
-     * @memberof EventsControllerGetQRCodeHistory200ResponseInner
+     * @memberof EventResponseDto
      */
-    'updatedAt'?: string;
-}
-
-export const EventsControllerGetQRCodeHistory200ResponseInnerStatusEnum = {
-    Active: 'active',
-    Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated'
-} as const;
-
-export type EventsControllerGetQRCodeHistory200ResponseInnerStatusEnum = typeof EventsControllerGetQRCodeHistory200ResponseInnerStatusEnum[keyof typeof EventsControllerGetQRCodeHistory200ResponseInnerStatusEnum];
-
-/**
- * 
- * @export
- * @interface EventsControllerRegenerateQRCode201Response
- */
-export interface EventsControllerRegenerateQRCode201Response {
+    'createdAt': string;
     /**
-     * 
+     * Event last update timestamp
      * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
+     * @memberof EventResponseDto
      */
-    'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'eventId'?: string;
-    /**
-     * PayMongo checkout URL
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'qrData'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'paymongoLinkId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'status'?: EventsControllerRegenerateQRCode201ResponseStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'expiresAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRegenerateQRCode201Response
-     */
-    'createdAt'?: string;
-}
-
-export const EventsControllerRegenerateQRCode201ResponseStatusEnum = {
-    Active: 'active'
-} as const;
-
-export type EventsControllerRegenerateQRCode201ResponseStatusEnum = typeof EventsControllerRegenerateQRCode201ResponseStatusEnum[keyof typeof EventsControllerRegenerateQRCode201ResponseStatusEnum];
-
-/**
- * 
- * @export
- * @interface EventsControllerRemove200Response
- */
-export interface EventsControllerRemove200Response {
-    /**
-     * 
-     * @type {string}
-     * @memberof EventsControllerRemove200Response
-     */
-    'message'?: string;
+    'updatedAt': string;
 }
 /**
  * 
@@ -666,46 +553,220 @@ export interface LogoutResponseDto {
 /**
  * 
  * @export
- * @interface PublicEventsControllerGetEventForPayment200Response
+ * @interface PublicEventResponseDto
  */
-export interface PublicEventsControllerGetEventForPayment200Response {
+export interface PublicEventResponseDto {
+    /**
+     * Event unique identifier
+     * @type {string}
+     * @memberof PublicEventResponseDto
+     */
+    'id': string;
+    /**
+     * Event name
+     * @type {string}
+     * @memberof PublicEventResponseDto
+     */
+    'name': string;
+    /**
+     * Event description
+     * @type {object}
+     * @memberof PublicEventResponseDto
+     */
+    'description'?: object;
+    /**
+     * Price per photobooth session
+     * @type {string}
+     * @memberof PublicEventResponseDto
+     */
+    'price': string;
+    /**
+     * Currency code
+     * @type {string}
+     * @memberof PublicEventResponseDto
+     */
+    'currency': string;
+    /**
+     * Whether the event is active
+     * @type {boolean}
+     * @memberof PublicEventResponseDto
+     */
+    'isActive': boolean;
+}
+/**
+ * 
+ * @export
+ * @interface QrCodeResponseDto
+ */
+export interface QrCodeResponseDto {
+    /**
+     * QR code unique identifier
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'id': string;
+    /**
+     * Event ID associated with this QR code
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'eventId': string;
+    /**
+     * Session ID (for future use)
+     * @type {object}
+     * @memberof QrCodeResponseDto
+     */
+    'sessionId'?: object;
+    /**
+     * Payment ID if payment was made
+     * @type {object}
+     * @memberof QrCodeResponseDto
+     */
+    'paymentId'?: object;
+    /**
+     * QR code data/content (PayMongo checkout URL)
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'qrData': string;
+    /**
+     * PayMongo payment link ID
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'paymongoLinkId': string;
+    /**
+     * PayMongo payment link URL
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'paymongoLinkUrl': string;
+    /**
+     * PayMongo QR Ph resource ID
+     * @type {object}
+     * @memberof QrCodeResponseDto
+     */
+    'paymongoQrphId'?: object;
+    /**
+     * QR code status
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'status': QrCodeResponseDtoStatusEnum;
+    /**
+     * QR code expiration timestamp
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'expiresAt': string;
+    /**
+     * Number of times QR code was scanned
+     * @type {number}
+     * @memberof QrCodeResponseDto
+     */
+    'usageCount': number;
+    /**
+     * Maximum allowed usage count
+     * @type {number}
+     * @memberof QrCodeResponseDto
+     */
+    'maxUsage': number;
+    /**
+     * Whether the QR code is active
+     * @type {boolean}
+     * @memberof QrCodeResponseDto
+     */
+    'isActive': boolean;
+    /**
+     * QR code creation timestamp
+     * @type {string}
+     * @memberof QrCodeResponseDto
+     */
+    'createdAt': string;
+    /**
+     * QR code usage timestamp
+     * @type {object}
+     * @memberof QrCodeResponseDto
+     */
+    'usedAt'?: object;
+    /**
+     * QR code invalidation timestamp
+     * @type {object}
+     * @memberof QrCodeResponseDto
+     */
+    'invalidatedAt'?: object;
+}
+
+export const QrCodeResponseDtoStatusEnum = {
+    Active: 'active',
+    Expired: 'expired',
+    Used: 'used',
+    Invalidated: 'invalidated',
+    Paid: 'paid',
+    Failed: 'failed'
+} as const;
+
+export type QrCodeResponseDtoStatusEnum = typeof QrCodeResponseDtoStatusEnum[keyof typeof QrCodeResponseDtoStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface QrCodesControllerGetCurrentQRCode200Response
+ */
+export interface QrCodesControllerGetCurrentQRCode200Response {
     /**
      * 
      * @type {string}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
      */
     'id'?: string;
     /**
      * 
      * @type {string}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
      */
-    'name'?: string;
+    'eventId'?: string;
+    /**
+     * PayMongo checkout URL
+     * @type {string}
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
+     */
+    'qrData'?: string;
     /**
      * 
      * @type {string}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
      */
-    'description'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
-     */
-    'price'?: number;
+    'paymongoLinkId'?: string;
     /**
      * 
      * @type {string}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
      */
-    'currency'?: string;
+    'status'?: QrCodesControllerGetCurrentQRCode200ResponseStatusEnum;
     /**
      * 
-     * @type {boolean}
-     * @memberof PublicEventsControllerGetEventForPayment200Response
+     * @type {string}
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
      */
-    'isActive'?: boolean;
+    'expiresAt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetCurrentQRCode200Response
+     */
+    'createdAt'?: string;
 }
+
+export const QrCodesControllerGetCurrentQRCode200ResponseStatusEnum = {
+    Active: 'active',
+    Expired: 'expired',
+    Used: 'used',
+    Invalidated: 'invalidated'
+} as const;
+
+export type QrCodesControllerGetCurrentQRCode200ResponseStatusEnum = typeof QrCodesControllerGetCurrentQRCode200ResponseStatusEnum[keyof typeof QrCodesControllerGetCurrentQRCode200ResponseStatusEnum];
+
 /**
  * 
  * @export
@@ -737,6 +798,71 @@ export interface QrCodesControllerGetPaymentLink200Response {
      */
     'expiresAt'?: string;
 }
+/**
+ * 
+ * @export
+ * @interface QrCodesControllerGetQRCodeHistory200ResponseInner
+ */
+export interface QrCodesControllerGetQRCodeHistory200ResponseInner {
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'eventId'?: string;
+    /**
+     * PayMongo checkout URL
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'qrData'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'paymongoLinkId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'status'?: QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'expiresAt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'createdAt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerGetQRCodeHistory200ResponseInner
+     */
+    'updatedAt'?: string;
+}
+
+export const QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum = {
+    Active: 'active',
+    Expired: 'expired',
+    Used: 'used',
+    Invalidated: 'invalidated'
+} as const;
+
+export type QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum = typeof QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum[keyof typeof QrCodesControllerGetQRCodeHistory200ResponseInnerStatusEnum];
+
 /**
  * 
  * @export
@@ -808,6 +934,62 @@ export const QrCodesControllerGetQRCodeStatus200ResponseStatusEnum = {
 } as const;
 
 export type QrCodesControllerGetQRCodeStatus200ResponseStatusEnum = typeof QrCodesControllerGetQRCodeStatus200ResponseStatusEnum[keyof typeof QrCodesControllerGetQRCodeStatus200ResponseStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface QrCodesControllerRegenerateQRCode201Response
+ */
+export interface QrCodesControllerRegenerateQRCode201Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'eventId'?: string;
+    /**
+     * PayMongo checkout URL
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'qrData'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'paymongoLinkId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'status'?: QrCodesControllerRegenerateQRCode201ResponseStatusEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'expiresAt'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof QrCodesControllerRegenerateQRCode201Response
+     */
+    'createdAt'?: string;
+}
+
+export const QrCodesControllerRegenerateQRCode201ResponseStatusEnum = {
+    Active: 'active'
+} as const;
+
+export type QrCodesControllerRegenerateQRCode201ResponseStatusEnum = typeof QrCodesControllerRegenerateQRCode201ResponseStatusEnum[keyof typeof QrCodesControllerRegenerateQRCode201ResponseStatusEnum];
 
 /**
  * 
@@ -1945,7 +2127,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerFindAll200ResponseInner>> {
+        async eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateEventResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerCreate(createEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerCreate']?.[localVarOperationServerIndex]?.url;
@@ -1957,7 +2139,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerFindAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventsControllerFindAll200ResponseInner>>> {
+        async eventsControllerFindAll(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerFindAll(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerFindAll']?.[localVarOperationServerIndex]?.url;
@@ -1970,7 +2152,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerFindAll200ResponseInner>> {
+        async eventsControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerFindOne(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerFindOne']?.[localVarOperationServerIndex]?.url;
@@ -1983,7 +2165,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerGetCurrentQRCode200Response>> {
+        async eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetCurrentQRCode(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetCurrentQRCode']?.[localVarOperationServerIndex]?.url;
@@ -1996,7 +2178,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventsControllerGetQRCodeHistory200ResponseInner>>> {
+        async eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<QrCodeResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetQRCodeHistory(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetQRCodeHistory']?.[localVarOperationServerIndex]?.url;
@@ -2009,7 +2191,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerRegenerateQRCode201Response>> {
+        async eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerRegenerateQRCode(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerRegenerateQRCode']?.[localVarOperationServerIndex]?.url;
@@ -2022,7 +2204,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerRemove200Response>> {
+        async eventsControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventDeleteResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerRemove(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerRemove']?.[localVarOperationServerIndex]?.url;
@@ -2036,7 +2218,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerReplace(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerFindAll200ResponseInner>> {
+        async eventsControllerReplace(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerReplace(id, updateEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerReplace']?.[localVarOperationServerIndex]?.url;
@@ -2050,7 +2232,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerFindAll200ResponseInner>> {
+        async eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerUpdate(id, updateEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerUpdate']?.[localVarOperationServerIndex]?.url;
@@ -2073,7 +2255,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerFindAll200ResponseInner> {
+        eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<CreateEventResponseDto> {
             return localVarFp.eventsControllerCreate(createEventDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2082,7 +2264,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerFindAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<EventsControllerFindAll200ResponseInner>> {
+        eventsControllerFindAll(options?: RawAxiosRequestConfig): AxiosPromise<Array<EventResponseDto>> {
             return localVarFp.eventsControllerFindAll(options).then((request) => request(axios, basePath));
         },
         /**
@@ -2092,7 +2274,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerFindAll200ResponseInner> {
+        eventsControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
             return localVarFp.eventsControllerFindOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2102,7 +2284,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerGetCurrentQRCode200Response> {
+        eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
             return localVarFp.eventsControllerGetCurrentQRCode(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2112,7 +2294,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventsControllerGetQRCodeHistory200ResponseInner>> {
+        eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<QrCodeResponseDto>> {
             return localVarFp.eventsControllerGetQRCodeHistory(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2122,7 +2304,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerRegenerateQRCode201Response> {
+        eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
             return localVarFp.eventsControllerRegenerateQRCode(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2132,7 +2314,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerRemove200Response> {
+        eventsControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventDeleteResponseDto> {
             return localVarFp.eventsControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2143,7 +2325,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerReplace(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerFindAll200ResponseInner> {
+        eventsControllerReplace(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
             return localVarFp.eventsControllerReplace(id, updateEventDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2154,7 +2336,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerFindAll200ResponseInner> {
+        eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
             return localVarFp.eventsControllerUpdate(id, updateEventDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -2685,7 +2867,7 @@ export const PublicEventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async publicEventsControllerGetEventForPayment(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PublicEventsControllerGetEventForPayment200Response>> {
+        async publicEventsControllerGetEventForPayment(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PublicEventResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.publicEventsControllerGetEventForPayment(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['PublicEventsApi.publicEventsControllerGetEventForPayment']?.[localVarOperationServerIndex]?.url;
@@ -2708,7 +2890,7 @@ export const PublicEventsApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        publicEventsControllerGetEventForPayment(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PublicEventsControllerGetEventForPayment200Response> {
+        publicEventsControllerGetEventForPayment(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PublicEventResponseDto> {
             return localVarFp.publicEventsControllerGetEventForPayment(id, options).then((request) => request(axios, basePath));
         },
     };
@@ -2987,7 +3169,7 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerGetCurrentQRCode200Response>> {
+        async qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerGetCurrentQRCode200Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetCurrentQRCode(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetCurrentQRCode']?.[localVarOperationServerIndex]?.url;
@@ -3013,7 +3195,7 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventsControllerGetQRCodeHistory200ResponseInner>>> {
+        async qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<QrCodesControllerGetQRCodeHistory200ResponseInner>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerGetQRCodeHistory(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerGetQRCodeHistory']?.[localVarOperationServerIndex]?.url;
@@ -3052,7 +3234,7 @@ export const QRCodesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventsControllerRegenerateQRCode201Response>> {
+        async qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodesControllerRegenerateQRCode201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.qrCodesControllerRegenerateQRCode(eventId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['QRCodesApi.qrCodesControllerRegenerateQRCode']?.[localVarOperationServerIndex]?.url;
@@ -3075,7 +3257,7 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerGetCurrentQRCode200Response> {
+        qrCodesControllerGetCurrentQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerGetCurrentQRCode200Response> {
             return localVarFp.qrCodesControllerGetCurrentQRCode(eventId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3095,7 +3277,7 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventsControllerGetQRCodeHistory200ResponseInner>> {
+        qrCodesControllerGetQRCodeHistory(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<QrCodesControllerGetQRCodeHistory200ResponseInner>> {
             return localVarFp.qrCodesControllerGetQRCodeHistory(eventId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -3125,7 +3307,7 @@ export const QRCodesApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<EventsControllerRegenerateQRCode201Response> {
+        qrCodesControllerRegenerateQRCode(eventId: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodesControllerRegenerateQRCode201Response> {
             return localVarFp.qrCodesControllerRegenerateQRCode(eventId, options).then((request) => request(axios, basePath));
         },
     };
