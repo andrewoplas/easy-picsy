@@ -1,6 +1,7 @@
 import { pgTable, uuid, text, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
 import { events } from './events.schema';
 import { payments } from './payments.schema';
+import { QrCodeStatus } from '@org/api-lib/types';
 
 export const qrCodes = pgTable('qr_codes', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -11,7 +12,7 @@ export const qrCodes = pgTable('qr_codes', {
   paymentIntentId: text('payment_intent_id').notNull(), // PayMongo Payment Intent ID for QR Ph payments
   paymongoLinkUrl: text('paymongo_link_url'), // Legacy: PayMongo payment link URL (deprecated)
   paymongoQrphId: text('paymongo_qrph_id'), // Paymongo QR Ph resource ID (for expiry tracking)
-  status: varchar('status', { length: 20 }).notNull().default('active').$type<'active' | 'expired' | 'used' | 'invalidated' | 'paid' | 'failed'>(),
+  status: varchar('status', { length: 20 }).notNull().default(QrCodeStatus.ACTIVE).$type<`${QrCodeStatus}`>(),
   expiresAt: timestamp('expires_at').notNull(),
   usageCount: integer('usage_count').notNull().default(0),
   maxUsage: integer('max_usage').notNull().default(1),
@@ -20,8 +21,6 @@ export const qrCodes = pgTable('qr_codes', {
   usedAt: timestamp('used_at'),
   invalidatedAt: timestamp('invalidated_at'),
 });
-
-export type QrCodeStatus = 'active' | 'expired' | 'used' | 'invalidated' | 'paid' | 'failed';
 
 export type QrCode = typeof qrCodes.$inferSelect;
 export type NewQrCode = typeof qrCodes.$inferInsert;

@@ -4,25 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { RefreshCw, Clock, Eye, Trash2, QrCode as QrCodeIcon, AlertCircle } from 'lucide-react';
+import { RefreshCw, Calendar, Timer, Users, Trash2, QrCode as QrCodeIcon, AlertCircle } from 'lucide-react';
 import { eventsApi, Event, QrCode } from '@/lib/api/events';
-import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-
-type QrCodeStatus = 'active' | 'expired' | 'used' | 'invalidated';
+import { QrCodeStatus } from '@org/api-lib/types';
 
 interface QrCodeStatusBadgeProps {
-  status: QrCodeStatus;
+  status: `${QrCodeStatus}`;
 }
 
-const statusConfig: Record<QrCodeStatus, { color: string; label: string }> = {
-  active: { color: 'bg-green-100 text-green-800', label: 'ACTIVE' },
-  expired: { color: 'bg-red-100 text-red-800', label: 'EXPIRED' },
-  used: { color: 'bg-blue-100 text-blue-800', label: 'USED' },
-  invalidated: { color: 'bg-gray-100 text-gray-800', label: 'INVALIDATED' },
+const statusConfig: Record<`${QrCodeStatus}`, { color: string; label: string }> = {
+  [QrCodeStatus.ACTIVE]: { color: 'bg-green-100 text-green-800', label: 'ACTIVE' },
+  [QrCodeStatus.EXPIRED]: { color: 'bg-red-100 text-red-800', label: 'EXPIRED' },
+  [QrCodeStatus.USED]: { color: 'bg-blue-100 text-blue-800', label: 'USED' },
+  [QrCodeStatus.INVALIDATED]: { color: 'bg-gray-100 text-gray-800', label: 'INVALIDATED' },
+  [QrCodeStatus.PAID]: { color: 'bg-green-800 text-white', label: 'PAID' },
+  [QrCodeStatus.FAILED]: { color: 'bg-red-100 text-red-800', label: 'FAILED' },
 };
 
 function QrCodeStatusBadge({ status }: QrCodeStatusBadgeProps) {
@@ -57,7 +57,17 @@ interface QrCodeItemProps {
 }
 
 function QrCodeItem({ qrCode }: QrCodeItemProps) {
-  const formatDateTime = (dateString: string) => new Date(dateString).toLocaleString();
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    });
+  };
   const formatDuration = (createdAt: string, expiresAt: string) => {
     const diffMinutes = Math.floor((new Date(expiresAt).getTime() - new Date(createdAt).getTime()) / 60000);
     return `${diffMinutes} mins`;
@@ -69,7 +79,7 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
         <div className="flex items-start justify-between">
           <div className="space-y-3 flex-1">
             <div className="flex items-center gap-2">
-              <QrCodeStatusBadge status={qrCode.status as QrCodeStatus} />
+              <QrCodeStatusBadge status={qrCode.status} />
               <span className="text-xs bg-dash-gray/10 px-2 py-0.5 rounded text-dash-navy/60 font-mono">
                 {qrCode.id.slice(0, 8)}...
               </span>
@@ -77,14 +87,14 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <QrCodeStat
-                icon={<Clock />}
+                icon={<Calendar />}
                 label="Created"
                 value={formatDateTime(qrCode.createdAt)}
                 bgColor="bg-blue-50"
                 iconColor="text-blue-500"
               />
               <QrCodeStat
-                icon={<Clock />}
+                icon={<Calendar />}
                 label="Expires"
                 value={formatDateTime(qrCode.expiresAt)}
                 bgColor="bg-red-50"
@@ -98,7 +108,7 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
                 iconColor="text-purple-500"
               />
               <QrCodeStat
-                icon={<Eye />}
+                icon={<Users />}
                 label="Usage"
                 value={`${qrCode.usageCount}/${qrCode.maxUsage}`}
                 bgColor="bg-green-50"
@@ -109,7 +119,7 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
             <div className="flex gap-3 pt-1">
               {qrCode.usedAt && (
                 <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center">
-                  <Clock className="w-3 h-3 mr-1" />
+                  <Timer className="w-3 h-3 mr-1" />
                   Used: {formatDateTime(qrCode.usedAt)}
                 </div>
               )}
@@ -122,20 +132,6 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 ml-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(qrCode.paymongoLinkUrl ?? '');
-                toast.success('Payment URL copied');
-              }}
-              className="border-dash-gray/50 hover:bg-dash-gray/10 text-xs group-hover:border-dash-orange/50 group-hover:text-dash-orange transition-colors duration-200"
-            >
-              <Eye className="w-3 h-3 mr-1" />
-              View URL
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
@@ -225,7 +221,7 @@ function QrCodeStats({ qrCodes }: QrCodeStatsProps) {
     },
     {
       label: 'Active',
-      value: qrCodes.filter((qr) => qr.status === 'active').length,
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.ACTIVE).length,
       icon: <div className="w-2 h-2 rounded-full bg-green-500" />,
       bgColor: 'bg-green-50',
       hoverBgColor: 'hover:bg-green-100/50',
@@ -233,7 +229,7 @@ function QrCodeStats({ qrCodes }: QrCodeStatsProps) {
     },
     {
       label: 'Used',
-      value: qrCodes.filter((qr) => qr.status === 'used').length,
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.USED).length,
       icon: <div className="w-2 h-2 rounded-full bg-blue-500" />,
       bgColor: 'bg-blue-50',
       hoverBgColor: 'hover:bg-blue-100/50',
@@ -241,7 +237,7 @@ function QrCodeStats({ qrCodes }: QrCodeStatsProps) {
     },
     {
       label: 'Expired',
-      value: qrCodes.filter((qr) => qr.status === 'expired').length,
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.EXPIRED).length,
       icon: <div className="w-2 h-2 rounded-full bg-red-500" />,
       bgColor: 'bg-red-50',
       hoverBgColor: 'hover:bg-red-100/50',
@@ -306,7 +302,7 @@ export function QRCodeHistoryModal({ isOpen, onClose, event }: QRCodeHistoryModa
           {/* Refresh Button */}
           <div className="flex justify-between items-center bg-dash-gray/5 p-3 rounded-lg">
             <p className="text-sm text-dash-navy/70 flex items-center gap-2">
-              <Eye className="w-4 h-4" />
+              <QrCodeIcon className="w-4 h-4" />
               View all QR codes generated for this event
             </p>
             <Button

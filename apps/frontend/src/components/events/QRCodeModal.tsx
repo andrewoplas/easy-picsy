@@ -9,7 +9,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { eventsApi, QrCode, QrCodeStatus, Event } from '@/lib/api/events';
 import { toast } from 'sonner';
 
-
 interface QRCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -36,32 +35,26 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
   });
 
   // Memoized computed values
-  const isQRCodeValid = useMemo(() => 
-    qrState.qrCode && qrState.status?.isValid, 
-    [qrState.qrCode, qrState.status?.isValid]
+  const isQRCodeValid = useMemo(
+    () => qrState.qrCode && qrState.status?.isValid,
+    [qrState.qrCode, qrState.status?.isValid],
   );
 
-  const formattedPrice = useMemo(() => 
-    `₱${Number(event.price || 0).toFixed(2)}`, 
-    [event.price]
-  );
-
-
+  const formattedPrice = useMemo(() => `₱${Number(event.price || 0).toFixed(2)}`, [event.price]);
 
   // Enhanced QR code loading with better state management
   const loadCurrentQRCode = useCallback(async () => {
-    setQrState(prev => ({ ...prev, loading: true, error: null }));
-    
+    setQrState((prev) => ({ ...prev, loading: true, error: null }));
+
     try {
       const currentQrCode = await eventsApi.qr.getCurrent(event.id);
-      
+
       let status: QrCodeStatus | null = null;
       if (currentQrCode) {
         status = await eventsApi.qr.getStatus(currentQrCode.id);
       }
-      
-      
-      setQrState(prev => ({
+
+      setQrState((prev) => ({
         ...prev,
         qrCode: currentQrCode,
         status,
@@ -71,15 +64,15 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load QR code';
       console.error('Failed to load QR code:', error);
-      
-      setQrState(prev => ({
+
+      setQrState((prev) => ({
         ...prev,
         qrCode: null,
         status: null,
         loading: false,
         error: errorMessage,
       }));
-      
+
       toast.error(errorMessage);
     }
   }, [event.id]);
@@ -97,21 +90,21 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
       return;
     }
 
-    setQrState(prev => ({ 
-      ...prev, 
-      timeUntilExpiry: qrState.status?.timeUntilExpiry || null 
+    setQrState((prev) => ({
+      ...prev,
+      timeUntilExpiry: qrState.status?.timeUntilExpiry || null,
     }));
 
     const interval = setInterval(() => {
-      setQrState(prev => {
+      setQrState((prev) => {
         const newTime = prev.timeUntilExpiry ? prev.timeUntilExpiry - 1000 : null;
-        
+
         if (!newTime || newTime <= 0) {
           clearInterval(interval);
           loadCurrentQRCode(); // Refresh status when expired
           return { ...prev, timeUntilExpiry: null };
         }
-        
+
         return { ...prev, timeUntilExpiry: newTime };
       });
     }, 1000);
@@ -121,31 +114,31 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
 
   // Enhanced regenerate handler
   const handleRegenerate = useCallback(async () => {
-    setQrState(prev => ({ ...prev, regenerating: true, error: null }));
-    
+    setQrState((prev) => ({ ...prev, regenerating: true, error: null }));
+
     try {
       const newQrCode = await eventsApi.qr.regenerate(event.id);
       const status = await eventsApi.qr.getStatus(newQrCode.id);
-      
-      setQrState(prev => ({
+
+      setQrState((prev) => ({
         ...prev,
         qrCode: newQrCode,
         status,
         regenerating: false,
         error: null,
       }));
-      
+
       toast.success('QR code regenerated successfully');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to regenerate QR code';
       console.error('Failed to regenerate QR code:', error);
-      
-      setQrState(prev => ({
+
+      setQrState((prev) => ({
         ...prev,
         regenerating: false,
         error: errorMessage,
       }));
-      
+
       toast.error(errorMessage);
     }
   }, [event.id]);
@@ -168,21 +161,23 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
     return statusColors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
   }, []);
 
-
   // Enhanced close handler with cleanup
-  const handleClose = useCallback((open: boolean) => {
-    if (!open) {
-      onClose();
-    }
-  }, [onClose]);
+  const handleClose = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onClose();
+      }
+    },
+    [onClose],
+  );
 
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setQrState(prev => ({ 
-        ...prev, 
+      setQrState((prev) => ({
+        ...prev,
         error: null,
-        timeUntilExpiry: null 
+        timeUntilExpiry: null,
       }));
     }
   }, [isOpen]);
@@ -191,25 +186,17 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-semibold tracking-wide text-dash-navy">
-            QR Payment Code
-          </DialogTitle>
+          <DialogTitle className="font-semibold tracking-wide text-dash-navy">QR Payment Code</DialogTitle>
         </DialogHeader>
 
         <div className="text-center space-y-6">
           {/* Event Info */}
           <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-dash-navy tracking-wide">
-              {event.name}
-            </h3>
+            <h3 className="text-xl font-semibold text-dash-navy tracking-wide">{event.name}</h3>
             {event.description && (
-              <p className="text-sm text-dash-navy/70 max-w-sm mx-auto leading-relaxed">
-                {event.description}
-              </p>
+              <p className="text-sm text-dash-navy/70 max-w-sm mx-auto leading-relaxed">{event.description}</p>
             )}
-            <p className="text-2xl font-bold text-dash-orange">
-              {formattedPrice}
-            </p>
+            <p className="text-2xl font-bold text-dash-orange">{formattedPrice}</p>
 
             {/* Enhanced QR Code Status */}
             {qrState.qrCode && qrState.status && (
@@ -218,10 +205,7 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
                   {qrState.qrCode.status.toUpperCase()}
                 </Badge>
                 {qrState.status.isValid && qrState.timeUntilExpiry && (
-                  <Badge 
-                    variant="outline" 
-                    className="text-orange-600 border-orange-200 bg-orange-50"
-                  >
+                  <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
                     <Clock className="w-3 h-3 mr-1" />
                     {formatTimeUntilExpiry(qrState.timeUntilExpiry)}
                   </Badge>
@@ -286,21 +270,6 @@ export function QRCodeModal({ isOpen, onClose, event }: QRCodeModalProps) {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Enhanced Instructions */}
-          <div className="text-left bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-200">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 bg-dash-orange rounded-full"></div>
-              <h4 className="font-semibold text-dash-navy">Setup Instructions</h4>
-            </div>
-            <ol className="text-sm text-dash-navy/80 space-y-2 list-decimal list-inside leading-relaxed">
-              <li>Download the QR code image using the button below</li>
-              <li>Add it to your dslrBooth lock screen background</li>
-              <li>Customers scan with GCash, Maya, or bank apps to pay</li>
-              <li>Payment unlocks the booth automatically</li>
-              <li>Sessions lock again when the timer expires</li>
-            </ol>
           </div>
 
           {/* Regenerate Button */}

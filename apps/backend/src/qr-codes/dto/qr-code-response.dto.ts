@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { QrCodeStatus } from '@org/api-lib/types';
 
 export class QrCodeResponseDto {
   @ApiProperty({ 
@@ -63,10 +64,10 @@ export class QrCodeResponseDto {
 
   @ApiProperty({ 
     description: 'QR code status',
-    example: 'active',
-    enum: ['active', 'expired', 'used', 'invalidated', 'paid', 'failed']
+    example: QrCodeStatus.ACTIVE,
+    enum: Object.values(QrCodeStatus)
   })
-  status: 'active' | 'expired' | 'used' | 'invalidated' | 'paid' | 'failed';
+  status: `${QrCodeStatus}`;
 
   @ApiProperty({ 
     description: 'QR code expiration timestamp',

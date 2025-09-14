@@ -10,11 +10,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { QrCodeRealtimeStatus } from '@org/api-lib/types';
 
 export interface QRCodeStatusUpdate {
   qrCodeId: string;
   eventId: string;
-  status: 'active' | 'expired' | 'used' | 'invalidated';
+  status: QrCodeRealtimeStatus;
   expiresAt?: string;
   timeUntilExpiry?: number;
   failureReason?: string;
