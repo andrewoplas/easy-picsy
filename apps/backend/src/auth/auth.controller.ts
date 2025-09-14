@@ -1,24 +1,30 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
-  UseGuards,
+  Post,
   Request,
-  Headers,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
-  ApiBody,
-  ApiBearerAuth,
+  ApiTags,
   ApiUnauthorizedResponse,
-  ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import type { AuthenticatedRequest } from '../types/auth.types';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { VerifyTokenResponseDto } from './dto/verify-token-response.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { LogoutResponseDto } from './dto/logout-response.dto';
+import { RefreshTokenRequestDto } from './dto/refresh-token-request.dto';
+import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 import { SupabaseAuthGuard } from './guards/supabase-auth.guard';
 
 @ApiTags('Authentication')
@@ -35,24 +41,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Login successful',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: { type: 'string', description: 'JWT access token' },
-        refresh_token: { type: 'string', description: 'JWT refresh token' },
-        expires_in: { type: 'number', description: 'Token expiration time in seconds' },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            email: { type: 'string' },
-          }
-        }
-      }
-    }
+    type: AuthResponseDto
   })
   @ApiBadRequestResponse({ description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return this.authService.login(loginDto);
   }
 
@@ -65,24 +57,10 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Registration successful',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: { type: 'string', description: 'JWT access token' },
-        refresh_token: { type: 'string', description: 'JWT refresh token' },
-        expires_in: { type: 'number', description: 'Token expiration time in seconds' },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            email: { type: 'string' },
-          }
-        }
-      }
-    }
+    type: AuthResponseDto
   })
   @ApiBadRequestResponse({ description: 'Invalid input or email already exists' })
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return this.authService.register(registerDto);
   }
 
@@ -96,17 +74,11 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Logout successful',
-    schema: {
-      type: 'object',
-      properties: {
-        message: { type: 'string', example: 'Logout successful' }
-      }
-    }
+    type: LogoutResponseDto
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async logout(@Headers('authorization') auth: string) {
-    const token = auth?.replace('Bearer ', '');
-    return this.authService.logout(token);
+  async logout(): Promise<LogoutResponseDto> {
+    return this.authService.logout();
   }
 
   @Post('refresh')
@@ -114,29 +86,15 @@ export class AuthController {
     summary: 'Refresh access token',
     description: 'Generate new access token using refresh token'
   })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        refresh_token: { type: 'string', description: 'Valid refresh token' }
-      },
-      required: ['refresh_token']
-    }
-  })
+  @ApiBody({ type: RefreshTokenRequestDto })
   @ApiResponse({
     status: 200,
     description: 'Token refresh successful',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: { type: 'string', description: 'New JWT access token' },
-        expires_in: { type: 'number', description: 'Token expiration time in seconds' },
-      }
-    }
+    type: RefreshTokenResponseDto
   })
   @ApiBadRequestResponse({ description: 'Invalid refresh token' })
-  async refreshToken(@Body('refresh_token') refreshToken: string) {
-    return this.authService.refreshToken(refreshToken);
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenRequestDto): Promise<RefreshTokenResponseDto> {
+    return this.authService.refreshToken(refreshTokenDto.refresh_token);
   }
 
   @Get('profile')
@@ -149,18 +107,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User profile retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string' },
-        email: { type: 'string' },
-        created_at: { type: 'string', format: 'date-time' },
-        updated_at: { type: 'string', format: 'date-time' },
-      }
-    }
+    type: UserResponseDto
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getProfile(@Request() req: any) {
+  async getProfile(@Request() req: AuthenticatedRequest): Promise<UserResponseDto> {
     return this.authService.getProfile(req.user.supabaseId);
   }
 
@@ -174,23 +124,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Token is valid',
-    schema: {
-      type: 'object',
-      properties: {
-        valid: { type: 'boolean', example: true },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            email: { type: 'string' },
-            supabaseId: { type: 'string' },
-          }
-        }
-      }
-    }
+    type: VerifyTokenResponseDto
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async verifyToken(@Request() req: any) {
+  async verifyToken(@Request() req: AuthenticatedRequest): Promise<VerifyTokenResponseDto> {
     return {
       valid: true,
       user: req.user,

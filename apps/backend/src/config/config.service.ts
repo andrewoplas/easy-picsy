@@ -23,7 +23,7 @@ export class ConfigService {
 
   // Database configuration
   get databaseUrl(): string {
-    return this.configService.get<string>('DATABASE_URL');
+    return this.configService.get<string>('DATABASE_URL') ?? '';
   }
 
   get databaseConfig() {
@@ -38,20 +38,20 @@ export class ConfigService {
 
   // Supabase configuration
   get supabaseUrl(): string {
-    return this.configService.get<string>('SUPABASE_URL');
+    return this.configService.get<string>('SUPABASE_URL') ?? '';
   }
 
   get supabaseAnonKey(): string {
-    return this.configService.get<string>('SUPABASE_ANON_KEY');
+    return this.configService.get<string>('SUPABASE_ANON_KEY') ?? '';
   }
 
   get supabaseServiceKey(): string {
-    return this.configService.get<string>('SUPABASE_SERVICE_KEY');
+    return this.configService.get<string>('SUPABASE_SERVICE_KEY') ?? '';
   }
 
   // JWT configuration
   get jwtSecret(): string {
-    return this.configService.get<string>('JWT_SECRET');
+    return this.configService.get<string>('JWT_SECRET') ?? '';
   }
 
   get jwtExpiration(): string {
@@ -60,11 +60,11 @@ export class ConfigService {
 
   // Paymongo configuration (for future use)
   get paymongoSecretKey(): string | undefined {
-    return this.configService.get<string>('PAYMONGO_SECRET_KEY');
+    return this.configService.get<string>('PAYMONGO_SECRET_KEY') ?? '';
   }
 
   get paymongoPublicKey(): string | undefined {
-    return this.configService.get<string>('PAYMONGO_PUBLIC_KEY');
+    return this.configService.get<string>('PAYMONGO_PUBLIC_KEY') ?? '';
   }
 
   // CORS configuration

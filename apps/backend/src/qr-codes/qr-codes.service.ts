@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException, Inject, forwardRef } from '@nest
 import { DatabaseService } from '../database/database.service';
 import { PaymongoService, CreatePaymentIntentRequest } from '../paymongo/paymongo.service';
 import { RealtimeService } from '../realtime/realtime.service';
-import { qrCodes, QrCode, NewQrCode } from '../database/schema/qr_codes.schema';
+import { qrCodes, QrCode, NewQrCode, QrCodeStatus } from '../database/schema/qr_codes.schema';
 import { events } from '../database/schema/events.schema';
 import { eq, and, desc } from 'drizzle-orm';
 import * as cron from 'node-cron';
@@ -285,7 +285,7 @@ export class QrCodesService {
     await db
       .update(qrCodes)
       .set({
-        status: 'paid',
+        status: 'paid' as QrCodeStatus,
         usedAt: new Date(),
         usageCount: 1,
         isActive: false,
@@ -298,7 +298,7 @@ export class QrCodesService {
     this.realtimeService.notifyQRStatusUpdate(eventId, {
       qrCodeId,
       eventId,
-      status: 'paid',
+      status: 'paid' as any,
     });
   }
 
@@ -311,7 +311,7 @@ export class QrCodesService {
     await db
       .update(qrCodes)
       .set({
-        status: 'failed',
+        status: 'failed' as QrCodeStatus,
         usageCount: 1,
         isActive: false,
       })
@@ -323,7 +323,7 @@ export class QrCodesService {
     this.realtimeService.notifyQRStatusUpdate(eventId, {
       qrCodeId,
       eventId,
-      status: 'failed',
+      status: 'failed' as any,
       failureReason,
     });
   }
@@ -382,7 +382,7 @@ export class QrCodesService {
         }
       } catch (error) {
         // Don't block QR generation if cleanup fails
-        this.logger.warn(`Failed to invalidate PayMongo resource ${qrCode.paymongoLinkId}:`, error.message);
+        this.logger.warn(`Failed to invalidate PayMongo resource ${qrCode.paymongoLinkId}:`, (error as Error).message);
       }
     }
 

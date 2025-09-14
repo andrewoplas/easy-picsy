@@ -17,6 +17,13 @@
         "color": "#28A745",
         "singleInstance": true,
         "command": "npx nx serve backend"
+      },
+      {
+        "cwd": "${workspaceFolder}",
+        "name": "🔄 Update Sources",
+        "color": "#FFA500",
+        "singleInstance": true,
+        "command": "npm run update-sources"
       }
     ]
   },

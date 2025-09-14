@@ -33,6 +33,9 @@
     "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.23.1",
+    "openapi-fetch": "^0.14.0",
+    "openapi-typescript": "^7.9.1",
     "tsx": "^4.20.5"
   }
 }

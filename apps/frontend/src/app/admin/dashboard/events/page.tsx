@@ -62,7 +62,6 @@ export default function EventsPage() {
         setEvents(eventsData);
       } catch (error) {
         console.error('Error loading events:', error);
-        // Show error state or toast notification
       } finally {
         setLoading(false);
       }
@@ -75,7 +74,6 @@ export default function EventsPage() {
   useEffect(() => {
     let filtered = events;
 
-    // Apply search filter
     if (searchQuery.trim()) {
       filtered = filtered.filter(
         (event) =>
@@ -83,9 +81,8 @@ export default function EventsPage() {
       );
     }
 
-
     setFilteredEvents(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
+    setCurrentPage(1);
   }, [events, searchQuery]);
 
   const handleCreateEvent = async (newEventData: CreateEventData) => {
@@ -128,7 +125,6 @@ export default function EventsPage() {
       }
     }
   };
-
 
   const openEditModal = (event: Event) => {
     setSelectedEvent(event);
@@ -182,8 +178,7 @@ export default function EventsPage() {
   }
 
   return (
-    
-      <div className="space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -194,7 +189,7 @@ export default function EventsPage() {
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-dash-orange hover:bg-dash-orange/90 text-white"
+          className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Event
@@ -218,7 +213,6 @@ export default function EventsPage() {
             </div>
           </CardContent>
         </Card>
-
 
         <Card className="bg-dash-white">
           <CardContent className="p-6">
@@ -256,7 +250,6 @@ export default function EventsPage() {
               className="pl-10"
             />
           </div>
-
         </div>
 
         <div className="text-sm text-dash-navy/70">
@@ -281,7 +274,7 @@ export default function EventsPage() {
               {events.length === 0 && (
                 <Button
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-dash-orange hover:bg-dash-orange/90 text-white"
+                  className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Event
@@ -492,10 +485,8 @@ export default function EventsPage() {
             }}
             event={selectedEvent}
           />
-
         </>
       )}
-      </div>
-    
+    </div>
   );
 }

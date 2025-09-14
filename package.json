@@ -7,7 +7,17 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx apps/backend/src/database/seed.ts"
+    "db:seed": "tsx apps/backend/src/database/seed.ts",
+    "gen:openapi": "ts-node --project apps/backend/tsconfig.openapi.json apps/backend/src/openapi-spec.ts",
+    "lint": "nx run-many -t lint",
+    "lint:fix": "nx run-many -t lint --fix",
+    "lint:backend": "nx lint backend",
+    "lint:backend:fix": "nx lint backend --fix",
+    "lint:frontend": "nx lint frontend",
+    "lint:frontend:fix": "nx lint frontend --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "update-sources": "openapi-generator-cli generate -i ../shared/api-spec.json -g typescript-axios -o libs/api-lib"
   },
   "private": true,
   "dependencies": {
@@ -35,7 +45,6 @@
     "react-dom": "19.0.0",
     "react-hot-toast": "^2.6.0",
     "recharts": "^3.1.2",
-    "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "tailwind-merge": "^2.0.0"
   },
@@ -72,7 +81,7 @@
     "@types/react-dom": "19.0.0",
     "autoprefixer": "10.4.13",
     "babel-jest": "^30.0.2",
-    "dotenv": "^17.2.1",
+    "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.8.0",
     "eslint-config-next": "^15.2.4",
@@ -88,7 +97,9 @@
     "nx": "21.4.1",
     "postcss": "8.4.38",
     "prettier": "^2.6.2",
+    "reflect-metadata": "^0.2.2",
     "socket.io-client": "^4.8.1",
+    "swagger-ui-express": "^5.0.1",
     "tailwindcss": "3.4.3",
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
@@ -99,6 +110,8 @@
     "webpack-cli": "^5.1.4"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "apps/frontend/*",
+    "libs/*"
   ]
 }

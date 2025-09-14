@@ -1,18 +1,14 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { SupabaseService } from '../supabase/supabase.service';
-import { DatabaseService } from '../database/database.service';
+import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { users } from '../database/schema';
-import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private supabaseService: SupabaseService,
-    private jwtService: JwtService,
-    private databaseService: DatabaseService,
+    private usersService: UsersService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -23,20 +19,24 @@ export class AuthService {
       .getClient()
       .auth.signInWithPassword({ email, password });
 
-    if (error || !data.user) {
+    if (error || !data.user || !data.user.email) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Sync user with our database
-    await this.syncUser(data.user);
+    await this.usersService.findOrCreateUser({
+      id: data.user.id,
+      email: data.user.email,
+      user_metadata: data.user.user_metadata,
+    });
 
     return {
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
+      expires_in: data.session.expires_in || 3600,
       user: {
         id: data.user.id,
-        email: data.user.email,
-        role: data.user.user_metadata?.role || 'user',
+        email: data.user.email || '',
       },
     };
   }
@@ -65,23 +65,34 @@ export class AuthService {
       throw new UnauthorizedException(error.message);
     }
 
-    if (!data.user) {
+    if (!data.user || !data.user.email) {
       throw new UnauthorizedException('Registration failed');
     }
 
     // Sync user with our database
-    await this.syncUser(data.user);
+    await this.usersService.findOrCreateUser({
+      id: data.user.id,
+      email: data.user.email,
+      user_metadata: data.user.user_metadata,
+    });
+
+    // For register, we might not have a session immediately if email confirmation is required
+    if (!data.session) {
+      throw new UnauthorizedException('Registration successful. Please check your email to verify your account.');
+    }
 
     return {
-      message: 'Registration successful. Please check your email to verify your account.',
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      expires_in: data.session.expires_in || 3600,
       user: {
         id: data.user.id,
-        email: data.user.email,
+        email: data.user.email || '',
       },
     };
   }
 
-  async logout(token: string) {
+  async logout() {
     // Sign out from Supabase
     const { error } = await this.supabaseService
       .getClient()
@@ -105,55 +116,16 @@ export class AuthService {
 
     return {
       access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
+      expires_in: data.session.expires_in || 3600,
     };
   }
 
   async getProfile(userId: string) {
-    const db = this.databaseService.getDb();
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.supabaseId, userId))
-      .limit(1);
-
-    if (!user.length) {
+    try {
+      return await this.usersService.findBySupabaseId(userId);
+    } catch {
       throw new UnauthorizedException('User not found');
     }
-
-    return user[0];
   }
 
-  private async syncUser(supabaseUser: any) {
-    const db = this.databaseService.getDb();
-    
-    // Check if user exists in our database
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.supabaseId, supabaseUser.id))
-      .limit(1);
-
-    if (existingUser.length === 0) {
-      // Create user in our database
-      await db.insert(users).values({
-        supabaseId: supabaseUser.id,
-        email: supabaseUser.email,
-        fullName: supabaseUser.user_metadata?.full_name || null,
-        avatarUrl: supabaseUser.user_metadata?.avatar_url || null,
-        role: supabaseUser.user_metadata?.role || 'user',
-        metadata: supabaseUser.user_metadata || {},
-        lastLoginAt: new Date(),
-      });
-    } else {
-      // Update last login
-      await db
-        .update(users)
-        .set({
-          lastLoginAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(users.supabaseId, supabaseUser.id));
-    }
-  }
 }

@@ -1,14 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { users } from '../database/schema';
+import { users, User } from '../database/schema';
 import { eq } from 'drizzle-orm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private databaseService: DatabaseService) {}
 
-  async findBySupabaseId(supabaseId: string) {
+  private transformToDto(user: User): UserResponseDto {
+    return {
+      id: user.id,
+      supabaseId: user.supabaseId,
+      email: user.email,
+      fullName: user.fullName,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+      permissions: Array.isArray(user.permissions) ? user.permissions as string[] : undefined,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      lastLoginAt: user.lastLoginAt,
+      metadata: user.metadata as Record<string, unknown>,
+    };
+  }
+
+  async findBySupabaseId(supabaseId: string): Promise<UserResponseDto> {
     const db = this.databaseService.getDb();
     const user = await db
       .select()
@@ -20,10 +37,10 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return user[0];
+    return this.transformToDto(user[0]);
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<UserResponseDto> {
     const db = this.databaseService.getDb();
     const user = await db
       .select()
@@ -35,10 +52,10 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return user[0];
+    return this.transformToDto(user[0]);
   }
 
-  async updateUser(supabaseId: string, updateUserDto: UpdateUserDto) {
+  async updateUser(supabaseId: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     const db = this.databaseService.getDb();
     
     const updatedUsers = await db
@@ -54,26 +71,35 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return updatedUsers[0];
+    return this.transformToDto(updatedUsers[0]);
   }
 
-  async getAllUsers() {
+  async getAllUsers(): Promise<UserResponseDto[]> {
     const db = this.databaseService.getDb();
-    return await db.select().from(users);
+    const userList = await db.select().from(users);
+    return userList.map(user => this.transformToDto(user));
   }
 
-  async findOrCreateUser(supabaseUser: any) {
+  async findOrCreateUser(supabaseUser: {
+    id: string;
+    email: string;
+    user_metadata?: {
+      full_name?: string;
+      avatar_url?: string;
+      role?: string;
+    };
+  }): Promise<UserResponseDto> {
     const db = this.databaseService.getDb();
     
     // Try to find existing user by supabaseId
-    let user = await db
+    const user = await db
       .select()
       .from(users)
       .where(eq(users.supabaseId, supabaseUser.id))
       .limit(1);
 
     if (user.length) {
-      return user[0];
+      return this.transformToDto(user[0]);
     }
 
     // If user doesn't exist, create them
@@ -89,6 +115,6 @@ export class UsersService {
       })
       .returning();
 
-    return newUser[0];
+    return this.transformToDto(newUser[0]);
   }
 }

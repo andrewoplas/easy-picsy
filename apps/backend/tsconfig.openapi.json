@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",                      // ✅ required for NestJS compatibility
+      "target": "es2020",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "types": ["node"]
+    }
+  }

@@ -9,9 +9,6 @@ import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import {
   Home,
   Calendar,
-  CreditCard,
-  Monitor,
-  Users,
   Settings,
   LogOut,
   Menu,
@@ -22,8 +19,6 @@ import LogoSvg from '../../../assets/logo.svg';
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
   { name: 'Events', href: '/admin/dashboard/events', icon: Calendar },
-  { name: 'Payments', href: '/admin/dashboard/payments', icon: Monitor },
-  { name: 'Sessions', href: '/admin/dashboard/sessions', icon: Users },
   { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];
 
@@ -156,7 +151,7 @@ export default function DashboardLayout({
       <div className="lg:pl-64">
         {/* Top Header Bar */}
         <div className="sticky top-0 z-10 bg-dash-white">
-          <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center px-6 py-4">
             {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(true)}
@@ -165,36 +160,26 @@ export default function DashboardLayout({
               <Menu className="h-6 w-6" />
             </button>
 
-            {/* Right side - User Profile */}
-            <div className="flex items-center space-x-4">
-              {/* Notification & Mail Icons */}
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2v10a2 2 0 002 2z" />
-                </svg>
-              </button>
-              
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
-                </svg>
-              </button>
+            {/* Spacer to push user profile to the right */}
+            <div className="flex-1"></div>
 
-              {/* User Profile */}
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-dash-orange to-easy-yellow rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="hidden md:block">
-                  <p className="font-medium text-dash-navy text-sm">
-                    {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-                  </p>
-                  <p className="text-xs text-dash-navy/60">{user?.email}</p>
-                </div>
+            {/* User Profile - Rightmost */}
+            <Link 
+              href="/admin/dashboard/settings"
+              className="flex items-center space-x-3 ml-auto hover:bg-gray-50 rounded-lg p-2 transition-colors cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-dash-orange to-easy-yellow rounded-full flex items-center justify-center">
+                <span className="text-white font-medium text-sm">
+                  {user?.email?.charAt(0).toUpperCase()}
+                </span>
               </div>
-            </div>
+              <div className="hidden md:block">
+                <p className="font-medium text-dash-navy text-sm">
+                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                </p>
+                <p className="text-xs text-dash-navy/60">{user?.email}</p>
+              </div>
+            </Link>
           </div>
         </div>
 

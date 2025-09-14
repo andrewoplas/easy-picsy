@@ -8,28 +8,30 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ConfigService } from './config/config.service';
+import fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   const configService = app.get(ConfigService);
   const port = configService.port;
-  
+
   // Enable CORS
   app.enableCors({
     origin: configService.corsOrigin,
     credentials: true,
   });
-  
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-    })
+    }),
   );
-  
+
   // Set global API prefix
   const globalPrefix = configService.apiPrefix;
   app.setGlobalPrefix(globalPrefix);
@@ -37,7 +39,8 @@ async function bootstrap() {
   // Setup Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Easy Picsy - Photobooth Payment API')
-    .setDescription(`
+    .setDescription(
+      `
       A comprehensive API for managing photobooth events, QR code payments, and real-time communication.
       
       ## Features
@@ -81,7 +84,8 @@ async function bootstrap() {
       - \`connectionStatus\` - Connection status updates
       
       **Room-based Broadcasting:** Events are sent only to clients in specific event rooms.
-    `)
+    `,
+    )
     .setVersion('1.0')
     .setContact('Easy Picsy', 'https://github.com/your-org/easy-picsy', 'support@easypicsy.com')
     .setLicense('MIT', 'https://opensource.org/licenses/MIT')
@@ -94,7 +98,7 @@ async function bootstrap() {
         description: 'Enter your Supabase JWT token',
         in: 'header',
       },
-      'JWT-auth'
+      'JWT-auth',
     )
     .addTag('Authentication', 'User authentication and authorization')
     .addTag('Events', 'Event management operations')
@@ -122,16 +126,22 @@ async function bootstrap() {
       tryItOutEnabled: true,
     },
   });
+
+  // Create shared directory one level up from workspace root
+  const sharedDir = path.join(process.cwd(), '../shared');
+  if (!fs.existsSync(sharedDir)) {
+    fs.mkdirSync(sharedDir, { recursive: true });
+  }
   
+  const outputPath = path.join(process.cwd(), '../shared/api-spec.json');
+  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+
   await app.listen(port);
   
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  );
-  Logger.log(
-    `📚 API Documentation: http://localhost:${port}/${globalPrefix}/docs`
-  );
+  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(`📚 API Documentation: http://localhost:${port}/${globalPrefix}/docs`);
   Logger.log(`📝 Environment: ${configService.nodeEnv}`);
+  Logger.log(`📄 API Spec saved to: ${outputPath}`);
 }
 
 bootstrap();

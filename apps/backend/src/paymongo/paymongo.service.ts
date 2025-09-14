@@ -296,7 +296,7 @@ export class PaymongoService {
   /**
    * Create expiry time for QR codes (30 minutes from now by default)
    */
-  generateExpiryTime(minutes: number = 30): Date {
+  generateExpiryTime(minutes = 30): Date {
     const expiryTime = new Date();
     expiryTime.setMinutes(expiryTime.getMinutes() + minutes);
     return expiryTime;

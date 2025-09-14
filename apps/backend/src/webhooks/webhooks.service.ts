@@ -163,7 +163,7 @@ export class WebhooksService {
       }
 
       // Verify timestamp to prevent replay attacks (optional but recommended)
-      const webhookTimestamp = parseInt(timestamp, 10);
+      const webhookTimestamp = parseInt(timestamp || '0', 10);
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const timeDifference = currentTimestamp - webhookTimestamp;
 
@@ -269,8 +269,8 @@ export class WebhooksService {
       await this.loggingService.updateWebhookLog(
         webhookLogId,
         'failed',
-        error.message,
-        error.stack
+        (error as Error).message,
+        (error as Error).stack
       );
       throw error;
     }
@@ -334,7 +334,7 @@ export class WebhooksService {
           eventId: qrCode.eventId,
           updatedAt: new Date(),
         })
-        .where(webhookLogs.id.eq(webhookLogId));
+        .where(eq(webhookLogs.id, webhookLogId));
 
       // Mark QR code as paid
       await this.qrCodesService.markQRCodePaid(qrCode.id, qrCode.eventId);
@@ -369,7 +369,7 @@ export class WebhooksService {
       });
 
     } catch (error) {
-      this.logger.error(`Failed to handle payment success for ${paymentIntentId}:`, error);
+      this.logger.error(`Failed to handle payment success for ${paymentData.attributes.payment_intent_id}:`, error);
     }
   }
 

@@ -1,16 +1,15 @@
+import { Logger } from '@nestjs/common';
 import {
-  WebSocketGateway,
-  SubscribeMessage,
-  MessageBody,
-  WebSocketServer,
   ConnectedSocket,
-  OnGatewayInit,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger, UseGuards } from '@nestjs/common';
-import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
 
 export interface QRCodeStatusUpdate {
   qrCodeId: string;
@@ -18,6 +17,7 @@ export interface QRCodeStatusUpdate {
   status: 'active' | 'expired' | 'used' | 'invalidated';
   expiresAt?: string;
   timeUntilExpiry?: number;
+  failureReason?: string;
 }
 
 export interface PaymentNotification {
@@ -33,6 +33,7 @@ export interface QRCodeGenerated {
   qrCodeId: string;
   eventId: string;
   checkoutUrl: string;
+  qrCodeImage: string;
   expiresAt: string;
   amount: number;
   currency: string;
@@ -60,8 +61,8 @@ export class EventsGateway
   async handleConnection(client: Socket) {
     try {
       // Extract token from auth header or query
-      const token = 
-        client.handshake.auth?.token || 
+      const token =
+        client.handshake.auth?.token ||
         client.handshake.headers?.authorization?.replace('Bearer ', '') ||
         client.handshake.query?.token;
 
@@ -92,7 +93,7 @@ export class EventsGateway
   @SubscribeMessage('joinEvent')
   async joinEventRoom(
     @MessageBody() data: { eventId: string },
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     if (!client.data.authenticated) {
       client.emit('error', { message: 'Unauthorized' });
@@ -110,7 +111,7 @@ export class EventsGateway
   @SubscribeMessage('leaveEvent')
   async leaveEventRoom(
     @MessageBody() data: { eventId: string },
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     await client.leave(`event_${data.eventId}`);
     this.logger.log(`Client ${client.id} left event room: ${data.eventId}`);
@@ -122,7 +123,9 @@ export class EventsGateway
    */
   broadcastQRStatusUpdate(eventId: string, update: QRCodeStatusUpdate) {
     this.server.to(`event_${eventId}`).emit('qrStatusUpdate', update);
-    this.logger.log(`Broadcasted QR status update for event ${eventId}: ${update.status}`);
+    this.logger.log(
+      `Broadcasted QR status update for event ${eventId}: ${update.status}`
+    );
   }
 
   /**
@@ -130,7 +133,9 @@ export class EventsGateway
    */
   broadcastPaymentNotification(eventId: string, payment: PaymentNotification) {
     this.server.to(`event_${eventId}`).emit('paymentReceived', payment);
-    this.logger.log(`Broadcasted payment notification for event ${eventId}: ${payment.status}`);
+    this.logger.log(
+      `Broadcasted payment notification for event ${eventId}: ${payment.status}`
+    );
   }
 
   /**
@@ -144,14 +149,20 @@ export class EventsGateway
   /**
    * Broadcast QR code expiry warning (5 minutes before expiry)
    */
-  broadcastQRExpiryWarning(eventId: string, qrCodeId: string, minutesRemaining: number) {
+  broadcastQRExpiryWarning(
+    eventId: string,
+    qrCodeId: string,
+    minutesRemaining: number
+  ) {
     this.server.to(`event_${eventId}`).emit('qrExpiryWarning', {
       qrCodeId,
       eventId,
       minutesRemaining,
       message: `QR code expires in ${minutesRemaining} minutes`,
     });
-    this.logger.log(`Broadcasted QR expiry warning for event ${eventId}: ${minutesRemaining}min remaining`);
+    this.logger.log(
+      `Broadcasted QR expiry warning for event ${eventId}: ${minutesRemaining}min remaining`
+    );
   }
 
   /**
@@ -167,27 +178,37 @@ export class EventsGateway
   /**
    * Broadcast payment success to event room
    */
-  broadcastPaymentSuccess(eventId: string, payment: {
-    qrCodeId: string;
-    eventId: string;
-    paymentId: string;
-    amount: number;
-    currency: string;
-  }) {
+  broadcastPaymentSuccess(
+    eventId: string,
+    payment: {
+      qrCodeId: string;
+      eventId: string;
+      paymentId: string;
+      amount: number;
+      currency: string;
+    }
+  ) {
     this.server.to(`event_${eventId}`).emit('paymentSuccess', payment);
-    this.logger.log(`Broadcasted payment success for event ${eventId}: ${payment.paymentId}`);
+    this.logger.log(
+      `Broadcasted payment success for event ${eventId}: ${payment.paymentId}`
+    );
   }
 
   /**
    * Broadcast payment failure to event room
    */
-  broadcastPaymentFailed(eventId: string, payment: {
-    qrCodeId: string;
-    eventId: string;
-    paymentId: string;
-    failureReason: string;
-  }) {
+  broadcastPaymentFailed(
+    eventId: string,
+    payment: {
+      qrCodeId: string;
+      eventId: string;
+      paymentId: string;
+      failureReason: string;
+    }
+  ) {
     this.server.to(`event_${eventId}`).emit('paymentFailed', payment);
-    this.logger.log(`Broadcasted payment failure for event ${eventId}: ${payment.failureReason}`);
+    this.logger.log(
+      `Broadcasted payment failure for event ${eventId}: ${payment.failureReason}`
+    );
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { and, count, desc, eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
-import { webhookLogs, eventLogs, NewWebhookLog, NewEventLog } from '../database/schema';
-import { eq, and, lt } from 'drizzle-orm';
+import { eventLogs, NewEventLog, NewWebhookLog, webhookLogs } from '../database/schema';
 
 export interface LogWebhookOptions {
   eventType: string;
@@ -136,24 +136,24 @@ export class LoggingService {
   }) {
     const db = this.databaseService.getDb();
     
-    let query = db.select().from(webhookLogs);
+    const query = db.select().from(webhookLogs);
     
     // Add filters if provided
     const conditions = [];
-    if (options?.eventType) conditions.push(webhookLogs.eventType.eq(options.eventType));
-    if (options?.status) conditions.push(webhookLogs.status.eq(options.status));
-    if (options?.qrCodeId) conditions.push(webhookLogs.qrCodeId.eq(options.qrCodeId));
-    if (options?.eventId) conditions.push(webhookLogs.eventId.eq(options.eventId));
+    if (options?.eventType) conditions.push(eq(webhookLogs.eventType, options.eventType));
+    if (options?.status) conditions.push(eq(webhookLogs.status, options.status));
+    if (options?.qrCodeId) conditions.push(eq(webhookLogs.qrCodeId, options.qrCodeId));
+    if (options?.eventId) conditions.push(eq(webhookLogs.eventId, options.eventId));
     
     if (conditions.length > 0) {
       // Apply AND conditions
-      query = query.where(conditions.reduce((acc, condition) => acc.and(condition)));
+       query.where(and(...conditions));
     }
     
-    query = query.orderBy(webhookLogs.createdAt.desc());
+     query.orderBy(desc(webhookLogs.createdAt));
     
-    if (options?.limit) query = query.limit(options.limit);
-    if (options?.offset) query = query.offset(options.offset);
+    if (options?.limit)  query.limit(options.limit);
+    if (options?.offset)  query.offset(options.offset);
     
     return await query;
   }
@@ -173,26 +173,26 @@ export class LoggingService {
   }) {
     const db = this.databaseService.getDb();
     
-    let query = db.select().from(eventLogs);
+    const query = db.select().from(eventLogs);
     
     // Add filters if provided
     const conditions = [];
-    if (options?.eventType) conditions.push(eventLogs.eventType.eq(options.eventType));
-    if (options?.source) conditions.push(eventLogs.source.eq(options.source));
-    if (options?.status) conditions.push(eventLogs.status.eq(options.status));
-    if (options?.qrCodeId) conditions.push(eventLogs.qrCodeId.eq(options.qrCodeId));
-    if (options?.eventId) conditions.push(eventLogs.eventId.eq(options.eventId));
-    if (options?.userId) conditions.push(eventLogs.userId.eq(options.userId));
+    if (options?.eventType) conditions.push(eq(eventLogs.eventType, options.eventType));
+    if (options?.source) conditions.push(eq(eventLogs.source, options.source));
+    if (options?.status) conditions.push(eq(eventLogs.status, options.status));
+    if (options?.qrCodeId) conditions.push(eq(eventLogs.qrCodeId, options.qrCodeId));
+    if (options?.eventId) conditions.push(eq(eventLogs.eventId, options.eventId));
+    if (options?.userId) conditions.push(eq(eventLogs.userId, options.userId));
     
     if (conditions.length > 0) {
       // Apply AND conditions
-      query = query.where(conditions.reduce((acc, condition) => acc.and(condition)));
+       query.where(and(...conditions));
     }
     
-    query = query.orderBy(eventLogs.createdAt.desc());
+     query.orderBy(desc(eventLogs.createdAt));
     
-    if (options?.limit) query = query.limit(options.limit);
-    if (options?.offset) query = query.offset(options.offset);
+    if (options?.limit)  query.limit(options.limit);
+    if (options?.offset)  query.offset(options.offset);
     
     return await query;
   }
@@ -208,7 +208,7 @@ export class LoggingService {
       const webhookStats = await db
         .select({
           status: webhookLogs.status,
-          count: db.count(),
+          count: count(),
         })
         .from(webhookLogs)
         .groupBy(webhookLogs.status);
@@ -218,7 +218,7 @@ export class LoggingService {
         .select({
           eventType: eventLogs.eventType,
           status: eventLogs.status,
-          count: db.count(),
+          count: count(),
         })
         .from(eventLogs)
         .groupBy(eventLogs.eventType, eventLogs.status);

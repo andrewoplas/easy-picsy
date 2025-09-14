@@ -138,6 +138,18 @@ h6 {
   font-family: var(--font-passion-one), cursive;
 }
 
+.admin-interface h1,
+.admin-interface h2,
+.admin-interface h3,
+.admin-interface h4,
+.admin-interface h5,
+.admin-interface h6 {
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
 .fillout-embed-popup-main {
   width: 80vw !important;
   height: 90vh !important;

@@ -8,9 +8,9 @@ export default function DashboardPage() {
       {/* Dashboard Title Section */}
       <div className="mb-8">
         <div>
-          <h1 className="text-4xl font-normal text-dash-navy mb-2 tracking-wide">Dashboard</h1>
-          <p className="text-dash-navy/60 text-lg">
-            Monitor your business performance and manage your finances.
+          <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Dashboard</h1>
+          <p className="text-dash-navy/70">
+            Monitor your business performance and manage your finances
           </p>
         </div>
       </div>

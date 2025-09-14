@@ -11,7 +11,7 @@ export const qrCodes = pgTable('qr_codes', {
   paymongoLinkId: text('paymongo_link_id').notNull(), // Paymongo payment intent ID
   paymongoLinkUrl: text('paymongo_link_url').notNull(), // Paymongo payment link URL
   paymongoQrphId: text('paymongo_qrph_id'), // Paymongo QR Ph resource ID (for expiry tracking)
-  status: varchar('status', { length: 20 }).notNull().default('active'), // active, expired, used, invalidated, paid, failed
+  status: varchar('status', { length: 20 }).notNull().default('active').$type<'active' | 'expired' | 'used' | 'invalidated' | 'paid' | 'failed'>(), // active, expired, used, invalidated, paid, failed
   expiresAt: timestamp('expires_at').notNull(),
   usageCount: integer('usage_count').notNull().default(0), // Track how many times QR was scanned
   maxUsage: integer('max_usage').notNull().default(1), // Single use by default
@@ -20,6 +20,8 @@ export const qrCodes = pgTable('qr_codes', {
   usedAt: timestamp('used_at'),
   invalidatedAt: timestamp('invalidated_at'),
 });
+
+export type QrCodeStatus = 'active' | 'expired' | 'used' | 'invalidated' | 'paid' | 'failed';
 
 export type QrCode = typeof qrCodes.$inferSelect;
 export type NewQrCode = typeof qrCodes.$inferInsert;

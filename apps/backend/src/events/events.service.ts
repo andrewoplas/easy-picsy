@@ -66,14 +66,12 @@ export class EventsService {
   async update(id: string, updateEventDto: UpdateEventDto, userId: string): Promise<Event> {
     const existingEvent = await this.findOne(id, userId);
 
+    const { price, ...rest } = updateEventDto;
     const updateData: Partial<NewEvent> = {
-      ...updateEventDto,
-      updatedAt: new Date(),
+      ...rest,
+      ...(price !== undefined && { price: price.toString() }),
+      updatedAt: new Date()
     };
-
-    if (updateEventDto.price !== undefined) {
-      updateData.price = updateEventDto.price.toString();
-    }
 
     const [updatedEvent] = await this.databaseService.db
       .update(events)

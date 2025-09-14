@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PaymongoService } from '../paymongo/paymongo.service';
+import { and, eq, lt } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
-import { QrCodesService } from '../qr-codes/qr-codes.service';
-import { LoggingService } from '../logging/logging.service';
 import { qrCodes } from '../database/schema';
-import { eq, and, inArray, lt } from 'drizzle-orm';
+import { LoggingService } from '../logging/logging.service';
+import { PaymongoService } from '../paymongo/paymongo.service';
+import { QrCodesService } from '../qr-codes/qr-codes.service';
 
 /**
  * Service to reconcile missed webhook events
@@ -88,8 +88,7 @@ export class WebhookReconciliationService {
               .update(qrCodes)
               .set({ 
                 status: 'expired',
-                isActive: false,
-                updatedAt: new Date()
+                isActive: false
               })
               .where(eq(qrCodes.id, qrCode.id));
               

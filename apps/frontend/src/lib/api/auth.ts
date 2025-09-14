@@ -1,28 +1,30 @@
-import apiClient from './client';
+import {
+  Configuration,
+  UpdateUserDto,
+  UserResponseDto,
+  UsersApi,
+  AuthenticationApi,
+  VerifyTokenResponseDto,
+} from '@org/api-lib';
+import axiosInstance from './client2';
 
-export interface UserProfile {
-  id: string;
-  email: string;
-  fullName?: string;
-  avatarUrl?: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
+const usersApi = new UsersApi(new Configuration(), undefined, axiosInstance);
+const authenticationApi = new AuthenticationApi(new Configuration(), undefined, axiosInstance);
 
 export const authApi = {
-  async getProfile(): Promise<UserProfile> {
-    const response = await apiClient.get('/users/profile');
+  async getProfile(): Promise<UserResponseDto> {
+    const response = await usersApi.usersControllerGetProfile();
     return response.data;
   },
 
-  async updateProfile(data: { fullName?: string; avatarUrl?: string }): Promise<UserProfile> {
-    const response = await apiClient.put('/users/profile', data);
+  async updateProfile(data: UpdateUserDto): Promise<UserResponseDto> {
+    const response = await usersApi.usersControllerUpdateProfile(data);
+
     return response.data;
   },
 
-  async verifyToken(): Promise<{ valid: boolean; user: any }> {
-    const response = await apiClient.get('/auth/verify');
+  async verifyToken(): Promise<VerifyTokenResponseDto> {
+    const response = await authenticationApi.authControllerVerifyToken();
     return response.data;
   },
 };
