@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { QrCodeStatus } from '@org/api-lib/types';
+import { QrCodeStatus } from '@org/commons';
 
-export class QrCodeResponseDto {
+export class CurrentQrCodeResponseDto {
   @ApiProperty({ 
     description: 'QR code unique identifier',
     example: '123e4567-e89b-12d3-a456-426614174000',

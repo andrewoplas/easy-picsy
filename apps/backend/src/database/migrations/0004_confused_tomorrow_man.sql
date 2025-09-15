@@ -1,0 +1,1 @@
+ALTER TABLE "booth_logs" ALTER COLUMN "session_id" SET DATA TYPE text;

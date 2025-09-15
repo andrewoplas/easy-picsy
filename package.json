@@ -94,6 +94,7 @@
     "jest": "^30.0.2",
     "jest-environment-jsdom": "^30.0.2",
     "jest-util": "^30.0.2",
+    "jsonc-eslint-parser": "^2.1.0",
     "nx": "21.4.1",
     "postcss": "8.4.38",
     "prettier": "^2.6.2",
@@ -112,6 +113,7 @@
   "workspaces": [
     "apps/*",
     "apps/frontend/*",
-    "libs/*"
+    "libs/*",
+    "libs/api-lib"
   ]
 }

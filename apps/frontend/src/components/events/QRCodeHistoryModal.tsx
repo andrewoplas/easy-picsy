@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { QrCodeStatus } from '@org/api-lib/types';
+import { QrCodeStatus } from '@org/commons';
 
 interface QrCodeStatusBadgeProps {
   status: `${QrCodeStatus}`;

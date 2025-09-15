@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { QrCodeStatus } from '@org/api-lib/types';
+import { QrCodeStatus } from '@org/commons';
 
 export class QrCodeResponseDto {
   @ApiProperty({ 

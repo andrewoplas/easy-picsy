@@ -10,7 +10,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { QrCodeRealtimeStatus } from '@org/api-lib/types';
+import { QrCodeRealtimeStatus } from '@org/commons';
 
 export interface QRCodeStatusUpdate {
   qrCodeId: string;

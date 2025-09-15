@@ -1,0 +1,27 @@
+{
+  "name": "@org/api-lib",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "development": "./index.ts",
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./api": "./api.ts",
+    "./base": "./base.ts",
+    "./common": "./common.ts",
+    "./configuration": "./configuration.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

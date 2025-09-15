@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, timestamp, varchar, boolean, integer } from 'drizzle-orm/pg-core';
 import { events } from './events.schema';
 import { payments } from './payments.schema';
-import { QrCodeStatus } from '@org/api-lib/types';
+import { QrCodeStatus } from '@org/commons';
 
 export const qrCodes = pgTable('qr_codes', {
   id: uuid('id').primaryKey().defaultRandom(),

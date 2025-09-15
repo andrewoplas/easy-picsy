@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -132,11 +132,54 @@ const mockAnalytics = {
   totalReprints: 23,
 };
 
+// Custom hook for odometer animation
+const useOdometer = (targetValue: number, duration = 2000) => {
+  const [currentValue, setCurrentValue] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    setIsAnimating(true);
+    const startTime = Date.now();
+    const startValue = 0;
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(startValue + (targetValue - startValue) * easeOutCubic);
+      
+      setCurrentValue(value);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setIsAnimating(false);
+      }
+    };
+    
+    // Start animation after a brief delay for better visual effect
+    const timer = setTimeout(() => {
+      requestAnimationFrame(animate);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [targetValue, duration]);
+
+  return { currentValue, isAnimating };
+};
+
 export default function EventAnalyticsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [boothLocked, setBoothLocked] = useState(false);
   const [expandedSessions, setExpandedSessions] = useState<Record<string, boolean>>({});
+
+  // Odometer animations for analytics
+  const earnings = useOdometer(mockAnalytics.runningEarnings, 2500);
+  const prints = useOdometer(mockAnalytics.totalPrints, 2000);
+  const reprints = useOdometer(mockAnalytics.totalReprints, 1500);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-PH', {
@@ -290,13 +333,13 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-emerald-500 rounded-lg">
+                    <div className={`p-2 bg-emerald-500 rounded-lg transition-all duration-300 ${earnings.isAnimating ? 'animate-pulse scale-110' : ''}`}>
                       <DollarSign className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-emerald-700">Running Earnings</h3>
                   </div>
-                  <p className="text-3xl font-bold text-emerald-900">
-                    {formatCurrency(mockAnalytics.runningEarnings)}
+                  <p className={`text-3xl font-bold text-emerald-900 transition-all duration-300 ${earnings.isAnimating ? 'text-emerald-600' : ''}`}>
+                    {formatCurrency(earnings.currentValue)}
                   </p>
                   <p className="text-xs text-emerald-600">Total revenue today</p>
                 </div>
@@ -330,13 +373,13 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-purple-500 rounded-lg">
+                    <div className={`p-2 bg-purple-500 rounded-lg transition-all duration-300 ${prints.isAnimating ? 'animate-pulse scale-110' : ''}`}>
                       <Printer className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-purple-700">Total Prints</h3>
                   </div>
-                  <p className="text-3xl font-bold text-purple-900">
-                    {mockAnalytics.totalPrints}
+                  <p className={`text-3xl font-bold text-purple-900 transition-all duration-300 ${prints.isAnimating ? 'text-purple-600' : ''}`}>
+                    {prints.currentValue.toLocaleString()}
                   </p>
                   <p className="text-xs text-purple-600">Photos printed today</p>
                 </div>
@@ -350,13 +393,13 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-orange-500 rounded-lg">
+                    <div className={`p-2 bg-orange-500 rounded-lg transition-all duration-300 ${reprints.isAnimating ? 'animate-pulse scale-110' : ''}`}>
                       <Copy className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-orange-700">Total Reprints</h3>
                   </div>
-                  <p className="text-3xl font-bold text-orange-900">
-                    {mockAnalytics.totalReprints}
+                  <p className={`text-3xl font-bold text-orange-900 transition-all duration-300 ${reprints.isAnimating ? 'text-orange-600' : ''}`}>
+                    {reprints.currentValue.toLocaleString()}
                   </p>
                   <p className="text-xs text-orange-600">Reprints requested</p>
                 </div>

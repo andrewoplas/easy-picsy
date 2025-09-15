@@ -14,6 +14,12 @@
     },
     {
       "path": "./apps/backend"
+    },
+    {
+      "path": "./libs/commons"
+    },
+    {
+      "path": "./libs/api-lib"
     }
   ]
 }
