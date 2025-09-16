@@ -101,6 +101,215 @@ export interface AuthUserDto {
 /**
  * 
  * @export
+ * @interface BoothEventDataDto
+ */
+export interface BoothEventDataDto {
+    /**
+     * Type of booth event
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'event_type': BoothEventDataDtoEventTypeEnum;
+    /**
+     * First parameter (usage depends on event type)
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'param1'?: string;
+    /**
+     * Second parameter (usage depends on event type)
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'param2'?: string;
+    /**
+     * Third parameter (usage depends on event type)
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'param3'?: string;
+    /**
+     * Fourth parameter (usage depends on event type)
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'param4'?: string;
+    /**
+     * Booth event timestamp in HH:MM:SS.mmm format
+     * @type {string}
+     * @memberof BoothEventDataDto
+     */
+    'timestamp': string;
+}
+
+export const BoothEventDataDtoEventTypeEnum = {
+    SessionStart: 'session_start',
+    CountdownStart: 'countdown_start',
+    Countdown: 'countdown',
+    CaptureStart: 'capture_start',
+    FileDownload: 'file_download',
+    ProcessingStart: 'processing_start',
+    SharingScreen: 'sharing_screen',
+    Printing: 'printing',
+    FileUpload: 'file_upload',
+    SessionEnd: 'session_end'
+} as const;
+
+export type BoothEventDataDtoEventTypeEnum = typeof BoothEventDataDtoEventTypeEnum[keyof typeof BoothEventDataDtoEventTypeEnum];
+
+/**
+ * 
+ * @export
+ * @interface BoothEventStatsDto
+ */
+export interface BoothEventStatsDto {
+    /**
+     * Booth event type
+     * @type {string}
+     * @memberof BoothEventStatsDto
+     */
+    'boothEventType': string;
+    /**
+     * Event status
+     * @type {string}
+     * @memberof BoothEventStatsDto
+     */
+    'status': string;
+    /**
+     * Count of events
+     * @type {number}
+     * @memberof BoothEventStatsDto
+     */
+    'count': number;
+}
+/**
+ * 
+ * @export
+ * @interface BoothLogDto
+ */
+export interface BoothLogDto {
+    /**
+     * Log entry ID
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'id': string;
+    /**
+     * Session ID (client-generated identifier)
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'sessionId': string;
+    /**
+     * Booth event type
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'boothEventType': string;
+    /**
+     * Original booth timestamp
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'timestamp': string;
+    /**
+     * Event parameter 1
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'param1'?: string;
+    /**
+     * Event parameter 2
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'param2'?: string;
+    /**
+     * Event parameter 3
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'param3'?: string;
+    /**
+     * Event parameter 4
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'param4'?: string;
+    /**
+     * Associated event ID
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'eventId'?: string;
+    /**
+     * Associated QR code ID
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'qrCodeId'?: string;
+    /**
+     * Booth identifier
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'boothIdentifier'?: string;
+    /**
+     * Event status
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'status': BoothLogDtoStatusEnum;
+    /**
+     * Human-readable message
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'message'?: string;
+    /**
+     * Error details if applicable
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'errorDetails'?: string;
+    /**
+     * When this log was created
+     * @type {string}
+     * @memberof BoothLogDto
+     */
+    'createdAt': string;
+}
+
+export const BoothLogDtoStatusEnum = {
+    Success: 'success',
+    Error: 'error',
+    Warning: 'warning'
+} as const;
+
+export type BoothLogDtoStatusEnum = typeof BoothLogDtoStatusEnum[keyof typeof BoothLogDtoStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface BoothSessionsResponseDto
+ */
+export interface BoothSessionsResponseDto {
+    /**
+     * Array of booth sessions
+     * @type {Array<GroupedSessionDto>}
+     * @memberof BoothSessionsResponseDto
+     */
+    'sessions': Array<GroupedSessionDto>;
+    /**
+     * Pagination information
+     * @type {PaginationInfoDto}
+     * @memberof BoothSessionsResponseDto
+     */
+    'pagination': PaginationInfoDto;
+}
+/**
+ * 
+ * @export
  * @interface CreateEventDto
  */
 export interface CreateEventDto {
@@ -197,10 +406,168 @@ export interface CreateEventResponseDto {
     'updatedAt': string;
     /**
      * Generated QR code for the event (if successful)
-     * @type {QrCodeResponseDto}
+     * @type {CurrentQrCodeResponseDto}
      * @memberof CreateEventResponseDto
      */
-    'qrCode'?: QrCodeResponseDto;
+    'qrCode'?: CurrentQrCodeResponseDto;
+}
+/**
+ * 
+ * @export
+ * @interface CurrentQrCodeResponseDto
+ */
+export interface CurrentQrCodeResponseDto {
+    /**
+     * QR code unique identifier
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'id': string;
+    /**
+     * Event ID associated with this QR code
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'eventId': string;
+    /**
+     * Session ID (for future use)
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'sessionId'?: object;
+    /**
+     * Payment ID if payment was made
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'paymentId'?: object;
+    /**
+     * QR code data/content (PayMongo checkout URL)
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'qrData': string;
+    /**
+     * PayMongo Payment Intent ID for QR Ph payments
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'paymentIntentId': string;
+    /**
+     * PayMongo payment link URL (deprecated)
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'paymongoLinkUrl'?: object;
+    /**
+     * PayMongo QR Ph resource ID
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'paymongoQrphId'?: object;
+    /**
+     * QR code status
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'status': CurrentQrCodeResponseDtoStatusEnum;
+    /**
+     * QR code expiration timestamp
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'expiresAt': string;
+    /**
+     * Number of times QR code was scanned
+     * @type {number}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'usageCount': number;
+    /**
+     * Maximum allowed usage count
+     * @type {number}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'maxUsage': number;
+    /**
+     * Whether the QR code is active
+     * @type {boolean}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'isActive': boolean;
+    /**
+     * QR code creation timestamp
+     * @type {string}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'createdAt': string;
+    /**
+     * QR code usage timestamp
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'usedAt'?: object;
+    /**
+     * QR code invalidation timestamp
+     * @type {object}
+     * @memberof CurrentQrCodeResponseDto
+     */
+    'invalidatedAt'?: object;
+}
+
+export const CurrentQrCodeResponseDtoStatusEnum = {
+    Active: 'active',
+    Expired: 'expired',
+    Used: 'used',
+    Invalidated: 'invalidated',
+    Paid: 'paid',
+    Failed: 'failed'
+} as const;
+
+export type CurrentQrCodeResponseDtoStatusEnum = typeof CurrentQrCodeResponseDtoStatusEnum[keyof typeof CurrentQrCodeResponseDtoStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface EventAnalyticsDto
+ */
+export interface EventAnalyticsDto {
+    /**
+     * Event ID
+     * @type {string}
+     * @memberof EventAnalyticsDto
+     */
+    'eventId': string;
+    /**
+     * Event name
+     * @type {string}
+     * @memberof EventAnalyticsDto
+     */
+    'eventName': string;
+    /**
+     * Running earnings for this event
+     * @type {number}
+     * @memberof EventAnalyticsDto
+     */
+    'runningEarnings': number;
+    /**
+     * Session average time for this event in seconds
+     * @type {number}
+     * @memberof EventAnalyticsDto
+     */
+    'sessionAverageTime': number;
+    /**
+     * Number of prints for this event
+     * @type {number}
+     * @memberof EventAnalyticsDto
+     */
+    'numberOfPrints': number;
+    /**
+     * Number of reprints for this event
+     * @type {number}
+     * @memberof EventAnalyticsDto
+     */
+    'numberOfReprints': number;
 }
 /**
  * 
@@ -275,6 +642,164 @@ export interface EventResponseDto {
      * @memberof EventResponseDto
      */
     'updatedAt': string;
+}
+/**
+ * 
+ * @export
+ * @interface GroupedSessionDto
+ */
+export interface GroupedSessionDto {
+    /**
+     * Session ID (client-generated identifier)
+     * @type {string}
+     * @memberof GroupedSessionDto
+     */
+    'sessionId': string;
+    /**
+     * Session start time
+     * @type {string}
+     * @memberof GroupedSessionDto
+     */
+    'startTime': string;
+    /**
+     * Session end time (null if incomplete)
+     * @type {object}
+     * @memberof GroupedSessionDto
+     */
+    'endTime'?: object;
+    /**
+     * Booth mode from session_start event
+     * @type {object}
+     * @memberof GroupedSessionDto
+     */
+    'boothMode'?: object;
+    /**
+     * Booth identifier
+     * @type {object}
+     * @memberof GroupedSessionDto
+     */
+    'boothIdentifier'?: object;
+    /**
+     * Session completion status
+     * @type {string}
+     * @memberof GroupedSessionDto
+     */
+    'status': GroupedSessionDtoStatusEnum;
+    /**
+     * Number of events in this session
+     * @type {number}
+     * @memberof GroupedSessionDto
+     */
+    'eventCount': number;
+    /**
+     * Associated QR code ID
+     * @type {object}
+     * @memberof GroupedSessionDto
+     */
+    'qrCodeId'?: object;
+    /**
+     * Associated event ID
+     * @type {object}
+     * @memberof GroupedSessionDto
+     */
+    'eventId'?: object;
+    /**
+     * All events in this session
+     * @type {Array<BoothLogDto>}
+     * @memberof GroupedSessionDto
+     */
+    'events': Array<BoothLogDto>;
+}
+
+export const GroupedSessionDtoStatusEnum = {
+    Complete: 'complete',
+    Incomplete: 'incomplete'
+} as const;
+
+export type GroupedSessionDtoStatusEnum = typeof GroupedSessionDtoStatusEnum[keyof typeof GroupedSessionDtoStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface LogBoothEventDto
+ */
+export interface LogBoothEventDto {
+    /**
+     * Client-generated session identifier (any unique string format)
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'sessionId': string;
+    /**
+     * Booth event data
+     * @type {BoothEventDataDto}
+     * @memberof LogBoothEventDto
+     */
+    'boothEvent': BoothEventDataDto;
+    /**
+     * Event ID (photo booth package/event)
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'eventId'?: string;
+    /**
+     * QR code ID associated with this session
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'qrCodeId'?: string;
+    /**
+     * Physical booth identifier
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'boothIdentifier'?: string;
+    /**
+     * Event status
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'status'?: LogBoothEventDtoStatusEnum;
+    /**
+     * Custom message for this event
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'message'?: string;
+    /**
+     * Error details if status is error
+     * @type {string}
+     * @memberof LogBoothEventDto
+     */
+    'errorDetails'?: string;
+}
+
+export const LogBoothEventDtoStatusEnum = {
+    Success: 'success',
+    Error: 'error',
+    Warning: 'warning'
+} as const;
+
+export type LogBoothEventDtoStatusEnum = typeof LogBoothEventDtoStatusEnum[keyof typeof LogBoothEventDtoStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface LogBoothEventResponseDto
+ */
+export interface LogBoothEventResponseDto {
+    /**
+     * Generated log ID
+     * @type {string}
+     * @memberof LogBoothEventResponseDto
+     */
+    'logId': string;
+    /**
+     * Success message
+     * @type {string}
+     * @memberof LogBoothEventResponseDto
+     */
+    'message': string;
 }
 /**
  * 
@@ -553,6 +1078,49 @@ export interface LogoutResponseDto {
 /**
  * 
  * @export
+ * @interface PaginationInfoDto
+ */
+export interface PaginationInfoDto {
+    /**
+     * Current page number
+     * @type {number}
+     * @memberof PaginationInfoDto
+     */
+    'currentPage': number;
+    /**
+     * Number of items per page
+     * @type {number}
+     * @memberof PaginationInfoDto
+     */
+    'pageSize': number;
+    /**
+     * Total number of sessions
+     * @type {number}
+     * @memberof PaginationInfoDto
+     */
+    'totalSessions': number;
+    /**
+     * Total number of pages
+     * @type {number}
+     * @memberof PaginationInfoDto
+     */
+    'totalPages': number;
+    /**
+     * Whether there is a next page
+     * @type {boolean}
+     * @memberof PaginationInfoDto
+     */
+    'hasNext': boolean;
+    /**
+     * Whether there is a previous page
+     * @type {boolean}
+     * @memberof PaginationInfoDto
+     */
+    'hasPrevious': boolean;
+}
+/**
+ * 
+ * @export
  * @interface PublicEventResponseDto
  */
 export interface PublicEventResponseDto {
@@ -793,6 +1361,68 @@ export interface RegisterDto {
 /**
  * 
  * @export
+ * @interface TotalAnalyticsDto
+ */
+export interface TotalAnalyticsDto {
+    /**
+     * Total net revenue from all completed payments
+     * @type {number}
+     * @memberof TotalAnalyticsDto
+     */
+    'totalNetRevenue': number;
+    /**
+     * Total withdrawable/cashout-able revenue
+     * @type {number}
+     * @memberof TotalAnalyticsDto
+     */
+    'totalWithdrawableRevenue': number;
+    /**
+     * Average session time in seconds
+     * @type {number}
+     * @memberof TotalAnalyticsDto
+     */
+    'averageSessionTime': number;
+    /**
+     * Print statistics breakdown
+     * @type {TotalPrintAnalyticsDto}
+     * @memberof TotalAnalyticsDto
+     */
+    'totalPrints': TotalPrintAnalyticsDto;
+}
+/**
+ * 
+ * @export
+ * @interface TotalPrintAnalyticsDto
+ */
+export interface TotalPrintAnalyticsDto {
+    /**
+     * Total prints from single sessions (not reprints)
+     * @type {number}
+     * @memberof TotalPrintAnalyticsDto
+     */
+    'singleSession': number;
+    /**
+     * Total reprints across all sessions
+     * @type {number}
+     * @memberof TotalPrintAnalyticsDto
+     */
+    'reprints': number;
+    /**
+     * Average prints per event
+     * @type {number}
+     * @memberof TotalPrintAnalyticsDto
+     */
+    'averagePerEvent': number;
+    /**
+     * Average reprints per event
+     * @type {number}
+     * @memberof TotalPrintAnalyticsDto
+     */
+    'averageReprintsPerEvent': number;
+}
+/**
+ * 
+ * @export
  * @interface UpdateEventDto
  */
 export interface UpdateEventDto {
@@ -946,6 +1576,209 @@ export interface VerifyTokenResponseDto {
      */
     'user': AuthUserDto;
 }
+
+/**
+ * AnalyticsApi - axios parameter creator
+ * @export
+ */
+export const AnalyticsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Get analytics data for each event including earnings, session times, and print counts
+         * @summary Get per-event analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetEventAnalytics: async (startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/analytics/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate;
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * @summary Get total analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetTotalAnalytics: async (startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/analytics/total`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate;
+            }
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AnalyticsApi - functional programming interface
+ * @export
+ */
+export const AnalyticsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AnalyticsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Get analytics data for each event including earnings, session times, and print counts
+         * @summary Get per-event analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventAnalyticsDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetEventAnalytics(startDate, endDate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetEventAnalytics']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * @summary Get total analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TotalAnalyticsDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetTotalAnalytics(startDate, endDate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetTotalAnalytics']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AnalyticsApi - factory interface
+ * @export
+ */
+export const AnalyticsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AnalyticsApiFp(configuration)
+    return {
+        /**
+         * Get analytics data for each event including earnings, session times, and print counts
+         * @summary Get per-event analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventAnalyticsDto>> {
+            return localVarFp.analyticsControllerGetEventAnalytics(startDate, endDate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * @summary Get total analytics
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<TotalAnalyticsDto> {
+            return localVarFp.analyticsControllerGetTotalAnalytics(startDate, endDate, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AnalyticsApi - object-oriented interface
+ * @export
+ * @class AnalyticsApi
+ * @extends {BaseAPI}
+ */
+export class AnalyticsApi extends BaseAPI {
+    /**
+     * Get analytics data for each event including earnings, session times, and print counts
+     * @summary Get per-event analytics
+     * @param {string} [startDate] Start date for analytics range (ISO string)
+     * @param {string} [endDate] End date for analytics range (ISO string)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnalyticsApi
+     */
+    public analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetEventAnalytics(startDate, endDate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get aggregated analytics across all events including revenue, session times, and print statistics
+     * @summary Get total analytics
+     * @param {string} [startDate] Start date for analytics range (ISO string)
+     * @param {string} [endDate] End date for analytics range (ISO string)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnalyticsApi
+     */
+    public analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetTotalAnalytics(startDate, endDate, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
 
 /**
  * AppApi - axios parameter creator
@@ -1495,6 +2328,507 @@ export class AuthenticationApi extends BaseAPI {
 
 
 /**
+ * BoothLogsApi - axios parameter creator
+ * @export
+ */
+export const BoothLogsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Retrieve booth event logs with optional filtering. Admin access required.
+         * @summary Get booth event logs
+         * @param {string} [boothEventType] Filter by booth event type
+         * @param {string} [sessionId] Filter by session ID
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [qrCodeId] Filter by QR code ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {string} [status] Filter by status
+         * @param {number} [limit] Limit results (default: 50)
+         * @param {number} [offset] Offset for pagination
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothEvents: async (boothEventType?: string, sessionId?: string, eventId?: string, qrCodeId?: string, boothIdentifier?: string, status?: string, limit?: number, offset?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/logs/booth/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (boothEventType !== undefined) {
+                localVarQueryParameter['boothEventType'] = boothEventType;
+            }
+
+            if (sessionId !== undefined) {
+                localVarQueryParameter['sessionId'] = sessionId;
+            }
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
+
+            if (qrCodeId !== undefined) {
+                localVarQueryParameter['qrCodeId'] = qrCodeId;
+            }
+
+            if (boothIdentifier !== undefined) {
+                localVarQueryParameter['boothIdentifier'] = boothIdentifier;
+            }
+
+            if (status !== undefined) {
+                localVarQueryParameter['status'] = status;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve booth sessions with pagination. Admin access required.
+         * @summary Get paginated booth sessions
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {number} [page] Page number (default: 1)
+         * @param {number} [pageSize] Items per page (default: 10)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothSessions: async (eventId?: string, boothIdentifier?: string, page?: number, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/logs/booth/sessions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
+
+            if (boothIdentifier !== undefined) {
+                localVarQueryParameter['boothIdentifier'] = boothIdentifier;
+            }
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['pageSize'] = pageSize;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get statistical overview of booth events. Admin access required.
+         * @summary Get booth event statistics
+         * @param {string} [eventId] Filter stats by event ID
+         * @param {string} [boothIdentifier] Filter stats by booth identifier
+         * @param {string} [sessionId] Filter stats by session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothStats: async (eventId?: string, boothIdentifier?: string, sessionId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/logs/booth/stats`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
+
+            if (boothIdentifier !== undefined) {
+                localVarQueryParameter['boothIdentifier'] = boothIdentifier;
+            }
+
+            if (sessionId !== undefined) {
+                localVarQueryParameter['sessionId'] = sessionId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Retrieve all booth events for a specific session in chronological order. Admin access required.
+         * @summary Get all events for a specific session
+         * @param {string} sessionId Session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetSessionEvents: async (sessionId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'sessionId' is not null or undefined
+            assertParamExists('boothLoggingControllerGetSessionEvents', 'sessionId', sessionId)
+            const localVarPath = `/api/logs/booth/session/{sessionId}/events`
+                .replace(`{${"sessionId"}}`, encodeURIComponent(String(sessionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Log a single DSLR booth event with structured data. Public endpoint for booth integration.
+         * @summary Log DSLR booth event
+         * @param {LogBoothEventDto} logBoothEventDto Booth event data to log
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerLogBoothEvent: async (logBoothEventDto: LogBoothEventDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'logBoothEventDto' is not null or undefined
+            assertParamExists('boothLoggingControllerLogBoothEvent', 'logBoothEventDto', logBoothEventDto)
+            const localVarPath = `/api/logs/booth/event`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(logBoothEventDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * BoothLogsApi - functional programming interface
+ * @export
+ */
+export const BoothLogsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BoothLogsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Retrieve booth event logs with optional filtering. Admin access required.
+         * @summary Get booth event logs
+         * @param {string} [boothEventType] Filter by booth event type
+         * @param {string} [sessionId] Filter by session ID
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [qrCodeId] Filter by QR code ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {string} [status] Filter by status
+         * @param {number} [limit] Limit results (default: 50)
+         * @param {number} [offset] Offset for pagination
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boothLoggingControllerGetBoothEvents(boothEventType?: string, sessionId?: string, eventId?: string, qrCodeId?: string, boothIdentifier?: string, status?: string, limit?: number, offset?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BoothLogDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boothLoggingControllerGetBoothEvents(boothEventType, sessionId, eventId, qrCodeId, boothIdentifier, status, limit, offset, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoothLogsApi.boothLoggingControllerGetBoothEvents']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve booth sessions with pagination. Admin access required.
+         * @summary Get paginated booth sessions
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {number} [page] Page number (default: 1)
+         * @param {number} [pageSize] Items per page (default: 10)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boothLoggingControllerGetBoothSessions(eventId?: string, boothIdentifier?: string, page?: number, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BoothSessionsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boothLoggingControllerGetBoothSessions(eventId, boothIdentifier, page, pageSize, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoothLogsApi.boothLoggingControllerGetBoothSessions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get statistical overview of booth events. Admin access required.
+         * @summary Get booth event statistics
+         * @param {string} [eventId] Filter stats by event ID
+         * @param {string} [boothIdentifier] Filter stats by booth identifier
+         * @param {string} [sessionId] Filter stats by session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boothLoggingControllerGetBoothStats(eventId?: string, boothIdentifier?: string, sessionId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BoothEventStatsDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boothLoggingControllerGetBoothStats(eventId, boothIdentifier, sessionId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoothLogsApi.boothLoggingControllerGetBoothStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Retrieve all booth events for a specific session in chronological order. Admin access required.
+         * @summary Get all events for a specific session
+         * @param {string} sessionId Session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boothLoggingControllerGetSessionEvents(sessionId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BoothLogDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boothLoggingControllerGetSessionEvents(sessionId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoothLogsApi.boothLoggingControllerGetSessionEvents']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Log a single DSLR booth event with structured data. Public endpoint for booth integration.
+         * @summary Log DSLR booth event
+         * @param {LogBoothEventDto} logBoothEventDto Booth event data to log
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async boothLoggingControllerLogBoothEvent(logBoothEventDto: LogBoothEventDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LogBoothEventResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boothLoggingControllerLogBoothEvent(logBoothEventDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BoothLogsApi.boothLoggingControllerLogBoothEvent']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * BoothLogsApi - factory interface
+ * @export
+ */
+export const BoothLogsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BoothLogsApiFp(configuration)
+    return {
+        /**
+         * Retrieve booth event logs with optional filtering. Admin access required.
+         * @summary Get booth event logs
+         * @param {string} [boothEventType] Filter by booth event type
+         * @param {string} [sessionId] Filter by session ID
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [qrCodeId] Filter by QR code ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {string} [status] Filter by status
+         * @param {number} [limit] Limit results (default: 50)
+         * @param {number} [offset] Offset for pagination
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothEvents(boothEventType?: string, sessionId?: string, eventId?: string, qrCodeId?: string, boothIdentifier?: string, status?: string, limit?: number, offset?: number, options?: RawAxiosRequestConfig): AxiosPromise<Array<BoothLogDto>> {
+            return localVarFp.boothLoggingControllerGetBoothEvents(boothEventType, sessionId, eventId, qrCodeId, boothIdentifier, status, limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve booth sessions with pagination. Admin access required.
+         * @summary Get paginated booth sessions
+         * @param {string} [eventId] Filter by event ID
+         * @param {string} [boothIdentifier] Filter by booth identifier
+         * @param {number} [page] Page number (default: 1)
+         * @param {number} [pageSize] Items per page (default: 10)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothSessions(eventId?: string, boothIdentifier?: string, page?: number, pageSize?: number, options?: RawAxiosRequestConfig): AxiosPromise<BoothSessionsResponseDto> {
+            return localVarFp.boothLoggingControllerGetBoothSessions(eventId, boothIdentifier, page, pageSize, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get statistical overview of booth events. Admin access required.
+         * @summary Get booth event statistics
+         * @param {string} [eventId] Filter stats by event ID
+         * @param {string} [boothIdentifier] Filter stats by booth identifier
+         * @param {string} [sessionId] Filter stats by session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetBoothStats(eventId?: string, boothIdentifier?: string, sessionId?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<BoothEventStatsDto>> {
+            return localVarFp.boothLoggingControllerGetBoothStats(eventId, boothIdentifier, sessionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Retrieve all booth events for a specific session in chronological order. Admin access required.
+         * @summary Get all events for a specific session
+         * @param {string} sessionId Session ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerGetSessionEvents(sessionId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<BoothLogDto>> {
+            return localVarFp.boothLoggingControllerGetSessionEvents(sessionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Log a single DSLR booth event with structured data. Public endpoint for booth integration.
+         * @summary Log DSLR booth event
+         * @param {LogBoothEventDto} logBoothEventDto Booth event data to log
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        boothLoggingControllerLogBoothEvent(logBoothEventDto: LogBoothEventDto, options?: RawAxiosRequestConfig): AxiosPromise<LogBoothEventResponseDto> {
+            return localVarFp.boothLoggingControllerLogBoothEvent(logBoothEventDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * BoothLogsApi - object-oriented interface
+ * @export
+ * @class BoothLogsApi
+ * @extends {BaseAPI}
+ */
+export class BoothLogsApi extends BaseAPI {
+    /**
+     * Retrieve booth event logs with optional filtering. Admin access required.
+     * @summary Get booth event logs
+     * @param {string} [boothEventType] Filter by booth event type
+     * @param {string} [sessionId] Filter by session ID
+     * @param {string} [eventId] Filter by event ID
+     * @param {string} [qrCodeId] Filter by QR code ID
+     * @param {string} [boothIdentifier] Filter by booth identifier
+     * @param {string} [status] Filter by status
+     * @param {number} [limit] Limit results (default: 50)
+     * @param {number} [offset] Offset for pagination
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoothLogsApi
+     */
+    public boothLoggingControllerGetBoothEvents(boothEventType?: string, sessionId?: string, eventId?: string, qrCodeId?: string, boothIdentifier?: string, status?: string, limit?: number, offset?: number, options?: RawAxiosRequestConfig) {
+        return BoothLogsApiFp(this.configuration).boothLoggingControllerGetBoothEvents(boothEventType, sessionId, eventId, qrCodeId, boothIdentifier, status, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieve booth sessions with pagination. Admin access required.
+     * @summary Get paginated booth sessions
+     * @param {string} [eventId] Filter by event ID
+     * @param {string} [boothIdentifier] Filter by booth identifier
+     * @param {number} [page] Page number (default: 1)
+     * @param {number} [pageSize] Items per page (default: 10)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoothLogsApi
+     */
+    public boothLoggingControllerGetBoothSessions(eventId?: string, boothIdentifier?: string, page?: number, pageSize?: number, options?: RawAxiosRequestConfig) {
+        return BoothLogsApiFp(this.configuration).boothLoggingControllerGetBoothSessions(eventId, boothIdentifier, page, pageSize, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get statistical overview of booth events. Admin access required.
+     * @summary Get booth event statistics
+     * @param {string} [eventId] Filter stats by event ID
+     * @param {string} [boothIdentifier] Filter stats by booth identifier
+     * @param {string} [sessionId] Filter stats by session ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoothLogsApi
+     */
+    public boothLoggingControllerGetBoothStats(eventId?: string, boothIdentifier?: string, sessionId?: string, options?: RawAxiosRequestConfig) {
+        return BoothLogsApiFp(this.configuration).boothLoggingControllerGetBoothStats(eventId, boothIdentifier, sessionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Retrieve all booth events for a specific session in chronological order. Admin access required.
+     * @summary Get all events for a specific session
+     * @param {string} sessionId Session ID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoothLogsApi
+     */
+    public boothLoggingControllerGetSessionEvents(sessionId: string, options?: RawAxiosRequestConfig) {
+        return BoothLogsApiFp(this.configuration).boothLoggingControllerGetSessionEvents(sessionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Log a single DSLR booth event with structured data. Public endpoint for booth integration.
+     * @summary Log DSLR booth event
+     * @param {LogBoothEventDto} logBoothEventDto Booth event data to log
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BoothLogsApi
+     */
+    public boothLoggingControllerLogBoothEvent(logBoothEventDto: LogBoothEventDto, options?: RawAxiosRequestConfig) {
+        return BoothLogsApiFp(this.configuration).boothLoggingControllerLogBoothEvent(logBoothEventDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
  * EventsApi - axios parameter creator
  * @export
  */
@@ -1907,7 +3241,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
+        async eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentQrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetCurrentQRCode(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetCurrentQRCode']?.[localVarOperationServerIndex]?.url;
@@ -1920,7 +3254,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<QrCodeResponseDto>>> {
+        async eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CurrentQrCodeResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetQRCodeHistory(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetQRCodeHistory']?.[localVarOperationServerIndex]?.url;
@@ -1933,7 +3267,7 @@ export const EventsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<QrCodeResponseDto>> {
+        async eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentQrCodeResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerRegenerateQRCode(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerRegenerateQRCode']?.[localVarOperationServerIndex]?.url;
@@ -2026,7 +3360,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
+        eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<CurrentQrCodeResponseDto> {
             return localVarFp.eventsControllerGetCurrentQRCode(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2036,7 +3370,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<QrCodeResponseDto>> {
+        eventsControllerGetQRCodeHistory(id: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<CurrentQrCodeResponseDto>> {
             return localVarFp.eventsControllerGetQRCodeHistory(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2046,7 +3380,7 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<QrCodeResponseDto> {
+        eventsControllerRegenerateQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<CurrentQrCodeResponseDto> {
             return localVarFp.eventsControllerRegenerateQRCode(id, options).then((request) => request(axios, basePath));
         },
         /**

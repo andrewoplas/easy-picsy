@@ -1,17 +1,17 @@
 import {
-  EventsApi,
-  QRCodesApi,
-  PublicEventsApi,
   Configuration,
-  EventResponseDto,
-  CreateEventResponseDto,
-  QrCodeResponseDto,
-  PublicEventResponseDto,
   CreateEventDto,
+  CreateEventResponseDto,
+  CurrentQrCodeResponseDto,
+  EventResponseDto,
+  EventsApi,
+  PublicEventResponseDto,
+  PublicEventsApi,
+  QRCodesApi,
   UpdateEventDto,
 } from '@org/api-lib';
-import axiosInstance from './client';
 import { AxiosError } from 'axios';
+import axiosInstance from './client';
 
 const config = new Configuration();
 const eventsApiInstance = new EventsApi(config, undefined, axiosInstance);
@@ -20,8 +20,8 @@ const publicEventsApiInstance = new PublicEventsApi(config, undefined, axiosInst
 
 export type Event = EventResponseDto;
 export type CreateEventResponse = CreateEventResponseDto;
-export type QrCode = QrCodeResponseDto;
-export type QrCodeHistory = QrCodeResponseDto;
+export type QrCode = CurrentQrCodeResponseDto;
+export type QrCodeHistory = CurrentQrCodeResponseDto;
 export type PublicEvent = PublicEventResponseDto;
 export type { CreateEventDto, UpdateEventDto };
 
@@ -103,12 +103,12 @@ export const eventsApi = {
 
     async getStatus(qrCodeId: string): Promise<QrCodeStatus> {
       const response = await qrCodesApiInstance.qrCodesControllerGetQRCodeStatus(qrCodeId);
-      
+
       // The backend returns a nested structure: {qrCode: {...}, isValid: boolean, timeUntilExpiry: number}
       // We should use the backend's calculated values instead of recalculating
       const backendResponse = response.data as any;
       const qrCode = backendResponse.qrCode as QrCode;
-      
+
       return {
         qrCode,
         isValid: backendResponse.isValid || false,
@@ -121,6 +121,5 @@ export const eventsApi = {
       const imageResponse = response.data as { qrCodeImage?: string };
       return imageResponse.qrCodeImage || '';
     },
-
   },
 };

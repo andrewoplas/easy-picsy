@@ -167,7 +167,7 @@ const { status, data } = await apiInstance.eventsControllerFindOne(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerGetCurrentQRCode**
-> QrCodeResponseDto eventsControllerGetCurrentQRCode()
+> CurrentQrCodeResponseDto eventsControllerGetCurrentQRCode()
 
 Get the currently active QR code for this event
 
@@ -198,7 +198,7 @@ const { status, data } = await apiInstance.eventsControllerGetCurrentQRCode(
 
 ### Return type
 
-**QrCodeResponseDto**
+**CurrentQrCodeResponseDto**
 
 ### Authorization
 
@@ -220,7 +220,7 @@ const { status, data } = await apiInstance.eventsControllerGetCurrentQRCode(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerGetQRCodeHistory**
-> Array<QrCodeResponseDto> eventsControllerGetQRCodeHistory()
+> Array<CurrentQrCodeResponseDto> eventsControllerGetQRCodeHistory()
 
 Get complete QR code generation history for this event
 
@@ -251,7 +251,7 @@ const { status, data } = await apiInstance.eventsControllerGetQRCodeHistory(
 
 ### Return type
 
-**Array<QrCodeResponseDto>**
+**Array<CurrentQrCodeResponseDto>**
 
 ### Authorization
 
@@ -273,7 +273,7 @@ const { status, data } = await apiInstance.eventsControllerGetQRCodeHistory(
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerRegenerateQRCode**
-> QrCodeResponseDto eventsControllerRegenerateQRCode()
+> CurrentQrCodeResponseDto eventsControllerRegenerateQRCode()
 
 Generate new QR code for this event (invalidates current one)
 
@@ -304,7 +304,7 @@ const { status, data } = await apiInstance.eventsControllerRegenerateQRCode(
 
 ### Return type
 
-**QrCodeResponseDto**
+**CurrentQrCodeResponseDto**
 
 ### Authorization
 
