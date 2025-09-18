@@ -19,6 +19,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        'sans': ['var(--font-inter)', 'Inter', 'sans-serif'],
         'passion': ['var(--font-passion-one)', 'cursive'],
         'jost': ['var(--font-jost)', 'sans-serif'],
       },

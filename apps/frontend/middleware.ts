@@ -20,10 +20,10 @@ export async function middleware(request: NextRequest) {
         get(name: string) {
           return request.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: Record<string, unknown>) {
           response.cookies.set({ name, value, ...options });
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: Record<string, unknown>) {
           response.cookies.set({ name, value: '', ...options });
         },
       },
@@ -31,6 +31,15 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { session } } = await supabase.auth.getSession();
+
+  // Handle redirects for clean URLs
+  if (request.nextUrl.pathname === '/login') {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+  
+  if (request.nextUrl.pathname === '/register') {
+    return NextResponse.redirect(new URL('/admin/register', request.url));
+  }
 
   // Protected routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
@@ -54,5 +63,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/login', '/register', '/admin/:path*'],
 };
