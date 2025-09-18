@@ -341,7 +341,7 @@ export default function LandingPage() {
     name: 'Easy Picsy - Cashless Payment System for dslrBooth',
     description:
       'Add cashless payments to your existing dslrBooth setup. Accept GCash, Maya, and 30+ Philippine banks and e-wallets through the official QRPh standard without replacing your current photobooth system.',
-    url: 'https://easypicsy.com',
+    url: 'https://www.easypicsybooths.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Windows',
     offers: {
@@ -353,8 +353,8 @@ export default function LandingPage() {
     provider: {
       '@type': 'Organization',
       name: 'Easy Picsy',
-      url: 'https://easypicsy.com',
-      logo: 'https://easypicsy.com/logo.svg',
+      url: 'https://www.easypicsybooths.com',
+      logo: 'https://www.easypicsybooths.com/logo.svg',
       sameAs: ['https://instagram.com/easypicsybooths'],
     },
     featureList: [

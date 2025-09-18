@@ -2,6 +2,8 @@ import './global.css';
 import { Passion_One, Jost, Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { Analytics } from '@vercel/analytics/next';
+import NextTopLoader from 'nextjs-toploader';
 
 const passionOne = Passion_One({
   subsets: ['latin'],
@@ -26,7 +28,8 @@ const inter = Inter({
 
 export const metadata = {
   title: 'Easy Picsy - Professional Photobooth Software with GCash Payments | Philippines',
-  description: 'Easy Picsy is the leading photobooth management software for rental businesses in the Philippines. Features GCash/QRPh payments, real-time analytics, cloud management, and white-label branding for weddings and corporate events.',
+  description:
+    'Easy Picsy is the leading photobooth management software for rental businesses in the Philippines. Features GCash/QRPh payments, real-time analytics, cloud management, and white-label branding for weddings and corporate events.',
   keywords: [
     'photobooth software Philippines',
     'photobooth rental business',
@@ -42,7 +45,7 @@ export const metadata = {
     'photobooth business solution',
     'contactless payments photobooth',
     'drag and drop branding',
-    'photobooth supplier software'
+    'photobooth supplier software',
   ],
   authors: [{ name: 'Easy Picsy Team' }],
   creator: 'Easy Picsy',
@@ -61,10 +64,11 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_PH',
-    url: 'https://easypicsy.com',
+    url: 'https://www.easypicsybooths.com',
     siteName: 'Easy Picsy',
     title: 'Easy Picsy - Professional Photobooth Software with GCash Payments',
-    description: 'Transform your photobooth rental business with Easy Picsy. GCash/QRPh integration, real-time analytics, cloud management, and custom branding for weddings and events in the Philippines.',
+    description:
+      'Transform your photobooth rental business with Easy Picsy. GCash/QRPh integration, real-time analytics, cloud management, and custom branding for weddings and events in the Philippines.',
     images: [
       {
         url: '/logo.svg',
@@ -77,20 +81,17 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Easy Picsy - Professional Photobooth Software with GCash Payments',
-    description: 'Transform your photobooth rental business with Easy Picsy. GCash/QRPh integration, real-time analytics, and custom branding.',
+    description:
+      'Transform your photobooth rental business with Easy Picsy. GCash/QRPh integration, real-time analytics, and custom branding.',
     images: ['/logo.svg'],
   },
   alternates: {
-    canonical: 'https://easypicsy.com',
+    canonical: 'https://www.easypicsybooths.com',
   },
   category: 'Business Software',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -100,6 +101,18 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={`${passionOne.variable} ${jost.variable} ${inter.variable} antialiased`}>
+        <NextTopLoader
+          color="linear-gradient(to right, #FEF08A, #F97316)"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={true}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #F97316,0 0 5px #FEF08A"
+        />
+        <Analytics />
         <QueryProvider>
           {children}
           <Toaster />

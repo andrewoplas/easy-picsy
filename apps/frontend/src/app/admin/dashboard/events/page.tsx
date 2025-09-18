@@ -17,6 +17,7 @@ import {
   ChevronRight,
   History,
   BarChart,
+  Activity,
 } from 'lucide-react';
 import { CreateEventModal } from '@/components/events/CreateEventModal';
 import { EditEventModal } from '@/components/events/EditEventModal';
@@ -94,6 +95,10 @@ export default function EventsPage() {
 
   const openAnalytics = (event: Event) => {
     router.push(`/admin/dashboard/events/${event.id}/analytics`);
+  };
+
+  const openRemoteControl = (event: Event) => {
+    router.push(`/admin/dashboard/events/${event.id}/remote`);
   };
 
   // Pagination logic
@@ -301,6 +306,22 @@ export default function EventsPage() {
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View Analytics</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openRemoteControl(event)}
+                          className="border-dash-gray/50 hover:bg-dash-gray/10"
+                        >
+                          <Activity className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Remote Control</p>
                       </TooltipContent>
                     </Tooltip>
 

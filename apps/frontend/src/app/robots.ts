@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/',
     },
-    sitemap: 'https://easypicsy.com/sitemap.xml',
+    sitemap: 'https://www.easypicsybooths.com/sitemap.xml',
   }
 }

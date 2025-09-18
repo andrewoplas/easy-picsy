@@ -100,14 +100,14 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               "name": "Easy Picsy",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://easypicsy.com/logo.svg",
+                "url": "https://www.easypicsybooths.com/logo.svg",
               },
             },
             "datePublished": blogPost.date,
             "dateModified": blogPost.date,
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": `https://easypicsy.com/blog/${blogPost.slug}`,
+              "@id": `https://www.easypicsybooths.com/blog/${blogPost.slug}`,
             },
           }),
         }}

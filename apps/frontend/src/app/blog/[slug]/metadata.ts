@@ -58,7 +58,7 @@ export function generateBlogMetadata(slug: string): Metadata {
     };
   }
 
-  const canonicalUrl = `https://easypicsy.com/blog/${slug}`;
+  const canonicalUrl = `https://www.easypicsybooths.com/blog/${slug}`;
 
   return {
     title: post.seoTitle,

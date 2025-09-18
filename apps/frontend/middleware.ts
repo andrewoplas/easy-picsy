@@ -46,9 +46,9 @@ export async function middleware(request: NextRequest) {
     // Allow access to login page
     if (request.nextUrl.pathname === '/admin/login' || 
         request.nextUrl.pathname === '/admin/register') {
-      // If user is already logged in, redirect to dashboard
+      // If user is already logged in, redirect to performance dashboard
       if (session) {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        return NextResponse.redirect(new URL('/admin/dashboard/performance', request.url));
       }
       return response;
     }

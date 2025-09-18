@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog - Easy Picsy | Photobooth Business Tips & Guides',
     description: 'Discover expert tips, guides, and insights for growing your photobooth business in the Philippines. Learn about software, marketing, and industry trends.',
-    url: 'https://easypicsy.com/blog',
+    url: 'https://www.easypicsybooths.com/blog',
     siteName: 'Easy Picsy',
     locale: 'en_US',
     type: 'website',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     creator: '@easypicsybooths',
   },
   alternates: {
-    canonical: 'https://easypicsy.com/blog',
+    canonical: 'https://www.easypicsybooths.com/blog',
   },
   robots: {
     index: true,

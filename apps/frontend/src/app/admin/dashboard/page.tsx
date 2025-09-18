@@ -1,22 +1,22 @@
 'use client';
 
-import { DashboardTabs } from '@/components/dashboard/DashboardTabs';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
-  return (
-    <div className="space-y-8">
-      {/* Dashboard Title Section */}
-      <div className="mb-8">
-        <div>
-          <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Dashboard</h1>
-          <p className="text-dash-navy/70">
-            Monitor your business performance and manage your finances
-          </p>
-        </div>
-      </div>
+  const router = useRouter();
 
-      {/* Dashboard Tabs */}
-      <DashboardTabs />
+  useEffect(() => {
+    // Redirect to performance page as the default
+    router.replace('/admin/dashboard/performance');
+  }, [router]);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dash-navy mx-auto mb-4"></div>
+        <p className="text-dash-navy/70">Redirecting to Performance Analytics...</p>
+      </div>
     </div>
   );
 }

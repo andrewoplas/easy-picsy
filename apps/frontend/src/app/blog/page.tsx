@@ -74,20 +74,20 @@ export default function BlogIndexPage() {
             name: 'Easy Picsy Blog',
             description:
               'Tips, guides, and insights for photobooth business owners',
-            url: 'https://easypicsy.com/blog',
+            url: 'https://www.easypicsybooths.com/blog',
             publisher: {
               '@type': 'Organization',
               name: 'Easy Picsy',
               logo: {
                 '@type': 'ImageObject',
-                url: 'https://easypicsy.com/logo.svg',
+                url: 'https://www.easypicsybooths.com/logo.svg',
               },
             },
             blogPost: blogPosts.map((post) => ({
               '@type': 'BlogPosting',
               headline: post.title,
               description: post.metaDescription || post.excerpt,
-              url: `https://easypicsy.com/blog/${post.slug}`,
+              url: `https://www.easypicsybooths.com/blog/${post.slug}`,
               datePublished: post.date,
               author: {
                 '@type': 'Person',

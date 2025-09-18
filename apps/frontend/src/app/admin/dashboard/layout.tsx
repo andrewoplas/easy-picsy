@@ -7,7 +7,8 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
 import {
-  Home,
+  CreditCard,
+  TrendingUp,
   Calendar,
   Settings,
   LogOut,
@@ -17,7 +18,8 @@ import {
 import LogoSvg from '../../../assets/logo.svg';
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
+  { name: 'Performance', href: '/admin/dashboard/performance', icon: TrendingUp },
+  { name: 'Payout', href: '/admin/dashboard/payout', icon: CreditCard },
   { name: 'Events', href: '/admin/dashboard/events', icon: Calendar },
   { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];

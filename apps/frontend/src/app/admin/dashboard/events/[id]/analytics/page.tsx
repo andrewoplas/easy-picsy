@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   TrendingUp,
@@ -11,8 +11,6 @@ import {
   Printer,
   Copy,
   RefreshCw,
-  Lock,
-  Unlock,
   Activity,
   ChevronRight,
   Home,
@@ -67,7 +65,6 @@ export default function EventAnalyticsPage() {
   const params = useParams();
   const eventId = params.id as string;
   
-  const [boothLocked, setBoothLocked] = useState(false);
 
   // Fetch event details
   const { data: event, isLoading: eventLoading } = useQuery({
@@ -100,10 +97,6 @@ export default function EventAnalyticsPage() {
     }).format(amount);
   };
 
-  const handleLockToggle = () => {
-    setBoothLocked(!boothLocked);
-    toast.success(`Booth ${boothLocked ? 'unlocked' : 'locked'} successfully!`);
-  };
 
   const handleRefresh = () => {
     toast.promise(refetchAnalytics(), {
@@ -207,49 +200,25 @@ export default function EventAnalyticsPage() {
         </Button>
       </div>
 
-      {/* Manual Controls - Remote Control Style */}
-      <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-lg font-normal text-white tracking-wide flex items-center justify-center">
-            <Activity className="w-5 h-5 mr-2" />
-            Remote Control
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="flex flex-col items-center space-y-6">
-            {/* Power/Lock Button */}
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 blur-sm"></div>
-              <Button
-                onClick={handleLockToggle}
-                className={`relative w-20 h-20 rounded-full text-lg font-bold shadow-lg transform transition-all duration-200 hover:scale-105 ${
-                  boothLocked
-                    ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-red-500/50'
-                    : 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-green-500/50'
-                }`}
-              >
-                {boothLocked ? (
-                  <Lock className="w-8 h-8" />
-                ) : (
-                  <Unlock className="w-8 h-8" />
-                )}
-              </Button>
-            </div>
-            
-            {/* Status Display */}
-            <div className="bg-slate-700 rounded-lg px-6 py-3 border border-slate-600">
-              <div className="flex items-center space-x-3">
-                <div className={`w-3 h-3 rounded-full ${boothLocked ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`}></div>
-                <span className="text-white font-medium">
-                  {boothLocked ? 'BOOTH LOCKED' : 'BOOTH ACTIVE'}
-                </span>
+      {/* Remote Control Access */}
+      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-shadow">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-500 rounded-lg">
+                <Activity className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-blue-900">Remote Control</h3>
+                <p className="text-sm text-blue-700">Access mobile-friendly booth controls</p>
               </div>
             </div>
-
-            {/* Control Label */}
-            <p className="text-slate-300 text-sm text-center">
-              {boothLocked ? 'Press to unlock booth' : 'Press to lock booth'}
-            </p>
+            <Button
+              onClick={() => router.push(`/admin/dashboard/events/${eventId}/remote`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Open Remote
+            </Button>
           </div>
         </CardContent>
       </Card>
