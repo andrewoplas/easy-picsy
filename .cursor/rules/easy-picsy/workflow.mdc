@@ -1,0 +1,162 @@
+---
+description: Development workflow and architecture guidelines for the Easy Picsy project
+globs: ["**/*.{ts,tsx}"]
+alwaysApply: true
+---
+
+# Development Workflow
+
+## Core Architecture
+
+### Frontend (Next.js App Router)
+- Server Components First: Default to React Server Components (RSC)
+- Client Components: Use 'use client' only when necessary (interactivity/hooks)
+- Data Fetching: Server components + React Query for real-time updates
+- State Management: URL state with nuqs, React Query for server state
+- UI Components: Shadcn UI + Radix + Tailwind CSS
+
+### Backend (NestJS)
+- Module-Based: Each feature has its own module
+- DTOs: Strict validation using class-validator
+- Database: PostgreSQL with Drizzle ORM
+- Real-time: WebSocket Gateway for booth events
+- File Storage: Supabase Storage
+
+### Shared (@org/commons)
+- Types: All shared types, enums, interfaces
+- Constants: Shared configuration values
+- Utilities: Common helper functions
+
+## File Structure
+
+```
+apps/
+├── frontend/
+│   ├── src/
+│   │   ├── app/           # Next.js pages
+│   │   ├── components/    # Shared components
+│   │   ├── lib/          # API services
+│   │   └── hooks/        # React Query hooks
+│   └── tests/            # Frontend tests
+├── backend/
+│   ├── src/
+│   │   ├── modules/      # Feature modules
+│   │   ├── common/       # Shared utilities
+│   │   └── config/       # Configuration
+│   └── test/            # Backend tests
+└── libs/
+    └── commons/         # Shared types & utils
+```
+
+## Development Flow
+
+### 1. Feature Planning
+```typescript
+// 1. Check commons for existing types
+import { BoothEventType } from '@org/commons';
+
+// 2. Add new types if needed
+export enum PaymentMethod {
+  GCASH = 'gcash',
+  GRABPAY = 'grabpay',
+}
+
+// 3. Plan component structure
+interface DashboardProps {
+  eventId: string;
+}
+```
+
+### 2. Backend Development
+```typescript
+// 1. Create DTO with validation
+export class CreatePaymentDto {
+  @IsUUID()
+  eventId: string;
+
+  @IsEnum(PaymentMethod)
+  method: PaymentMethod;
+}
+
+// 2. Implement service with proper types
+@Injectable()
+export class PaymentsService {
+  async createPayment(dto: CreatePaymentDto): Promise<Payment> {
+    // Implementation
+  }
+}
+```
+
+### 3. Frontend Development
+```typescript
+// 1. Create API service
+export const paymentsApi = {
+  async createPayment(data: CreatePaymentDto): Promise<Payment> {
+    // Implementation
+  }
+};
+
+// 2. Create React Query hook
+export function useCreatePayment() {
+  return useMutation({
+    mutationFn: paymentsApi.createPayment,
+  });
+}
+
+// 3. Implement component
+export function PaymentForm() {
+  const createPayment = useCreatePayment();
+  // Implementation
+}
+```
+
+## Code Review Checklist
+
+1. **Type Safety**
+   - [ ] Uses commons types
+   - [ ] No magic strings
+   - [ ] Proper error types
+   - [ ] Validated DTOs
+
+2. **Performance**
+   - [ ] Server components where possible
+   - [ ] Proper suspense boundaries
+   - [ ] Optimized images
+   - [ ] Memoized callbacks
+
+3. **State Management**
+   - [ ] URL state for shareable state
+   - [ ] React Query for server state
+   - [ ] Local state for UI
+   - [ ] Proper cache invalidation
+
+4. **Error Handling**
+   - [ ] Typed errors
+   - [ ] User-friendly messages
+   - [ ] Error boundaries
+   - [ ] Loading states
+
+5. **Testing**
+   - [ ] Unit tests
+   - [ ] Integration tests
+   - [ ] E2E tests
+   - [ ] Error scenarios
+
+## Deployment
+
+1. **Frontend (Vercel)**
+   - Automatic deployments
+   - Environment variables
+   - Edge functions for APIs
+
+2. **Backend (AWS)**
+   - Docker containers
+   - Load balancing
+   - Auto-scaling
+
+3. **Database (Supabase)**
+   - Automated backups
+   - Connection pooling
+   - Real-time subscriptions
+
+Remember: This workflow is designed to maintain consistency and quality across the codebase while maximizing developer productivity.

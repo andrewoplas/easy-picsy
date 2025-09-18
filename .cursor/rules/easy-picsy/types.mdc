@@ -1,0 +1,226 @@
+---
+description: Enforces strict type safety and shared type usage across the codebase
+globs: ["apps/**/*.{ts,tsx}", "libs/**/*.{ts,tsx}"]
+alwaysApply: true
+---
+
+# Type Safety and Shared Types Guidelines
+
+## Core Principles
+
+- **Single Source of Truth**: All shared types, enums, and interfaces must live in `@org/commons`
+- **Zero Magic Strings**: Always use enums for predefined string values
+- **Strict Type Enforcement**: No `any` types or type assertions unless absolutely necessary
+- **Cross-Module Consistency**: Frontend and backend must use the same type definitions
+
+## Type Organization in Commons
+
+```typescript
+// ✅ DO: Keep related types together in a single file
+// @org/commons/lib/booth.types.ts
+export enum BoothEventType {
+  SESSION_START = 'session_start',
+  PRINTING = 'printing',
+}
+
+export interface BoothLog {
+  id: string;
+  boothEventType: BoothEventType;
+}
+
+// ❌ DON'T: Duplicate type definitions across modules
+// frontend/src/types/booth.ts - WRONG!
+export interface BoothLog {
+  id: string;
+  type: string; // Should use BoothEventType from commons
+}
+```
+
+## Backend Usage
+
+### Database Schemas
+```typescript
+// ✅ DO: Use enums from commons for defaults
+import { PaymentStatus } from '@org/commons';
+
+export const payments = pgTable('payments', {
+  status: varchar('status').notNull()
+    .default(PaymentStatus.PENDING),
+});
+
+// ❌ DON'T: Use magic strings
+status: varchar('status').notNull()
+  .default('pending'),
+```
+
+### DTOs and Validation
+```typescript
+// ✅ DO: Validate against enum values
+import { BoothEventType } from '@org/commons';
+
+export class BoothEventDto {
+  @IsIn(Object.values(BoothEventType))
+  event_type: BoothEventType;
+}
+
+// ❌ DON'T: Use string literals
+@IsIn(['session_start', 'session_end'])
+event_type: string;
+```
+
+### Services
+```typescript
+// ✅ DO: Use enum values in switch statements
+switch (event.type) {
+  case BoothEventType.SESSION_START:
+    return this.handleSessionStart(event);
+}
+
+// ❌ DON'T: Use string literals
+if (event.type === 'session_start') {
+```
+
+## Frontend Usage
+
+### Components
+```typescript
+// ✅ DO: Type props with commons interfaces
+interface ActivityTimelineProps {
+  activity: BoothActivity;
+}
+
+// ❌ DON'T: Redefine existing types
+interface Activity {
+  type: string; // Wrong! Should use BoothEventType
+}
+```
+
+### API Services
+```typescript
+// ✅ DO: Return properly typed data
+async getBoothLogs(eventId: string): Promise<BoothActivity[]> {
+  const response = await api.get(`/booth-logs/${eventId}`);
+  return response.data;
+}
+
+// ❌ DON'T: Return untyped data
+async getBoothLogs(eventId: string): Promise<any> {
+```
+
+### Hooks
+```typescript
+// ✅ DO: Provide proper TypeScript types
+function useEventActivity(eventId: string) {
+  return useQuery<BoothActivity[], Error>({
+    // ... query config
+  });
+}
+
+// ❌ DON'T: Leave query types implicit
+function useEventActivity(eventId: string) {
+  return useQuery({
+```
+
+## Type Safety Best Practices
+
+### 1. Enum Usage
+```typescript
+// ✅ DO: Use enums for predefined values
+export enum PaymentStatus {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+}
+
+// ❌ DON'T: Use string literals
+const status = 'pending'; // Use PaymentStatus.PENDING
+```
+
+### 2. Type Guards
+```typescript
+// ✅ DO: Create type guards for runtime checks
+function isBoothActivity(value: unknown): value is BoothActivity {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    'timestamp' in value
+  );
+}
+
+// ❌ DON'T: Use type assertions without checks
+const activity = data as BoothActivity; // Unsafe!
+```
+
+### 3. Generic Components
+```typescript
+// ✅ DO: Use generics for flexible typing
+interface DataListProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+}
+
+// ❌ DON'T: Use any for flexibility
+interface DataListProps {
+  items: any[];
+  renderItem: (item: any) => React.ReactNode;
+}
+```
+
+### 4. Error Handling
+```typescript
+// ✅ DO: Define error types
+interface ApiError {
+  code: string;
+  message: string;
+}
+
+// ❌ DON'T: Use generic Error type
+catch (error: any) { // Avoid!
+```
+
+## Migration Guidelines
+
+When adding new features or modifying existing ones:
+
+1. **Check Commons First**
+   - Look for existing types in `@org/commons` before creating new ones
+   - If a type is used in multiple places, move it to commons
+
+2. **Update Existing Code**
+   - Replace string literals with enum values
+   - Update type imports to use commons
+   - Add proper type annotations to functions and variables
+
+3. **Testing**
+   - Add type tests using TypeScript's `expectType` utility
+   - Verify type inference in consuming code
+   - Test enum value handling
+
+4. **Documentation**
+   - Add JSDoc comments to types and enums
+   - Document breaking type changes
+   - Keep README up to date with type usage examples
+
+## Enforcement
+
+- Configure ESLint rules to enforce type safety:
+  ```json
+  {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-magic-numbers": "warn"
+  }
+  ```
+
+- Use TypeScript's strict mode:
+  ```json
+  {
+    "compilerOptions": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true
+    }
+  }
+  ```
+
+Remember: The goal is to make the TypeScript compiler your first line of defense against bugs. If it compiles with strict mode and no type assertions, it's probably correct!

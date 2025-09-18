@@ -1,0 +1,349 @@
+---
+description: Guidelines for creating and maintaining React components in the Easy Picsy codebase
+globs: ["apps/frontend/src/**/*.{ts,tsx}"]
+alwaysApply: true
+---
+
+# Component Guidelines
+
+## Component Organization
+
+```typescript
+// ✅ DO: Organize imports by type
+// 1. React and Next.js imports
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+// 2. Third-party libraries
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+
+// 3. UI components
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+// 4. Project imports
+import { type BoothActivity } from '@org/commons';
+import { useEventActivity } from '@/hooks/useEventActivity';
+
+// 5. Icons and assets
+import { Activity, Calendar } from 'lucide-react';
+```
+
+## Component Structure
+
+```typescript
+// ✅ DO: Use proper type imports
+import type { ReactNode } from 'react';
+
+// ✅ DO: Use descriptive interface names
+interface ActivityTimelineProps {
+  sessionId: string;
+  activities: BoothActivity[];
+  isExpanded?: boolean;
+  onToggle: (id: string) => void;
+}
+
+// ✅ DO: Use function keyword for components
+export function ActivityTimeline({
+  sessionId,
+  activities,
+  isExpanded = false,
+  onToggle,
+}: ActivityTimelineProps) {
+  // 1. Hooks (useState, useEffect, custom hooks)
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const { data, isLoading } = useEventActivity(sessionId);
+
+  // 2. Derived state and callbacks
+  const sortedActivities = useMemo(() => 
+    activities.sort((a, b) => 
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    ),
+    [activities]
+  );
+
+  const handleActivitySelect = useCallback((id: string) => {
+    setSelectedActivity(id);
+    onToggle(id);
+  }, [onToggle]);
+
+  // 3. Effects
+  useEffect(() => {
+    if (data) {
+      // Handle data updates
+    }
+  }, [data]);
+
+  // 4. Render helpers
+  const renderActivity = (activity: BoothActivity) => (
+    <ActivityItem
+      key={activity.id}
+      activity={activity}
+      isSelected={activity.id === selectedActivity}
+      onSelect={handleActivitySelect}
+    />
+  );
+
+  // 5. Loading/error states
+  if (isLoading) {
+    return <ActivitySkeleton />;
+  }
+
+  // 6. Main render
+  return (
+    <div className="space-y-4">
+      {sortedActivities.map(renderActivity)}
+    </div>
+  );
+}
+```
+
+## Styling Guidelines
+
+```typescript
+// ✅ DO: Use Tailwind utility classes
+export function Card({ children }: { children: ReactNode }) {
+  return (
+    <div className="
+      rounded-lg 
+      border border-gray-200 
+      bg-white 
+      p-4 
+      shadow-sm 
+      transition-all 
+      hover:shadow-md
+    ">
+      {children}
+    </div>
+  );
+}
+
+// ✅ DO: Use cn utility for conditional classes
+import { cn } from '@/lib/utils';
+
+export function Badge({ 
+  variant = 'default',
+  className,
+  children 
+}: BadgeProps) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+        variant === 'success' && 'bg-green-100 text-green-800',
+        variant === 'error' && 'bg-red-100 text-red-800',
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+}
+```
+
+## Data Fetching
+
+```typescript
+// ✅ DO: Use React Query for client data
+export function EventDashboard({ eventId }: { eventId: string }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['event', eventId],
+    queryFn: () => eventsApi.getById(eventId),
+    staleTime: 30 * 1000, // 30 seconds
+  });
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  if (error) {
+    return <ErrorAlert error={error} />;
+  }
+
+  return <DashboardContent data={data} />;
+}
+
+// ✅ DO: Use Server Components for static data
+export async function EventList() {
+  const events = await db.event.findMany({
+    where: { status: 'active' },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return (
+    <div className="space-y-4">
+      {events.map(event => (
+        <EventCard key={event.id} event={event} />
+      ))}
+    </div>
+  );
+}
+```
+
+## Form Handling
+
+```typescript
+// ✅ DO: Use react-hook-form with zod validation
+const formSchema = z.object({
+  name: z.string().min(2).max(50),
+  email: z.string().email(),
+  type: z.enum(['standard', 'premium']),
+});
+
+export function EventForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: 'standard',
+    },
+  });
+
+  return (
+    <Form {...form}>
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Event Name</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </Form>
+  );
+}
+```
+
+## Error Handling
+
+```typescript
+// ✅ DO: Create reusable error components
+export function ErrorAlert({ 
+  error,
+  onRetry 
+}: ErrorAlertProps) {
+  const errorMessage = error instanceof Error 
+    ? error.message 
+    : 'An unexpected error occurred';
+
+  return (
+    <Alert variant="destructive">
+      <AlertCircle className="h-4 w-4" />
+      <AlertTitle>Error</AlertTitle>
+      <AlertDescription>{errorMessage}</AlertDescription>
+      {onRetry && (
+        <Button onClick={onRetry}>
+          Retry
+        </Button>
+      )}
+    </Alert>
+  );
+}
+
+// ✅ DO: Use error boundaries
+export class ErrorBoundary extends React.Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback />;
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+## Performance Optimization
+
+```typescript
+// ✅ DO: Use React.memo for expensive renders
+export const ActivityList = React.memo(function ActivityList({
+  activities,
+  onSelect,
+}: ActivityListProps) {
+  return activities.map(activity => (
+    <ActivityItem
+      key={activity.id}
+      activity={activity}
+      onSelect={onSelect}
+    />
+  ));
+});
+
+// ✅ DO: Use useMemo for expensive computations
+export function Dashboard({ data }: DashboardProps) {
+  const statistics = useMemo(() => 
+    calculateStatistics(data),
+    [data]
+  );
+
+  return <DashboardContent stats={statistics} />;
+}
+
+// ✅ DO: Use useCallback for event handlers
+export function SearchBar({ onSearch }: SearchBarProps) {
+  const handleSubmit = useCallback((event: FormEvent) => {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const query = new FormData(form).get('query');
+    onSearch(query as string);
+  }, [onSearch]);
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Form content */}
+    </form>
+  );
+}
+```
+
+## Testing
+
+```typescript
+// ✅ DO: Write comprehensive tests
+describe('PaymentForm', () => {
+  it('submits form with valid data', async () => {
+    const onSubmit = vi.fn();
+    render(<PaymentForm onSubmit={onSubmit} />);
+
+    await userEvent.type(
+      screen.getByLabelText(/amount/i),
+      '100'
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /submit/i })
+    );
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      amount: 100,
+    });
+  });
+
+  it('displays validation errors', async () => {
+    render(<PaymentForm onSubmit={vi.fn()} />);
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /submit/i })
+    );
+
+    expect(screen.getByText(/amount is required/i))
+      .toBeInTheDocument();
+  });
+});
+```
+
+Remember: These guidelines ensure consistent, maintainable, and high-quality components across the codebase.

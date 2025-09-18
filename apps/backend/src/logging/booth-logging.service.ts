@@ -1,39 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { and, count, desc, eq, asc } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
-import { boothLogs, NewBoothLog } from '../database/schema';
-
-export interface BoothEventData {
-  event_type: string;
-  param1?: string;
-  param2?: string;
-  param3?: string;
-  param4?: string;
-  timestamp: string; // Format: "16:20:7.287"
-}
+import { boothLogs, NewBoothLog, BoothLog } from '../database/schema';
+import { 
+  BoothEventData, 
+  BoothEventType, 
+  BoothStatus, 
+  GroupedSession 
+} from '@org/commons';
 
 export interface LogBoothEventOptions {
-  sessionId: string; // Client-generated UUID
+  sessionId: string;
   boothEvent: BoothEventData;
-  eventId?: string; // Reference to events table
+  eventId?: string;
   qrCodeId?: string;
-  boothIdentifier?: string; // Physical booth ID
-  status?: 'success' | 'error' | 'warning';
+  boothIdentifier?: string;
+  status?: BoothStatus;
   message?: string;
   errorDetails?: string;
-}
-
-export interface GroupedSession {
-  sessionId: string;
-  startTime: string;
-  endTime: string | null;
-  boothMode: string | null;
-  boothIdentifier: string | null;
-  status: 'complete' | 'incomplete';
-  eventCount: number;
-  events: any[];
-  qrCodeId: string | null;
-  eventId: string | null;
 }
 
 export interface PaginationInfo {
@@ -51,9 +35,6 @@ export class BoothLoggingService {
 
   constructor(private databaseService: DatabaseService) {}
 
-  /**
-   * Log a single booth event
-   */
   async logBoothEvent(options: LogBoothEventOptions): Promise<string> {
     const db = this.databaseService.getDb();
     
@@ -69,7 +50,7 @@ export class BoothLoggingService {
         eventId: options.eventId,
         qrCodeId: options.qrCodeId,
         boothIdentifier: options.boothIdentifier,
-        status: options.status || 'success',
+        status: options.status || BoothStatus.SUCCESS,
         message: options.message || this.formatBoothEventMessage(options.boothEvent),
         errorDetails: options.errorDetails,
       };
@@ -84,24 +65,18 @@ export class BoothLoggingService {
     }
   }
 
-  /**
-   * Get booth logs with optional filtering
-   */
   async getBoothLogs(options?: {
-    boothEventType?: string;
+    boothEventType?: BoothEventType;
     sessionId?: string;
     eventId?: string;
     qrCodeId?: string;
     boothIdentifier?: string;
-    status?: string;
+    status?: BoothStatus;
     limit?: number;
     offset?: number;
-  }) {
+  }): Promise<BoothLog[]> {
     const db = this.databaseService.getDb();
     
-    const query = db.select().from(boothLogs);
-    
-    // Add filters if provided
     const conditions = [];
     if (options?.boothEventType) conditions.push(eq(boothLogs.boothEventType, options.boothEventType));
     if (options?.sessionId) conditions.push(eq(boothLogs.sessionId, options.sessionId));
@@ -109,6 +84,8 @@ export class BoothLoggingService {
     if (options?.qrCodeId) conditions.push(eq(boothLogs.qrCodeId, options.qrCodeId));
     if (options?.boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, options.boothIdentifier));
     if (options?.status) conditions.push(eq(boothLogs.status, options.status));
+    
+    const query = db.select().from(boothLogs);
     
     if (conditions.length > 0) {
       query.where(and(...conditions));
@@ -122,24 +99,16 @@ export class BoothLoggingService {
     return await query;
   }
 
-  /**
-   * Get all events for a specific session in chronological order
-   */
-  async getSessionEvents(sessionId: string): Promise<any[]> {
+  async getSessionEvents(sessionId: string): Promise<BoothLog[]> {
     const db = this.databaseService.getDb();
     
-    const events = await db
+    return await db
       .select()
       .from(boothLogs)
       .where(eq(boothLogs.sessionId, sessionId))
       .orderBy(asc(boothLogs.createdAt));
-
-    return events;
   }
 
-  /**
-   * Get paginated sessions with their events
-   */
   async getBoothSessions(options: {
     eventId?: string;
     boothIdentifier?: string;
@@ -153,8 +122,11 @@ export class BoothLoggingService {
     const { eventId, boothIdentifier, page, pageSize } = options;
     const offset = (page - 1) * pageSize;
 
-    // Build base query for session_start events
-    let sessionQuery = db
+    const conditions = [eq(boothLogs.boothEventType, BoothEventType.SESSION_START)];
+    if (eventId) conditions.push(eq(boothLogs.eventId, eventId));
+    if (boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, boothIdentifier));
+
+    const sessionsStart = await db
       .select({
         sessionId: boothLogs.sessionId,
         startTime: boothLogs.timestamp,
@@ -165,24 +137,11 @@ export class BoothLoggingService {
         createdAt: boothLogs.createdAt,
       })
       .from(boothLogs)
-      .where(eq(boothLogs.boothEventType, 'session_start'));
-
-    // Add filters
-    const conditions = [eq(boothLogs.boothEventType, 'session_start')];
-    if (eventId) conditions.push(eq(boothLogs.eventId, eventId));
-    if (boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, boothIdentifier));
-
-    if (conditions.length > 1) {
-      sessionQuery = sessionQuery.where(and(...conditions));
-    }
-
-    // Get paginated sessions
-    const sessionsStart = await sessionQuery
+      .where(and(...conditions))
       .orderBy(desc(boothLogs.createdAt))
       .limit(pageSize)
       .offset(offset);
 
-    // Get total count for pagination
     const totalSessionsResult = await db
       .select({ count: count() })
       .from(boothLogs)
@@ -190,13 +149,11 @@ export class BoothLoggingService {
     
     const totalSessions = totalSessionsResult[0]?.count || 0;
 
-    // For each session, get all events and build grouped session
     const sessions: GroupedSession[] = await Promise.all(
       sessionsStart.map(async (sessionStart) => {
         const sessionEvents = await this.getSessionEvents(sessionStart.sessionId);
         
-        // Find session end event
-        const sessionEnd = sessionEvents.find(e => e.boothEventType === 'session_end');
+        const sessionEnd = sessionEvents.find(e => e.boothEventType === BoothEventType.SESSION_END);
         
         return {
           sessionId: sessionStart.sessionId,
@@ -206,7 +163,12 @@ export class BoothLoggingService {
           boothIdentifier: sessionStart.boothIdentifier,
           status: sessionEnd ? 'complete' : 'incomplete',
           eventCount: sessionEvents.length,
-          events: sessionEvents,
+          events: sessionEvents.map(event => ({
+            ...event,
+            boothEventType: event.boothEventType as BoothEventType,
+            status: event.status as BoothStatus,
+            createdAt: event.createdAt.toISOString(),
+          })),
           qrCodeId: sessionStart.qrCodeId,
           eventId: sessionStart.eventId,
         };
@@ -228,9 +190,6 @@ export class BoothLoggingService {
     };
   }
 
-  /**
-   * Get booth event statistics
-   */
   async getBoothEventStats(options?: {
     eventId?: string;
     boothIdentifier?: string;
@@ -238,50 +197,48 @@ export class BoothLoggingService {
   }) {
     const db = this.databaseService.getDb();
     
-    let query = db
-      .select({
-        boothEventType: boothLogs.boothEventType,
-        status: boothLogs.status,
-        count: count(),
-      })
-      .from(boothLogs);
-
     const conditions = [];
     if (options?.eventId) conditions.push(eq(boothLogs.eventId, options.eventId));
     if (options?.boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, options.boothIdentifier));
     if (options?.sessionId) conditions.push(eq(boothLogs.sessionId, options.sessionId));
     
+    const query = db
+      .select({
+        boothEventType: boothLogs.boothEventType,
+        status: boothLogs.status,
+        count: count(),
+      })
+      .from(boothLogs)
+      .groupBy(boothLogs.boothEventType, boothLogs.status);
+    
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query.where(and(...conditions));
     }
     
-    return await query.groupBy(boothLogs.boothEventType, boothLogs.status);
+    return await query;
   }
 
-  /**
-   * Format booth event into human-readable message
-   */
   private formatBoothEventMessage(boothEvent: BoothEventData): string {
     switch (boothEvent.event_type) {
-      case 'session_start':
+      case BoothEventType.SESSION_START:
         return `Booth session started with mode: ${boothEvent.param1 || 'Unknown'}`;
-      case 'countdown_start':
+      case BoothEventType.COUNTDOWN_START:
         return `Countdown started: ${boothEvent.param1 || '0'} seconds`;
-      case 'countdown':
+      case BoothEventType.COUNTDOWN:
         return `Countdown progress: ${boothEvent.param1 || '0'}% complete`;
-      case 'capture_start':
+      case BoothEventType.CAPTURE_START:
         return 'Camera capture initiated';
-      case 'file_download':
+      case BoothEventType.FILE_DOWNLOAD:
         return `Photo downloaded from camera: ${boothEvent.param1 || 'Unknown file'}`;
-      case 'processing_start':
+      case BoothEventType.PROCESSING_START:
         return 'Photo processing started';
-      case 'sharing_screen':
+      case BoothEventType.SHARING_SCREEN:
         return 'Sharing screen displayed';
-      case 'printing':
+      case BoothEventType.PRINTING:
         return `Printing ${boothEvent.param2 || '1'} copies of ${boothEvent.param1 || 'file'} on ${boothEvent.param3 || 'printer'}`;
-      case 'file_upload':
+      case BoothEventType.FILE_UPLOAD:
         return `File uploaded: ${boothEvent.param1 || 'file'} to ${boothEvent.param2 || 'cloud'} as ${boothEvent.param3 || 'unknown type'}`;
-      case 'session_end':
+      case BoothEventType.SESSION_END:
         return 'Booth session completed';
       default:
         return `Booth event: ${boothEvent.event_type}`;

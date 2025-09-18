@@ -1,5 +1,6 @@
 import { Body, Controller, Headers, HttpException, HttpStatus, Logger, Post, Request } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { PaymongoWebhookPayload } from './webhooks.service';
 import { WebhooksService } from './webhooks.service';
 
 @ApiTags('Webhooks')
@@ -7,30 +8,30 @@ import { WebhooksService } from './webhooks.service';
 export class WebhooksController {
   private readonly logger = new Logger(WebhooksController.name);
 
-  constructor(private readonly webhooksService: WebhooksService) { }
+  constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post()
   @ApiOperation({
     summary: 'PayMongo webhook endpoint',
-    description: 'Handle PayMongo webhook events for payment status updates'
+    description: 'Handle PayMongo webhook events for payment status updates',
   })
   @ApiHeader({
     name: 'paymongo-signature',
     description: 'PayMongo webhook signature for verification',
-    required: true
+    required: true,
   })
   @ApiResponse({
     status: 200,
-    description: 'Webhook processed successfully'
+    description: 'Webhook processed successfully',
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid webhook signature or payload'
+    description: 'Invalid webhook signature or payload',
   })
   async handleWebhook(
-    @Body() payload: any,
+    @Body() payload: PaymongoWebhookPayload,
     @Headers('paymongo-signature') signature: string,
-    @Request() req: any
+    @Request() req: { headers: Record<string, string> },
   ) {
     this.logger.log('payload', payload);
     // Best Practice #2: Log incoming webhook immediately
@@ -39,7 +40,7 @@ export class WebhooksController {
       type: payload.data?.type,
       eventType: payload.data?.attributes?.type,
       eventId: payload.data?.id,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     try {
@@ -66,10 +67,10 @@ export class WebhooksController {
         } catch (asyncError) {
           // Best Practice #3: Log processing errors for monitoring
           this.logger.error(`[${webhookId}] Async webhook processing failed:`, {
-            error: asyncError.message,
-            stack: asyncError.stack,
+            error: (asyncError as Error).message,
+            stack: (asyncError as Error).stack,
             eventType: payload.data?.attributes?.type,
-            eventId: payload.data?.id
+            eventId: payload.data?.id,
           });
         }
       });
@@ -78,19 +79,18 @@ export class WebhooksController {
       return {
         status: 'accepted',
         message: 'Webhook received and queued for processing',
-        webhookId
+        webhookId,
       };
-
     } catch (error) {
       // Only catch signature verification errors here
       // These should fail fast and return appropriate status
       this.logger.error(`[${webhookId}] Webhook validation failed:`, {
-        error: error.message,
+        error: (error as Error).message,
         signature: signature?.substring(0, 50) + '...',
       });
 
       // Best Practice: Return 401 for signature failures so PayMongo knows it's an auth issue
-      if (error.message?.includes('signature')) {
+      if ((error as Error).message?.includes('signature')) {
         throw new HttpException('Invalid webhook signature', HttpStatus.UNAUTHORIZED);
       }
 

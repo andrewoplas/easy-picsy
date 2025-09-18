@@ -2,13 +2,14 @@ import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
 import { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 import { events } from './events.schema';
 import { qrCodes } from './qr_codes.schema';
+import { BoothStatus } from '@org/commons';
 
 export const boothLogs = pgTable('booth_logs', {
   id: uuid('id').defaultRandom().primaryKey(),
   
   // Core booth session data
   sessionId: text('session_id').notNull(), // Client-generated session identifier
-  boothEventType: text('booth_event_type').notNull(), // session_start, countdown, printing, etc.
+  boothEventType: text('booth_event_type').notNull(), // Enum values enforced at application level
   timestamp: text('timestamp').notNull(), // Original booth timestamp format: "16:20:7.287"
   
   // Event parameters (preserving original booth event structure)
@@ -25,7 +26,7 @@ export const boothLogs = pgTable('booth_logs', {
   boothIdentifier: text('booth_identifier'), // Physical booth ID/name (e.g., "Booth-1", "Main-Booth")
   
   // Status and diagnostics
-  status: text('status').notNull().default('success'), // success, error, warning
+  status: text('status').notNull().default(BoothStatus.SUCCESS), // Enum values enforced at application level
   message: text('message'), // Human-readable description
   errorDetails: text('error_details'), // Error information if status is error
   

@@ -1,26 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsUUID, IsOptional, IsIn, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { BoothEventType, BoothStatus } from '@org/commons';
 
 export class BoothEventDataDto {
   @ApiProperty({
     description: 'Type of booth event',
-    example: 'session_start',
-    enum: [
-      'session_start',
-      'countdown_start', 
-      'countdown',
-      'capture_start',
-      'file_download',
-      'processing_start',
-      'sharing_screen',
-      'printing',
-      'file_upload',
-      'session_end'
-    ]
+    example: BoothEventType.SESSION_START,
+    enum: Object.values(BoothEventType)
   })
   @IsString()
-  event_type: string;
+  @IsIn(Object.values(BoothEventType))
+  event_type: BoothEventType;
 
   @ApiPropertyOptional({
     description: 'First parameter (usage depends on event type)',
@@ -106,12 +97,12 @@ export class LogBoothEventDto {
 
   @ApiPropertyOptional({
     description: 'Event status',
-    example: 'success',
-    enum: ['success', 'error', 'warning']
+    example: BoothStatus.SUCCESS,
+    enum: Object.values(BoothStatus)
   })
   @IsOptional()
-  @IsIn(['success', 'error', 'warning'])
-  status?: 'success' | 'error' | 'warning';
+  @IsIn(Object.values(BoothStatus))
+  status?: BoothStatus;
 
   @ApiPropertyOptional({
     description: 'Custom message for this event',

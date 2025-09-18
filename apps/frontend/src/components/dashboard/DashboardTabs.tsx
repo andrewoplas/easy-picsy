@@ -90,49 +90,69 @@ export function DashboardTabs() {
       </TabsContent>
 
       <TabsContent value="performance" className="mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnalyticsCard
-            title="Average Session Time"
-            value={metrics.averageSessionTime.value}
-            trend={metrics.averageSessionTime.trend}
-            icon={Clock}
-            description={metrics.averageSessionTime.description}
-          />
-          <AnalyticsCard
-            title="Total Prints"
-            value={metrics.totalPrints.value}
-            trend={metrics.totalPrints.trend}
-            icon={Printer}
-            description={metrics.totalPrints.description}
-          />
-          <AnalyticsCard
-            title="Single Session"
-            value={metrics.singleSession.value}
-            trend={metrics.singleSession.trend}
-            icon={Camera}
-            description={metrics.singleSession.description}
-          />
-          <AnalyticsCard
-            title="Reprints"
-            value={metrics.reprints.value}
-            trend={metrics.reprints.trend}
-            icon={RefreshCw}
-            description={metrics.reprints.description}
-          />
-          <AnalyticsCard
-            title="Average Prints / Event"
-            value={metrics.averagePrintsPerEvent.value}
-            trend={metrics.averagePrintsPerEvent.trend}
-            icon={BarChart}
-            description={metrics.averagePrintsPerEvent.description}
-          />
-          <AnalyticsCard
-            title="Average Reprints per Event"
-            value={metrics.averageReprintsPerEvent.value}
-            trend={metrics.averageReprintsPerEvent.trend}
-            icon={LineChart}
-            description={metrics.averageReprintsPerEvent.description}
-          />
+        <div className="space-y-6">
+          {/* Session Metrics */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">Session Activity</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              <AnalyticsCard
+                title="Average Session Time"
+                value={metrics.averageSessionTime.value}
+                trend={metrics.averageSessionTime.trend}
+                icon={Clock}
+                description={metrics.averageSessionTime.description}
+              />
+              <AnalyticsCard
+                title="Single Session"
+                value={metrics.singleSession.value}
+                trend={metrics.singleSession.trend}
+                icon={Camera}
+                description={metrics.singleSession.description}
+              />
+            </div>
+          </div>
+
+          {/* Print Metrics */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">Print Activity</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              <AnalyticsCard
+                title="Total Prints"
+                value={metrics.totalPrints.value}
+                trend={metrics.totalPrints.trend}
+                icon={Printer}
+                description={metrics.totalPrints.description}
+              />
+              <AnalyticsCard
+                title="Reprints"
+                value={metrics.reprints.value}
+                trend={metrics.reprints.trend}
+                icon={RefreshCw}
+                description={metrics.reprints.description}
+              />
+            </div>
+          </div>
+
+          {/* Event Averages */}
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">Event Averages</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              <AnalyticsCard
+                title="Average Prints per Event"
+                value={metrics.averagePrintsPerEvent.value}
+                trend={metrics.averagePrintsPerEvent.trend}
+                icon={BarChart}
+                description={metrics.averagePrintsPerEvent.description}
+              />
+              <AnalyticsCard
+                title="Average Reprints per Event"
+                value={metrics.averageReprintsPerEvent.value}
+                trend={metrics.averageReprintsPerEvent.trend}
+                icon={LineChart}
+                description={metrics.averageReprintsPerEvent.description}
+              />
+            </div>
+          </div>
         </div>
       </TabsContent>
     </Tabs>

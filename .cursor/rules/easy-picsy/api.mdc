@@ -1,0 +1,347 @@
+---
+description: Guidelines for API integration and data fetching in the Easy Picsy codebase
+globs: ["apps/frontend/src/lib/api/**/*.ts", "apps/frontend/src/hooks/**/*.ts"]
+alwaysApply: true
+---
+
+# API Integration Guidelines
+
+## API Service Structure
+
+```typescript
+// ✅ DO: Create typed API services
+// @/lib/api/events.ts
+import { Configuration, EventsApi } from '@org/api-lib';
+import { Event, CreateEventDto } from '@org/commons';
+import axiosInstance from './client';
+
+const config = new Configuration();
+const eventsApiInstance = new EventsApi(
+  config,
+  undefined,
+  axiosInstance
+);
+
+export const eventsApi = {
+  async getById(id: string): Promise<Event> {
+    const response = await eventsApiInstance
+      .eventsControllerGetById(id);
+    return response.data;
+  },
+
+  async create(data: CreateEventDto): Promise<Event> {
+    const response = await eventsApiInstance
+      .eventsControllerCreate(data);
+    return response.data;
+  },
+};
+```
+
+## React Query Integration
+
+```typescript
+// ✅ DO: Create reusable query hooks
+// @/hooks/useEvent.ts
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { eventsApi } from '@/lib/api/events';
+import type { Event, CreateEventDto } from '@org/commons';
+
+export const EVENT_QUERY_KEYS = {
+  all: ['events'] as const,
+  lists: () => [...EVENT_QUERY_KEYS.all, 'list'] as const,
+  list: (filters: string) => [...EVENT_QUERY_KEYS.lists(), { filters }] as const,
+  details: () => [...EVENT_QUERY_KEYS.all, 'detail'] as const,
+  detail: (id: string) => [...EVENT_QUERY_KEYS.details(), id] as const,
+} as const;
+
+export function useEvent(id: string) {
+  return useQuery({
+    queryKey: EVENT_QUERY_KEYS.detail(id),
+    queryFn: () => eventsApi.getById(id),
+    staleTime: 30 * 1000, // 30 seconds
+  });
+}
+
+export function useCreateEvent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateEventDto) => 
+      eventsApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: EVENT_QUERY_KEYS.lists(),
+      });
+    },
+  });
+}
+```
+
+## Error Handling
+
+```typescript
+// ✅ DO: Create typed error handling
+// @/lib/api/errors.ts
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public code: string
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+// @/lib/api/client.ts
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+});
+
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      throw new ApiError(
+        error.response.data.message,
+        error.response.status,
+        error.response.data.code
+      );
+    }
+    throw error;
+  }
+);
+
+export default axiosInstance;
+```
+
+## Real-time Updates
+
+```typescript
+// ✅ DO: Implement real-time updates with React Query
+// @/hooks/useEventActivity.ts
+export function useEventActivity(eventId: string) {
+  const { data, ...rest } = useQuery({
+    queryKey: ['activity', eventId],
+    queryFn: () => activityApi.getBoothLogs(eventId),
+    refetchInterval: 30 * 1000, // Poll every 30 seconds
+  });
+
+  useEffect(() => {
+    const ws = new WebSocket(
+      `${process.env.NEXT_PUBLIC_WS_URL}/events/${eventId}`
+    );
+
+    ws.onmessage = (event) => {
+      const activity = JSON.parse(event.data);
+      queryClient.setQueryData(
+        ['activity', eventId],
+        (old: BoothActivity[]) => [...old, activity]
+      );
+    };
+
+    return () => ws.close();
+  }, [eventId]);
+
+  return { data, ...rest };
+}
+```
+
+## Data Transformation
+
+```typescript
+// ✅ DO: Transform API data consistently
+// @/lib/api/transforms.ts
+import { BoothLog, BoothActivity } from '@org/commons';
+
+export function transformBoothLog(log: BoothLog): BoothActivity {
+  return {
+    id: log.id,
+    type: log.boothEventType,
+    timestamp: log.timestamp,
+    description: formatBoothEvent(log),
+    status: log.status,
+  };
+}
+
+// @/lib/api/activity.ts
+export const activityApi = {
+  async getBoothLogs(eventId: string): Promise<BoothActivity[]> {
+    const response = await boothLoggingApiInstance
+      .boothLoggingControllerGetBoothEvents(eventId);
+    
+    return response.data.map(transformBoothLog);
+  },
+};
+```
+
+## Authentication & Authorization
+
+```typescript
+// ✅ DO: Handle auth in API client
+// @/lib/api/client.ts
+import { getSession } from 'next-auth/react';
+
+axiosInstance.interceptors.request.use(
+  async config => {
+    const session = await getSession();
+    
+    if (session?.accessToken) {
+      config.headers.Authorization = 
+        `Bearer ${session.accessToken}`;
+    }
+    
+    return config;
+  },
+  error => Promise.reject(error)
+);
+
+// Handle token refresh
+axiosInstance.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      const newToken = await refreshAccessToken();
+      
+      originalRequest.headers.Authorization = 
+        `Bearer ${newToken}`;
+        
+      return axiosInstance(originalRequest);
+    }
+
+    return Promise.reject(error);
+  }
+);
+```
+
+## API Testing
+
+```typescript
+// ✅ DO: Test API integration
+// @/hooks/useEvent.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { useEvent } from './useEvent';
+import { eventsApi } from '@/lib/api/events';
+
+vi.mock('@/lib/api/events');
+
+describe('useEvent', () => {
+  it('fetches and returns event data', async () => {
+    const mockEvent = {
+      id: '123',
+      name: 'Test Event',
+    };
+
+    (eventsApi.getById as Mock).mockResolvedValue(mockEvent);
+
+    const { result } = renderHook(() => 
+      useEvent('123')
+    );
+
+    expect(result.current.isLoading).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual(mockEvent);
+  });
+
+  it('handles errors properly', async () => {
+    const error = new ApiError(
+      'Not found',
+      404,
+      'EVENT_NOT_FOUND'
+    );
+
+    (eventsApi.getById as Mock).mockRejectedValue(error);
+
+    const { result } = renderHook(() => 
+      useEvent('123')
+    );
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(result.current.error).toEqual(error);
+  });
+});
+```
+
+## Performance Optimization
+
+```typescript
+// ✅ DO: Optimize data fetching
+export function useEventDashboard(eventId: string) {
+  // Parallel queries
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: ['event', eventId],
+        queryFn: () => eventsApi.getById(eventId),
+      },
+      {
+        queryKey: ['analytics', eventId],
+        queryFn: () => analyticsApi.getEventAnalytics(eventId),
+      },
+      {
+        queryKey: ['activity', eventId],
+        queryFn: () => activityApi.getBoothLogs(eventId),
+      },
+    ],
+  });
+
+  // Derived state
+  const data = useMemo(() => {
+    if (queries.some(q => !q.data)) return null;
+    
+    return {
+      event: queries[0].data,
+      analytics: queries[1].data,
+      activity: queries[2].data,
+    };
+  }, [queries]);
+
+  return {
+    data,
+    isLoading: queries.some(q => q.isLoading),
+    error: queries.find(q => q.error)?.error,
+  };
+}
+```
+
+## API Documentation
+
+```typescript
+// ✅ DO: Document API integration
+/**
+ * Hook for managing event data
+ * @param id - The event ID to fetch
+ * @returns Query result with event data
+ * @throws {ApiError} When the event is not found or server error occurs
+ * @example
+ * ```tsx
+ * function EventDetails({ id }: { id: string }) {
+ *   const { data, isLoading } = useEvent(id);
+ *   
+ *   if (isLoading) return <Spinner />;
+ *   return <div>{data.name}</div>;
+ * }
+ * ```
+ */
+export function useEvent(id: string) {
+  return useQuery({
+    queryKey: EVENT_QUERY_KEYS.detail(id),
+    queryFn: () => eventsApi.getById(id),
+  });
+}
+```
+
+Remember: These guidelines ensure consistent, reliable, and maintainable API integration across the codebase.

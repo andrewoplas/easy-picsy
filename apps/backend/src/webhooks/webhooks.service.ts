@@ -1,14 +1,15 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { QrCodeStatus } from '@org/commons';
+import * as crypto from 'crypto';
+import { eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
+import { events, QrCode, qrCodes, webhookLogs } from '../database/schema';
+import { LoggingService } from '../logging/logging.service';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
 import { RealtimeService } from '../realtime/realtime.service';
-import { LoggingService } from '../logging/logging.service';
-import { qrCodes, webhookLogs } from '../database/schema';
-import { eq } from 'drizzle-orm';
-import * as crypto from 'crypto';
 
-interface PaymongoWebhookPayload {
+export interface PaymongoWebhookPayload {
   data: PaymongoWebhookEvent;
 }
 
@@ -91,8 +92,12 @@ interface PaymongoQRPhData {
     organization_id: string;
     created_at: string;
     source_id: string;
-    source_status: 'expired';
+    source_status: 'expired' | 'failed' | 'paid';
     payment_intent_id: string;
+    failed_message?: string;
+    failed_code?: string;
+    amount?: number;
+    currency?: string;
   };
 }
 
@@ -114,7 +119,7 @@ export class WebhooksService {
   /**
    * Verify PayMongo webhook signature
    */
-  async verifyWebhookSignature(payload: any, signature: string): Promise<void> {
+  async verifyWebhookSignature(payload: PaymongoWebhookPayload, signature: string): Promise<void> {
     if (!this.webhookSecret) {
       this.logger.warn('Webhook secret not configured, skipping signature verification');
       return;
@@ -128,20 +133,21 @@ export class WebhooksService {
     try {
       // PayMongo sends signature in format: t=timestamp,te=test_mode_signature,li=live_mode_signature
       const signatureParts = signature.split(',');
-      const timestamp = signatureParts.find(part => part.startsWith('t='))?.replace('t=', '');
-      const testSignature = signatureParts.find(part => part.startsWith('te='))?.replace('te=', '');
-      const liveSignature = signatureParts.find(part => part.startsWith('li='))?.replace('li=', '');
+      const timestamp = signatureParts.find((part) => part.startsWith('t='))?.replace('t=', '');
+      const testSignature = signatureParts.find((part) => part.startsWith('te='))?.replace('te=', '');
+      const liveSignature = signatureParts.find((part) => part.startsWith('li='))?.replace('li=', '');
 
-      this.logger.log('Webhook signature parts:', { timestamp, hasTestSig: !!testSignature, hasLiveSig: !!liveSignature });
+      this.logger.log('Webhook signature parts:', {
+        timestamp,
+        hasTestSig: !!testSignature,
+        hasLiveSig: !!liveSignature,
+      });
 
       // Create the signature payload: timestamp.payload
       const signaturePayload = `${timestamp}.${JSON.stringify(payload)}`;
 
       // Calculate expected signature
-      const expectedSignature = crypto
-        .createHmac('sha256', this.webhookSecret)
-        .update(signaturePayload)
-        .digest('hex');
+      const expectedSignature = crypto.createHmac('sha256', this.webhookSecret).update(signaturePayload).digest('hex');
 
       // Check if we're in test mode or live mode
       // PayMongo test webhook secrets usually start with 'whsk_' or contain 'test'
@@ -151,13 +157,13 @@ export class WebhooksService {
       this.logger.log('Signature verification:', {
         isTestMode,
         receivedSig: receivedSignature?.substring(0, 10) + '...',
-        expectedSig: expectedSignature.substring(0, 10) + '...'
+        expectedSig: expectedSignature.substring(0, 10) + '...',
       });
 
       if (!receivedSignature || receivedSignature !== expectedSignature) {
         this.logger.error('Invalid webhook signature', {
           received: receivedSignature?.substring(0, 20),
-          expected: expectedSignature.substring(0, 20)
+          expected: expectedSignature.substring(0, 20),
         });
         throw new UnauthorizedException('Invalid webhook signature');
       }
@@ -172,7 +178,6 @@ export class WebhooksService {
         this.logger.warn('Webhook timestamp too old', { timeDifference });
         throw new UnauthorizedException('Webhook timestamp too old');
       }
-
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
@@ -233,18 +238,26 @@ export class WebhooksService {
 
       switch (eventType) {
         case 'payment.paid':
-          if (eventData?.type === 'payment') {
-            await this.handlePaymentPaid(eventData as PaymongoPaymentData, webhookLogId);
+          // Add debug logging to see the payment data structure
+          this.logger.debug('Payment.paid webhook data:', {
+            type: eventData?.type,
+            attributes: eventData?.attributes,
+            paymentIntentId: eventData?.attributes?.payment_intent_id,
+          });
+
+          // Only accept qrph type since we're using QR Ph exclusively
+          if (eventData?.type === 'qrph') {
+            await this.handlePaymentPaid(eventData as PaymongoQRPhData, webhookLogId);
           } else {
-            this.logger.error(`Expected payment data for payment.paid event, got: ${eventData?.type}`);
+            this.logger.error(`Expected qrph data for payment.paid event, got: ${eventData?.type}`);
           }
           break;
 
         case 'payment.failed':
-          if (eventData?.type === 'payment') {
-            await this.handlePaymentFailed(eventData as PaymongoPaymentData, webhookLogId);
+          if (eventData?.type === 'qrph') {
+            await this.handlePaymentFailed(eventData as PaymongoQRPhData, webhookLogId);
           } else {
-            this.logger.error(`Expected payment data for payment.failed event, got: ${eventData?.type}`);
+            this.logger.error(`Expected qrph data for payment.failed event, got: ${eventData?.type}`);
           }
           break;
 
@@ -263,14 +276,13 @@ export class WebhooksService {
       }
 
       await this.loggingService.updateWebhookLog(webhookLogId, 'completed');
-
     } catch (error) {
       this.logger.error(`Failed to process webhook ${eventType}:`, error);
       await this.loggingService.updateWebhookLog(
         webhookLogId,
         'failed',
         (error as Error).message,
-        (error as Error).stack
+        (error as Error).stack,
       );
       throw error;
     }
@@ -279,12 +291,11 @@ export class WebhooksService {
   /**
    * Handle successful payment
    */
-  private async handlePaymentPaid(paymentData: PaymongoPaymentData, webhookLogId: string): Promise<void> {
-    // PayMongo sends the payment object in the data field
-    // The payment intent ID is nested in: paymentData.attributes.payment_intent_id
+  private async handlePaymentPaid(paymentData: PaymongoQRPhData, webhookLogId: string): Promise<void> {
+    // Handle QR Ph payment data
     const paymentIntentId = paymentData.attributes.payment_intent_id;
     const paymentId = paymentData.id;
-    const origin = paymentData.attributes.origin;
+    const origin = 'qrph';
 
     this.logger.log(`Processing payment.paid for payment intent: ${paymentIntentId}`, {
       paymentId,
@@ -292,9 +303,14 @@ export class WebhooksService {
       origin,
       dataType: paymentData.type,
       hasAttributes: !!paymentData.attributes,
-      status: paymentData.attributes?.status,
-      amount: paymentData.attributes?.amount,
-      currency: paymentData.attributes?.currency,
+      status:
+        'attributes' in paymentData && 'status' in paymentData.attributes ? paymentData.attributes.status : 'paid',
+      amount:
+        'attributes' in paymentData && 'amount' in paymentData.attributes ? paymentData.attributes.amount : undefined,
+      currency:
+        'attributes' in paymentData && 'currency' in paymentData.attributes
+          ? paymentData.attributes.currency
+          : undefined,
     });
 
     try {
@@ -304,14 +320,12 @@ export class WebhooksService {
       if (paymentIntentId) {
         // QR Ph payment via Payment Intent (this is what we want)
         this.logger.log(`Looking for QR code with Payment Intent ID: ${paymentIntentId}`);
-        [qrCode] = await db
-          .select()
-          .from(qrCodes)
-          .where(eq(qrCodes.paymentIntentId, paymentIntentId))
-          .limit(1);
+        [qrCode] = await db.select().from(qrCodes).where(eq(qrCodes.paymentIntentId, paymentIntentId)).limit(1);
       } else {
         // Handle legacy payment link cases (should not happen anymore)
-        this.logger.warn(`Payment without payment_intent_id (origin: ${origin}), this should not happen with QR Ph only flow`);
+        this.logger.warn(
+          `Payment without payment_intent_id (origin: ${origin}), this should not happen with QR Ph only flow`,
+        );
         return;
       }
 
@@ -323,29 +337,24 @@ export class WebhooksService {
           origin,
           dataStructure: Object.keys(paymentData.attributes),
         });
-        
+
         // Debug: Let's see what QR codes exist
-        const allActiveQrCodes = await db
-          .select()
-          .from(qrCodes)
-          .where(eq(qrCodes.status, 'active'))
-          .limit(5);
-        
+        const allActiveQrCodes = await db.select().from(qrCodes).where(eq(qrCodes.status, 'active')).limit(5);
+
         this.logger.debug('Active QR codes in database:', {
           count: allActiveQrCodes.length,
-          qrCodes: allActiveQrCodes.map(qr => ({
+          qrCodes: allActiveQrCodes.map((qr) => ({
             id: qr.id,
             paymentIntentId: qr.paymentIntentId,
             status: qr.status,
-            createdAt: qr.createdAt
-          }))
+            createdAt: qr.createdAt,
+          })),
         });
         return;
       }
 
       this.logger.log(`Found QR code ${qrCode.id} for payment intent ${paymentIntentId}`);
       await this.processPaymentSuccess(qrCode, paymentData, webhookLogId, db);
-
     } catch (error) {
       this.logger.error(`Failed to handle payment success for ${paymentIntentId}:`, error);
     }
@@ -354,8 +363,14 @@ export class WebhooksService {
   /**
    * Process successful payment for a QR code
    */
-  private async processPaymentSuccess(qrCode: any, paymentData: any, webhookLogId: string, db: any): Promise<void> {
-    try { // Update webhook log with QR code and event references
+  private async processPaymentSuccess(
+    qrCode: QrCode,
+    paymentData: PaymongoPaymentData | PaymongoQRPhData,
+    webhookLogId: string,
+    db: DatabaseService['db'],
+  ): Promise<void> {
+    try {
+      // Update webhook log with QR code and event references
       await this.loggingService.updateWebhookLog(webhookLogId, 'processing');
       await db
         .update(webhookLogs)
@@ -371,6 +386,18 @@ export class WebhooksService {
 
       this.logger.log(`Payment successful for QR code: ${qrCode.id}`);
 
+      // Get event details to get the amount and currency if not in payment data
+      const [event] = await db.select().from(events).where(eq(events.id, qrCode.eventId)).limit(1);
+
+      const amount =
+        'attributes' in paymentData && 'amount' in paymentData.attributes
+          ? paymentData.attributes.amount
+          : Math.round(parseFloat(event.price) * 100);
+      const currency =
+        'attributes' in paymentData && 'currency' in paymentData.attributes
+          ? paymentData.attributes.currency
+          : event.currency;
+
       // Log the payment success event
       await this.loggingService.logEvent({
         eventType: 'payment_success',
@@ -379,14 +406,14 @@ export class WebhooksService {
         eventId: qrCode.eventId,
         eventData: {
           paymentId: paymentData.id,
-          amount: paymentData.attributes.amount,
-          currency: paymentData.attributes.currency,
+          amount,
+          currency,
         },
         metadata: {
           webhookLogId,
-          paymentIntentId: paymentData.id,
+          paymentIntentId: paymentData.attributes.payment_intent_id,
         },
-        message: `Payment successful for ${paymentData.attributes.amount / 100} ${paymentData.attributes.currency}`,
+        message: `Payment successful for ${amount ? amount / 100 : 0} ${currency}`,
       });
 
       // Broadcast payment success
@@ -394,10 +421,9 @@ export class WebhooksService {
         qrCodeId: qrCode.id,
         eventId: qrCode.eventId,
         paymentId: paymentData.id,
-        amount: paymentData.attributes.amount,
-        currency: paymentData.attributes.currency,
+        amount: amount ?? 0,
+        currency: currency ?? 'PHP',
       });
-
     } catch (error) {
       this.logger.error(`Failed to handle payment success for ${paymentData.attributes.payment_intent_id}:`, error);
     }
@@ -406,18 +432,14 @@ export class WebhooksService {
   /**
    * Handle failed payment
    */
-  private async handlePaymentFailed(paymentData: PaymongoPaymentData, webhookLogId: string): Promise<void> {
+  private async handlePaymentFailed(paymentData: PaymongoQRPhData, webhookLogId: string): Promise<void> {
     const paymentIntentId = paymentData.attributes.payment_intent_id;
     const paymentId = paymentData.id;
 
     try {
       // Find QR code by payment intent ID
       let db = this.databaseService.getDb();
-      const [qrCode] = await db
-        .select()
-        .from(qrCodes)
-        .where(eq(qrCodes.paymentIntentId, paymentIntentId))
-        .limit(1);
+      const [qrCode] = await db.select().from(qrCodes).where(eq(qrCodes.paymentIntentId, paymentIntentId)).limit(1);
 
       if (!qrCode) {
         this.logger.warn(`QR code not found for payment intent: ${paymentIntentId}`, {
@@ -468,9 +490,9 @@ export class WebhooksService {
           paymentIntentId,
         },
         message: `Payment failed: ${paymentData.attributes.failed_message || 'Unknown error'}`,
-        errorDetails: JSON.stringify({ 
-          failed_code: paymentData.attributes.failed_code, 
-          failed_message: paymentData.attributes.failed_message 
+        errorDetails: JSON.stringify({
+          failed_code: paymentData.attributes.failed_code,
+          failed_message: paymentData.attributes.failed_message,
         }),
       });
 
@@ -481,7 +503,6 @@ export class WebhooksService {
         paymentId: paymentData.id,
         failureReason: paymentData.attributes.failed_message || 'Payment failed',
       });
-
     } catch (error) {
       this.logger.error(`Failed to handle payment failure for ${paymentIntentId}:`, error);
     }
@@ -494,12 +515,12 @@ export class WebhooksService {
     try {
       // QR expiration references the QR Ph resource ID (qrph_xxx)
       const qrphId = qrData.id;
-      
+
       this.logger.log(`Processing qrph.expired for QR Ph: ${qrphId}`, {
         dataType: qrData.type,
         hasAttributes: !!qrData.attributes,
       });
-      
+
       if (!qrphId) {
         this.logger.warn('No QR Ph ID found in QR expiration event');
         return;
@@ -507,11 +528,7 @@ export class WebhooksService {
 
       // Find QR code by QR Ph ID
       const db = this.databaseService.getDb();
-      const [qrCode] = await db
-        .select()
-        .from(qrCodes)
-        .where(eq(qrCodes.paymongoQrphId, qrphId))
-        .limit(1);
+      const [qrCode] = await db.select().from(qrCodes).where(eq(qrCodes.paymongoQrphId, qrphId)).limit(1);
 
       if (!qrCode) {
         this.logger.warn(`QR code not found for QR Ph ID: ${qrphId}`, {
@@ -526,8 +543,8 @@ export class WebhooksService {
       // Update webhook log with QR code and event references
       await db
         .update(webhookLogs)
-        .set({ 
-          qrCodeId: qrCode.id, 
+        .set({
+          qrCodeId: qrCode.id,
           eventId: qrCode.eventId,
           updatedAt: new Date(),
         })
@@ -552,9 +569,8 @@ export class WebhooksService {
       this.realtimeService.notifyQRStatusUpdate(qrCode.eventId, {
         qrCodeId: qrCode.id,
         eventId: qrCode.eventId,
-        status: 'expired',
+        status: QrCodeStatus.EXPIRED,
       });
-
     } catch (error) {
       this.logger.error('Failed to handle QR expiration:', error);
     }

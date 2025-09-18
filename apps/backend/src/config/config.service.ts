@@ -69,7 +69,7 @@ export class ConfigService {
 
   // CORS configuration
   get corsOrigin(): string {
-    return this.configService.get<string>('CORS_ORIGIN', 'http://localhost:4200');
+    return '*';
   }
 
   // API configuration
