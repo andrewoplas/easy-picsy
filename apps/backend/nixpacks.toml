@@ -1,20 +1,27 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm", "postgresql"]
+nixPkgs = ["nodejs_20", "npm", "git"]
+aptPkgs = ["ca-certificates"]
 
 [phases.install]
+dependsOn = ["setup"]
 cmds = [
+  "cd ../..",
   "npm install --legacy-peer-deps"
 ]
 
 [phases.build]
+dependsOn = ["install"]
 cmds = [
-  "chmod +x apps/backend/railway-build-simple.sh",
-  "./apps/backend/railway-build-simple.sh"
+  "cd ../..",
+  "npx nx build commons",
+  "npx nx build backend --configuration=production",
+  "cd apps/backend"
 ]
 
 [start]
-cmd = "node apps/backend/dist/main.js"
+cmd = "node dist/main.js"
 
 [variables]
 NODE_ENV = "production"
 PORT = "3000"
+NPM_CONFIG_PRODUCTION = "false"
