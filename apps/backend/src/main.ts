@@ -143,21 +143,24 @@ async function bootstrap() {
     },
     });
 
-    // Create shared directory one level up from workspace root
-    const sharedDir = path.join(process.cwd(), '../shared');
-    if (!fs.existsSync(sharedDir)) {
-      fs.mkdirSync(sharedDir, { recursive: true });
+    // Only generate shared API spec in development mode
+    if (configService.nodeEnv === 'development') {
+      // Create shared directory one level up from workspace root
+      const sharedDir = path.join(process.cwd(), '../shared');
+      if (!fs.existsSync(sharedDir)) {
+        fs.mkdirSync(sharedDir, { recursive: true });
+      }
+      
+      const outputPath = path.join(process.cwd(), '../shared/api-spec.json');
+      fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+      Logger.log(`📄 API Spec saved to: ${outputPath}`);
     }
-    
-    const outputPath = path.join(process.cwd(), '../shared/api-spec.json');
-    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
 
     await app.listen(port, '0.0.0.0');
     
     Logger.log(`🚀 Application is running on: http://0.0.0.0:${port}/${globalPrefix}`);
     Logger.log(`📚 API Documentation: http://0.0.0.0:${port}/${globalPrefix}/docs`);
     Logger.log(`📝 Environment: ${configService.nodeEnv}`);
-    Logger.log(`📄 API Spec saved to: ${outputPath}`);
     Logger.log(`💚 Health check available at: http://0.0.0.0:${port}/${globalPrefix}/health`);
     
     // Log environment variable status (safely without exposing values)
