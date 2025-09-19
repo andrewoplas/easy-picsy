@@ -54,3 +54,4 @@ test-output
 .mcp.json
 .cursor/mcp.json
 
+.env*

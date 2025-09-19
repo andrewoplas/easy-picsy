@@ -4,9 +4,6 @@ FROM node:20-alpine AS base
 # Set working directory
 WORKDIR /app
 
-# Install dependencies for building (including Python for native modules)
-RUN apk add --no-cache python3 make g++
-
 # Copy workspace package files
 COPY package*.json ./
 COPY apps/backend/package*.json ./apps/backend/

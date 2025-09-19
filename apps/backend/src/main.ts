@@ -159,6 +159,14 @@ async function bootstrap() {
     Logger.log(`📝 Environment: ${configService.nodeEnv}`);
     Logger.log(`📄 API Spec saved to: ${outputPath}`);
     Logger.log(`💚 Health check available at: http://0.0.0.0:${port}/${globalPrefix}/health`);
+    
+    // Log environment variable status (safely without exposing values)
+    Logger.log('📋 Environment Variables Status:');
+    Logger.log(`Database Config: ${configService.databaseUrl ? '✅' : '❌'}`);
+    Logger.log(`Supabase Config: ${configService.supabaseUrl && configService.supabaseAnonKey ? '✅' : '❌'}`);
+    Logger.log(`JWT Config: ${configService.jwtSecret ? '✅' : '❌'}`);
+    Logger.log(`PayMongo Config: ${configService.paymongoSecretKey && configService.paymongoPublicKey ? '✅' : '❌'}`);
+    Logger.log(`API Config: ${configService.apiPrefix && configService.apiVersion ? '✅' : '❌'}`);
   } catch (error) {
     console.error('❌ Failed to start application:', error);
     process.exit(1);
