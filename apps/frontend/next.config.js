@@ -1,6 +1,7 @@
 //@ts-check
+const path = require('path');
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+ 
 const { composePlugins, withNx } = require('@nx/next');
 
 /**
@@ -10,6 +11,16 @@ const nextConfig = {
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {},
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Add webpack aliases for workspace packages
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@org/api-lib': path.resolve(__dirname, '../../libs/api-lib'),
+      '@org/commons': path.resolve(__dirname, '../../libs/commons/src'),
+    };
+    
+    return config;
+  },
 };
 
 const plugins = [

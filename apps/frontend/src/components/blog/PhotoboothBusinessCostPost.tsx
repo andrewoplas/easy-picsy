@@ -17,9 +17,9 @@ export default function PhotoboothBusinessCostPost() {
         </h2>
         <p className="text-lg text-easy-black/80 leading-relaxed">
           Thinking about starting a photobooth business in the Philippines?
-          You're not alone. From weddings and debuts to corporate events and
+          You&apos;re not alone. From weddings and debuts to corporate events and
           weekend markets, photobooths have become an essential feature at
-          Filipino gatherings. They're not just for fun—they're a proven way to
+          Filipino gatherings. They&apos;re not just for fun—they&apos;re a proven way to
           build memories, create shareable moments, and even start a profitable
           side hustle.
         </p>
@@ -29,7 +29,7 @@ export default function PhotoboothBusinessCostPost() {
             how much does it cost to start a photobooth business in the
             Philippines in 2025?
           </strong>{' '}
-          Let's break it down.
+          Let&apos;s break it down.
         </p>
       </div>
 
@@ -40,13 +40,13 @@ export default function PhotoboothBusinessCostPost() {
           Why Start a Photobooth Business in the Philippines?
         </h3>
         <p className="text-easy-black/80 text-lg leading-relaxed mb-6">
-          Filipinos love taking pictures—whether it's for Instagram, TikTok, or
+          Filipinos love taking pictures—whether it&apos;s for Instagram, TikTok, or
           a family photo album. Add the fact that the country hosts thousands of
           weddings, birthdays, and corporate events every year, and you have a
           consistent demand for photobooth rentals.
         </p>
         <p className="text-easy-black/80 text-lg leading-relaxed mb-6">
-          Here's why it's a strong business idea:
+          Here&apos;s why it&apos;s a strong business idea:
         </p>
         <div className="grid md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-2xl p-6 border border-easy-yellow/20 shadow-sm">
@@ -55,7 +55,7 @@ export default function PhotoboothBusinessCostPost() {
               High demand year-round
             </h4>
             <p className="text-easy-black/70 text-sm">
-              From "ber" months weddings to summer festivals, there's always a
+              From &ldquo;ber&rdquo; months weddings to summer festivals, there&apos;s always a
               market.
             </p>
           </div>
@@ -65,7 +65,7 @@ export default function PhotoboothBusinessCostPost() {
               Low operational costs
             </h4>
             <p className="text-easy-black/70 text-sm">
-              Once you've covered startup expenses, recurring costs are
+              Once you&apos;ve covered startup expenses, recurring costs are
               manageable.
             </p>
           </div>
@@ -82,7 +82,7 @@ export default function PhotoboothBusinessCostPost() {
           <div className="flex items-start gap-3">
             <Lightbulb className="w-6 h-6 text-easy-yellow flex-shrink-0 mt-1" />
             <p className="text-easy-black/80 font-medium">
-              In other words, a photobooth isn't just a side hustle—it can grow
+              In other words, a photobooth isn&apos;t just a side hustle—it can grow
               into a reliable small business.
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function PhotoboothBusinessCostPost() {
         </h3>
         <p className="text-easy-black/80 text-lg leading-relaxed mb-8">
           The cost of starting your booth will depend on the type of photobooth
-          setup you want and how premium you'd like it to look. Here's a
+          setup you want and how premium you&apos;d like it to look. Here&apos;s a
           realistic breakdown for 2025:
         </p>
 
@@ -154,8 +154,8 @@ export default function PhotoboothBusinessCostPost() {
             2. Photobooth Software (₱0–₱20,000 annually)
           </h4>
           <p className="text-easy-black/80 mb-6">
-            This is the "engine" that runs your booth. Without the right app,
-            you'll struggle with operations.
+            This is the &ldquo;engine&rdquo; that runs your booth. Without the right app,
+            you&apos;ll struggle with operations.
           </p>
           <div className="space-y-4 mb-6">
             <div className="bg-gray-50 p-4 rounded-xl">
@@ -169,7 +169,7 @@ export default function PhotoboothBusinessCostPost() {
             <div className="bg-easy-yellow-light/50 p-4 rounded-xl border border-easy-yellow/30">
               <h5 className="font-semibold text-easy-black mb-2">Easy Picsy</h5>
               <p className="text-easy-black/70 text-sm">
-                A <strong>Philippine-first photobooth software</strong> that's
+                A <strong>Philippine-first photobooth software</strong> that&apos;s
                 simple, mobile-ready, and designed for contactless payments
                 (GCash & QRPH).
               </p>
@@ -227,7 +227,7 @@ export default function PhotoboothBusinessCostPost() {
         </h3>
         <p className="text-easy-black/80 text-lg leading-relaxed mb-6">
           Running a photobooth business in the Philippines has recurring costs,
-          but they're generally manageable and scale with how many events you
+          but they&apos;re generally manageable and scale with how many events you
           book.
         </p>
         <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -295,7 +295,7 @@ export default function PhotoboothBusinessCostPost() {
           <p className="text-easy-black/80 mb-6">
             With <strong>Easy Picsy</strong>, you can simplify your setup,
             accept <strong>GCash/QRPH cashless payments</strong>, and offer
-            instant digital sharing—perfect for today's clients.
+            instant digital sharing—perfect for today&apos;s clients.
           </p>
           <a
             href="#waitlist"
@@ -312,7 +312,7 @@ export default function PhotoboothBusinessCostPost() {
           How Much Can You Earn?
         </h3>
         <p className="text-easy-black/80 text-lg leading-relaxed mb-6">
-          Here's the exciting part—earnings.
+          Here&apos;s the exciting part—earnings.
         </p>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -524,7 +524,7 @@ export default function PhotoboothBusinessCostPost() {
             experience for clients.
           </p>
           <p className="text-easy-black/80 text-lg leading-relaxed">
-            Whether you're starting small or running multiple booths, Easy Picsy
+            Whether you&apos;re starting small or running multiple booths, Easy Picsy
             makes it simple, fast, and profitable.
           </p>
         </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowDownRight, ArrowUpRight, CreditCard, DollarSign, Download } from 'lucide-react';
 
-interface Transaction {
+export interface Transaction {
   id: string;
   type: 'payment' | 'refund' | 'fee';
   description: string;

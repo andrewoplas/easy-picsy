@@ -128,7 +128,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       .replace(/\\\)/g, ')') // Fix escaped parentheses
       .replace(/\\n/g, '\n') // Fix escaped newlines
       // Format tips
-      .replace(/💡\s*([^💡\n]+?)(?=\n|$)/g, '💡 **$1**') // Format tips
+      .replace(/💡\s*([^💡\n]+?)(?=\n|$)/gu, '💡 **$1**') // Format tips
       .replace(/\*\*([^*]+):\*\*/g, '**$1:**') // Fix bold with colon
       .replace(/\n\n\n+/g, '\n\n') // Remove excessive line breaks
       .replace(/–/g, '–') // Ensure proper em dash

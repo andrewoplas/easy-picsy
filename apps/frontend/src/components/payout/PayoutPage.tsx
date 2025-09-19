@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { DateRange } from 'react-day-picker';
-import { PayoutSummary } from '@/components/dashboard/payout/PayoutSummary';
 import { DateRangeFilter } from '@/components/dashboard/DateRangeFilter';
+import { PayoutSummary } from '@/components/dashboard/payout/PayoutSummary';
+import { DateRange } from 'react-day-picker';
 
 export function PayoutPage() {
   const handleDateChange = (range: DateRange | undefined) => {

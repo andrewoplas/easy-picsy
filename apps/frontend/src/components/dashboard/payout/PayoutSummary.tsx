@@ -3,10 +3,10 @@
 import { RevenueCard } from './RevenueCard';
 import { WithdrawableCard } from './WithdrawableCard';
 import { PendingCard } from './PendingCard';
-import { TransactionHistory } from './TransactionHistory';
-import { CashoutHistory } from './CashoutHistory';
+import { TransactionHistory, Transaction } from './TransactionHistory';
+import { CashoutHistory, Cashout } from './CashoutHistory';
 
-const defaultTransactions = [
+const defaultTransactions: Transaction[] = [
   {
     id: 'txn_001',
     type: 'payment',
@@ -14,16 +14,16 @@ const defaultTransactions = [
     amount: 1250,
     date: '2024-01-15T10:30:00Z',
     status: 'completed',
-    eventName: 'Wedding Event - Manila Hotel'
+    eventName: 'Wedding Event - Manila Hotel',
   },
   {
-    id: 'txn_002', 
+    id: 'txn_002',
     type: 'payment',
     description: 'Booth rental fee',
     amount: 850,
     date: '2024-01-14T14:20:00Z',
     status: 'completed',
-    eventName: 'Birthday Party - BGC'
+    eventName: 'Birthday Party - BGC',
   },
   {
     id: 'txn_003',
@@ -32,7 +32,7 @@ const defaultTransactions = [
     amount: -45,
     date: '2024-01-14T14:21:00Z',
     status: 'completed',
-    eventName: 'Birthday Party - BGC'
+    eventName: 'Birthday Party - BGC',
   },
   {
     id: 'txn_004',
@@ -41,7 +41,7 @@ const defaultTransactions = [
     amount: 300,
     date: '2024-01-13T16:45:00Z',
     status: 'pending',
-    eventName: 'Corporate Event - Makati'
+    eventName: 'Corporate Event - Makati',
   },
   {
     id: 'txn_005',
@@ -50,18 +50,18 @@ const defaultTransactions = [
     amount: -200,
     date: '2024-01-12T09:15:00Z',
     status: 'completed',
-    eventName: 'Graduation Party - QC'
-  }
+    eventName: 'Graduation Party - QC',
+  },
 ];
 
-const defaultCashouts = [
+const defaultCashouts: Cashout[] = [
   {
     id: 'co_001',
     amount: 5000,
     date: '2024-01-10T08:00:00Z',
     status: 'completed',
     method: 'bank_transfer',
-    reference: 'TXN20240110001'
+    reference: 'TXN20240110001',
   },
   {
     id: 'co_002',
@@ -69,7 +69,7 @@ const defaultCashouts = [
     date: '2024-01-05T15:30:00Z',
     status: 'completed',
     method: 'gcash',
-    reference: 'GC20240105002'
+    reference: 'GC20240105002',
   },
   {
     id: 'co_003',
@@ -77,8 +77,8 @@ const defaultCashouts = [
     date: '2024-01-03T11:20:00Z',
     status: 'processing',
     method: 'bank_transfer',
-    reference: 'TXN20240103003'
-  }
+    reference: 'TXN20240103003',
+  },
 ];
 
 interface PayoutSummaryProps {
@@ -87,10 +87,10 @@ interface PayoutSummaryProps {
   pendingAmount?: number;
 }
 
-export function PayoutSummary({ 
+export function PayoutSummary({
   totalNetRevenue = 15420,
   withdrawableAmount = 8750,
-  pendingAmount = 1200
+  pendingAmount = 1200,
 }: PayoutSummaryProps) {
   return (
     <div className="space-y-6">

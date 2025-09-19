@@ -916,7 +916,7 @@ export default function LandingPage() {
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-easy-black transition-colors leading-tight line-clamp-2">
-                    Why Gen Z and Millennials Can't Get Enough of Photobooths
+                    Why Gen Z and Millennials Can&apos;t Get Enough of Photobooths
                   </h3>
                   <p className="text-gray-600 leading-relaxed mb-6 flex-1 line-clamp-3">
                     Understanding why Gen Z and Millennials are obsessed with photobooths and how to design your rental business to capture this growing market.

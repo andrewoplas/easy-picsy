@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Analytics } from '@vercel/analytics/next';
 import NextTopLoader from 'nextjs-toploader';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const passionOne = Passion_One({
   subsets: ['latin'],
@@ -113,6 +114,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           shadow="0 0 10px #F97316,0 0 5px #FEF08A"
         />
         <Analytics />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID as string} />
         <QueryProvider>
           {children}
           <Toaster />

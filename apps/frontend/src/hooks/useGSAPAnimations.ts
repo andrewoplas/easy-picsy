@@ -47,7 +47,7 @@ export const useScrollAnimation = (
   return ref;
 };
 
-export const useParallaxEffect = (speed: number = 0.5) => {
+export const useParallaxEffect = (speed = 0.5) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -71,9 +71,9 @@ export const useParallaxEffect = (speed: number = 0.5) => {
 };
 
 export const useStaggerAnimation = (
-  staggerAmount: number = 0.1,
+  staggerAmount = 0.1,
   animationConfig?: gsap.TweenVars,
-  selector: string = '.feature-card'
+  selector = '.feature-card'
 ) => {
   const ref = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
@@ -128,7 +128,7 @@ export const useStaggerAnimation = (
 export const useMorphAnimation = () => {
   const ref = useRef<SVGPathElement>(null);
 
-  const morph = (newPath: string, duration: number = 1) => {
+  const morph = (newPath: string, duration = 1) => {
     if (!ref.current) return;
 
     gsap.to(ref.current, {
@@ -224,8 +224,8 @@ export const useTextSplitAnimation = () => {
 };
 
 export const useFloatingAnimation = (
-  amplitude: number = 20,
-  duration: number = 3
+  amplitude = 20,
+  duration = 3
 ) => {
   const ref = useRef<HTMLDivElement>(null);
 

@@ -120,13 +120,13 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
               {qrCode.usedAt && (
                 <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center">
                   <Timer className="w-3 h-3 mr-1" />
-                  Used: {formatDateTime(qrCode.usedAt)}
+                  Used: {formatDateTime(qrCode.usedAt as unknown as string)}
                 </div>
               )}
               {qrCode.invalidatedAt && (
                 <div className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-md flex items-center">
                   <Trash2 className="w-3 h-3 mr-1" />
-                  Invalidated: {formatDateTime(qrCode.invalidatedAt)}
+                  Invalidated: {formatDateTime(qrCode.invalidatedAt as unknown as string)}
                 </div>
               )}
             </div>
