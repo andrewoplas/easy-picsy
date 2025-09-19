@@ -1,22 +1,12 @@
 [build]
 dockerfilePath = "Dockerfile"
-watchPatterns = ["**/*.ts", "**/*.js", "**/*.json", "package*.json"]
 
 [deploy]
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
-numReplicas = 1
 
 [env]
 NODE_ENV = "production"
 PORT = "3000"
-TZ = "UTC"
-
-[experimental]
-incrementalBuilds = true
-
-# Railway service configuration
-[railway]
-service = "easy-picsy-backend"
