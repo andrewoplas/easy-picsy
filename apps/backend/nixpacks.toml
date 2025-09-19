@@ -1,14 +1,14 @@
 [phases.setup]
-nixPkgs = ["nodejs_18", "npm", "postgresql"]
+nixPkgs = ["nodejs_20", "npm", "postgresql"]
 
 [phases.install]
 cmds = [
-  "npm ci --only=production"
+  "npm ci --omit=dev"
 ]
 
 [phases.build]
 cmds = [
-  "cd apps/backend && npm run build"
+  "npx nx build backend"
 ]
 
 [start]

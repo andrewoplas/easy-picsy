@@ -1,5 +1,5 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine
+# Use Node.js 20 Alpine for smaller image size
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -27,10 +27,10 @@ COPY apps/backend/webpack.config.js ./apps/backend/
 COPY apps/backend/src/ ./apps/backend/src/
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Build the application
-RUN cd apps/backend && npm run build
+RUN npx nx build backend
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs

@@ -20,6 +20,10 @@
     "update-sources": "openapi-generator-cli generate -i ../shared/api-spec.json -g typescript-axios -o libs/api-lib"
   },
   "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "dependencies": {
     "@fillout/react": "^1.1.0",
     "@nestjs/common": "^11.0.0",
