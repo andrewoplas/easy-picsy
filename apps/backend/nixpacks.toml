@@ -3,12 +3,12 @@ nixPkgs = ["nodejs_20", "npm", "postgresql"]
 
 [phases.install]
 cmds = [
-  "npm ci --omit=dev"
+  "npm install --legacy-peer-deps"
 ]
 
 [phases.build]
 cmds = [
-  "npx nx build backend"
+  "chmod +x apps/backend/railway-build-simple.sh && ./apps/backend/railway-build-simple.sh"
 ]
 
 [start]

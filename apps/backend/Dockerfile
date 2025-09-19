@@ -27,7 +27,7 @@ COPY apps/backend/webpack.config.js ./apps/backend/
 COPY apps/backend/src/ ./apps/backend/src/
 
 # Install dependencies
-RUN npm ci --omit=dev
+RUN npm install --legacy-peer-deps
 
 # Build the application
 RUN npx nx build backend
