@@ -11,17 +11,17 @@ echo "📋 npm version: $(npm --version)"
 
 # Install all dependencies (including dev dependencies for build)
 echo "📦 Installing all dependencies..."
-npm install --legacy-peer-deps
+cd ../.. && npm install --legacy-peer-deps
 
-# Build the application using webpack directly
-echo "🔨 Building application with webpack..."
-npx webpack-cli build --node-env=production --mode=production
+# Build the application using Nx
+echo "🔨 Building application with Nx..."
+npx nx build backend --configuration=production
 
 # Verify build output
-if [ -f "dist/main.js" ]; then
-    echo "✅ Build successful! Output found at dist/main.js"
+if [ -f "apps/backend/dist/main.js" ]; then
+    echo "✅ Build successful! Output found at apps/backend/dist/main.js"
 else
-    echo "❌ Build failed! Output not found at dist/main.js"
+    echo "❌ Build failed! Output not found at apps/backend/dist/main.js"
     exit 1
 fi
 

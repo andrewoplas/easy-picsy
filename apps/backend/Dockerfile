@@ -30,7 +30,7 @@ COPY apps/backend/src/ ./apps/backend/src/
 RUN npm install --legacy-peer-deps
 
 # Build the application
-RUN npx nx build backend
+RUN chmod +x apps/backend/railway-build-simple.sh && ./apps/backend/railway-build-simple.sh
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
