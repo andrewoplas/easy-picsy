@@ -27,12 +27,11 @@ FROM node:20-alpine AS production
 # Set working directory
 WORKDIR /app
 
-# Copy built application
+# Copy the entire built workspace structure
+COPY --from=base /app/package*.json ./
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/libs/commons ./libs/commons
 COPY --from=base /app/apps/backend/dist ./
-COPY --from=base /app/apps/backend/package*.json ./
-
-# Install only production dependencies
-RUN npm ci --omit=dev && npm cache clean --force
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
