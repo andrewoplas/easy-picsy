@@ -1,0 +1,63 @@
+# Railway ignore file
+# Files and directories to exclude from Railway deployment
+
+# Development files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/test/
+**/tests/
+**/__tests__/
+
+# Documentation
+docs/
+*.md
+README.md
+
+# Git
+.git/
+.gitignore
+
+# Node modules (will be installed during build)
+node_modules/
+
+# Build artifacts (will be built during deployment)
+dist/
+build/
+
+# Environment files
+.env*
+!.env.example
+
+# Nx cache
+.nx/
+nx.json
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
+
+# E2E tests
+apps/frontend-e2e/
+apps/backend-e2e/
+
+# Frontend (only deploying backend)
+apps/frontend/
+
+# Temporary files
+tmp/
+temp/

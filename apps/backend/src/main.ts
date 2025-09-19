@@ -17,6 +17,19 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.port;
 
+  // Graceful shutdown handling
+  process.on('SIGTERM', async () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    await app.close();
+    process.exit(0);
+  });
+
+  process.on('SIGINT', async () => {
+    console.log('SIGINT received, shutting down gracefully');
+    await app.close();
+    process.exit(0);
+  });
+
   // Enable CORS
   app.enableCors({
     origin: configService.corsOrigin,
