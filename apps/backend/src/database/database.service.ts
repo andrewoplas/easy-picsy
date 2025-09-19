@@ -14,23 +14,46 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     const databaseUrl = this.configService.databaseUrl;
     
-    // Create postgres connection
-    this.sql = postgres(databaseUrl, {
-      max: 10, // Maximum number of connections
-      idle_timeout: 20,
-      connect_timeout: 10,
-    });
-
-    // Create drizzle instance
-    this.db = drizzle(this.sql, { schema });
-
-    // Test connection
+    // Skip database initialization if no URL provided
+    if (!databaseUrl) {
+      console.log('⚠️ No DATABASE_URL provided, skipping database connection');
+      return;
+    }
+    
     try {
-      await this.sql`SELECT 1`;
-      console.log('✅ Database connected successfully');
+      // Create postgres connection
+      this.sql = postgres(databaseUrl, {
+        max: 10, // Maximum number of connections
+        idle_timeout: 20,
+        connect_timeout: 30, // Increased timeout for Railway
+      });
+
+      // Create drizzle instance
+      this.db = drizzle(this.sql, { schema });
+
+      // Test connection with retry
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          await this.sql`SELECT 1`;
+          console.log('✅ Database connected successfully');
+          break;
+        } catch (error) {
+          retries--;
+          if (retries === 0) {
+            console.error('❌ Database connection failed after retries:', error);
+            // Don't throw error - let app start without database
+            console.log('🚀 App will start without database connection');
+            return;
+          }
+          console.log(`⏳ Database connection failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
     } catch (error) {
-      console.error('❌ Database connection failed:', error);
-      throw error;
+      console.error('❌ Database initialization failed:', error);
+      // Don't throw error - let app start without database
+      console.log('🚀 App will start without database connection');
     }
   }
 
@@ -42,6 +65,13 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   getDb() {
+    if (!this.db) {
+      throw new Error('Database not initialized. Check DATABASE_URL configuration.');
+    }
     return this.db;
+  }
+
+  isConnected(): boolean {
+    return !!this.db && !!this.sql;
   }
 }

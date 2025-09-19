@@ -12,45 +12,48 @@ import fs from 'fs';
 import * as path from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  try {
+    console.log('🚀 Starting Easy Picsy Backend...');
+    const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  const port = configService.port;
+    const configService = app.get(ConfigService);
+    const port = configService.port;
+      console.log(`📋 Configuration loaded - Port: ${port}, Environment: ${configService.nodeEnv}`);
 
-  // Graceful shutdown handling
-  process.on('SIGTERM', async () => {
-    console.log('SIGTERM received, shutting down gracefully');
-    await app.close();
-    process.exit(0);
-  });
+    // Graceful shutdown handling
+    process.on('SIGTERM', async () => {
+      console.log('SIGTERM received, shutting down gracefully');
+      await app.close();
+      process.exit(0);
+    });
 
-  process.on('SIGINT', async () => {
-    console.log('SIGINT received, shutting down gracefully');
-    await app.close();
-    process.exit(0);
-  });
+    process.on('SIGINT', async () => {
+      console.log('SIGINT received, shutting down gracefully');
+      await app.close();
+      process.exit(0);
+    });
 
-  // Enable CORS
-  app.enableCors({
-    origin: configService.corsOrigin,
-    credentials: true,
-  });
+    // Enable CORS
+    app.enableCors({
+      origin: configService.corsOrigin,
+      credentials: true,
+    });
 
-  // Global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+    // Global validation pipe
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
 
-  // Set global API prefix
-  const globalPrefix = configService.apiPrefix;
-  app.setGlobalPrefix(globalPrefix);
+    // Set global API prefix
+    const globalPrefix = configService.apiPrefix;
+    app.setGlobalPrefix(globalPrefix);
 
-  // Setup Swagger documentation
-  const config = new DocumentBuilder()
+    // Setup Swagger documentation
+    const config = new DocumentBuilder()
     .setTitle('Easy Picsy - Photobooth Payment API')
     .setDescription(
       `
@@ -122,8 +125,8 @@ async function bootstrap() {
     .addServer(`http://localhost:${port}`, 'Development server')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`${globalPrefix}/docs`, app, document, {
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup(`${globalPrefix}/docs`, app, document, {
     customSiteTitle: 'Easy Picsy API Documentation',
     customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
     customJs: [
@@ -138,23 +141,31 @@ async function bootstrap() {
       showRequestHeaders: true,
       tryItOutEnabled: true,
     },
-  });
+    });
 
-  // Create shared directory one level up from workspace root
-  const sharedDir = path.join(process.cwd(), '../shared');
-  if (!fs.existsSync(sharedDir)) {
-    fs.mkdirSync(sharedDir, { recursive: true });
+    // Create shared directory one level up from workspace root
+    const sharedDir = path.join(process.cwd(), '../shared');
+    if (!fs.existsSync(sharedDir)) {
+      fs.mkdirSync(sharedDir, { recursive: true });
+    }
+    
+    const outputPath = path.join(process.cwd(), '../shared/api-spec.json');
+    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+
+    await app.listen(port, '0.0.0.0');
+    
+    Logger.log(`🚀 Application is running on: http://0.0.0.0:${port}/${globalPrefix}`);
+    Logger.log(`📚 API Documentation: http://0.0.0.0:${port}/${globalPrefix}/docs`);
+    Logger.log(`📝 Environment: ${configService.nodeEnv}`);
+    Logger.log(`📄 API Spec saved to: ${outputPath}`);
+    Logger.log(`💚 Health check available at: http://0.0.0.0:${port}/${globalPrefix}/health`);
+  } catch (error) {
+    console.error('❌ Failed to start application:', error);
+    process.exit(1);
   }
-  
-  const outputPath = path.join(process.cwd(), '../shared/api-spec.json');
-  fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
-
-  await app.listen(port);
-  
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
-  Logger.log(`📚 API Documentation: http://localhost:${port}/${globalPrefix}/docs`);
-  Logger.log(`📝 Environment: ${configService.nodeEnv}`);
-  Logger.log(`📄 API Spec saved to: ${outputPath}`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('💥 Bootstrap failed:', error);
+  process.exit(1);
+});

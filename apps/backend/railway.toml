@@ -6,7 +6,7 @@ restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
-startDelay = 30
+startDelay = 60
 
 [env]
 NODE_ENV = "production"

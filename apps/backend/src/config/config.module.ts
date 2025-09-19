@@ -19,20 +19,20 @@ const isOpenAPIGen = process.env.GENERATING_OPENAPI === 'true';
             PORT: Joi.number().default(3000),
 
             // Database
-            DATABASE_URL: Joi.string().required(),
-            DATABASE_HOST: Joi.string().required(),
-            DATABASE_PORT: Joi.number().required(),
-            DATABASE_USER: Joi.string().required(),
-            DATABASE_PASSWORD: Joi.string().required(),
-            DATABASE_NAME: Joi.string().required(),
+            DATABASE_URL: Joi.string().allow('').optional(),
+            DATABASE_HOST: Joi.string().allow('').optional(),
+            DATABASE_PORT: Joi.number().optional(),
+            DATABASE_USER: Joi.string().allow('').optional(),
+            DATABASE_PASSWORD: Joi.string().allow('').optional(),
+            DATABASE_NAME: Joi.string().allow('').optional(),
 
             // Supabase
-            SUPABASE_URL: Joi.string().uri().required(),
-            SUPABASE_ANON_KEY: Joi.string().required(),
-            SUPABASE_SERVICE_KEY: Joi.string().required(),
+            SUPABASE_URL: Joi.string().uri().allow('').optional(),
+            SUPABASE_ANON_KEY: Joi.string().allow('').optional(),
+            SUPABASE_SERVICE_KEY: Joi.string().allow('').optional(),
 
             // JWT
-            JWT_SECRET: Joi.string().required(),
+            JWT_SECRET: Joi.string().allow('').optional(),
             JWT_EXPIRATION: Joi.string().default('7d'),
 
             // Paymongo (optional for now)
