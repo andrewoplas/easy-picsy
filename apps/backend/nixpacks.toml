@@ -8,7 +8,8 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "chmod +x apps/backend/railway-build-simple.sh && ./apps/backend/railway-build-simple.sh"
+  "chmod +x apps/backend/railway-build-simple.sh",
+  "./apps/backend/railway-build-simple.sh"
 ]
 
 [start]

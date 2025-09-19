@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simple Railway build script for Easy Picsy Backend
+# Railway build script for Easy Picsy Backend
 set -e
 
 echo "🚀 Starting Railway build process..."
@@ -9,19 +9,27 @@ echo "🚀 Starting Railway build process..."
 echo "📋 Node.js version: $(node --version)"
 echo "📋 npm version: $(npm --version)"
 
-# Install all dependencies (including dev dependencies for build)
-echo "📦 Installing all dependencies..."
-cd ../.. && npm install --legacy-peer-deps
+# Ensure we're in the workspace root
+echo "📂 Current directory: $(pwd)"
+echo "📂 Contents: $(ls -la)"
 
-# Build the application using Nx
-echo "🔨 Building application with Nx..."
+# Build commons library first (required dependency)
+echo "🔨 Building commons library..."
+npx nx build commons
+
+# Build the backend application
+echo "🔨 Building backend application..."
 npx nx build backend --configuration=production
 
 # Verify build output
 if [ -f "apps/backend/dist/main.js" ]; then
     echo "✅ Build successful! Output found at apps/backend/dist/main.js"
+    echo "📁 Build contents:"
+    ls -la apps/backend/dist/
 else
     echo "❌ Build failed! Output not found at apps/backend/dist/main.js"
+    echo "📁 Checking dist directory:"
+    ls -la apps/backend/ || echo "No dist directory found"
     exit 1
 fi
 
