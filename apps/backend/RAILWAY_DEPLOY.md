@@ -1,34 +1,38 @@
 # Railway Deployment Configuration
 
-This directory contains the complete Railway deployment configuration using TOML files.
+This directory contains the modern Railway deployment configuration using Dockerfile and TOML.
 
 ## Files
 
 ### `railway.toml`
 Main Railway service configuration:
-- Build settings and watch patterns
+- Dockerfile-based build
+- Watch patterns for auto-deployment
 - Deployment configuration with health checks
 - Environment variables
 - Service restart policies
 
-### `nixpacks.toml`
-Nixpacks build configuration:
-- Node.js 20 setup
-- Dependency installation with monorepo support
-- Build process for commons + backend
-- Production environment variables
+### `Dockerfile`
+Multi-stage Docker build:
+- **Build Stage**: Installs dependencies and builds the application
+- **Production Stage**: Creates optimized production image
+- **Security**: Runs as non-root user
+- **Health Check**: Built-in health monitoring
 
 ## Build Process
 
-1. **Setup Phase**: Install Node.js 20, npm, git
-2. **Install Phase**: 
-   - Navigate to workspace root
-   - Install all dependencies with `--legacy-peer-deps`
-3. **Build Phase**:
-   - Build commons library first
-   - Build backend in production mode
-   - Return to backend directory
-4. **Start**: Run `node dist/main.js`
+1. **Build Stage**:
+   - Uses Node.js 20 Alpine base image
+   - Installs build dependencies (Python, make, g++)
+   - Copies workspace package files
+   - Installs all dependencies with `--legacy-peer-deps`
+   - Builds commons library first, then backend
+
+2. **Production Stage**:
+   - Clean Node.js 20 Alpine image
+   - Copies only built application and production dependencies
+   - Creates non-root user for security
+   - Sets up health check monitoring
 
 ## Environment Variables
 

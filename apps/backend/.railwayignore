@@ -1,0 +1,9 @@
+# Backend-specific Railway ignore
+node_modules/
+.nx/
+dist/
+*.log
+.env*
+!.env.example
+railway.env.example
+RAILWAY_DEPLOY.md

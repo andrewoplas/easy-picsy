@@ -1,10 +1,8 @@
 [build]
-builder = "nixpacks"
-nixpacksConfigPath = "nixpacks.toml"
+dockerfilePath = "Dockerfile"
 watchPatterns = ["**/*.ts", "**/*.js", "**/*.json", "package*.json"]
 
 [deploy]
-startCommand = "node dist/main.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/api/health"
