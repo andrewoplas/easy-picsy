@@ -15,6 +15,44 @@ export class LogBoothEventResponseDto {
   message: string;
 }
 
+export class EventInfoDto {
+  @ApiProperty({
+    description: 'Event ID',
+    format: 'uuid'
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'Event name',
+    example: 'Wedding Photo Booth Package'
+  })
+  name: string;
+
+  @ApiPropertyOptional({
+    description: 'Event description',
+    example: 'Premium photo booth package for wedding events'
+  })
+  description?: string | null;
+
+  @ApiProperty({
+    description: 'Event price',
+    example: '15000.00'
+  })
+  price: string;
+
+  @ApiProperty({
+    description: 'Currency code',
+    example: 'PHP'
+  })
+  currency: string;
+
+  @ApiProperty({
+    description: 'Whether the event is active',
+    example: true
+  })
+  isActive: boolean;
+}
+
 export class BoothLogDto {
   @ApiProperty({
     description: 'Log entry ID',
@@ -44,25 +82,25 @@ export class BoothLogDto {
     description: 'Event parameter 1',
     example: 'PrintAndGIF'
   })
-  param1?: string;
+  param1?: string | null;
 
   @ApiPropertyOptional({
     description: 'Event parameter 2',
     example: '1'
   })
-  param2?: string;
+  param2?: string | null;
 
   @ApiPropertyOptional({
     description: 'Event parameter 3',
     example: 'DS-RX1'
   })
-  param3?: string;
+  param3?: string | null;
 
   @ApiPropertyOptional({
     description: 'Event parameter 4',
     example: 'Album Name'
   })
-  param4?: string;
+  param4?: string | null;
 
   @ApiPropertyOptional({
     description: 'Associated event ID',
@@ -105,6 +143,12 @@ export class BoothLogDto {
     format: 'date-time'
   })
   createdAt: string;
+
+  @ApiPropertyOptional({
+    description: 'Associated event information',
+    type: EventInfoDto
+  })
+  event?: EventInfoDto;
 }
 
 export class GroupedSessionDto {
@@ -162,6 +206,12 @@ export class GroupedSessionDto {
     format: 'uuid'
   })
   eventId: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Associated event information',
+    type: EventInfoDto
+  })
+  event?: EventInfoDto;
 
   @ApiProperty({
     description: 'All events in this session',

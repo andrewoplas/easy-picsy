@@ -27,7 +27,7 @@ const statusConfig: Record<`${QrCodeStatus}`, { color: string; label: string }> 
 
 function QrCodeStatusBadge({ status }: QrCodeStatusBadgeProps) {
   const config = statusConfig[status];
-  return <Badge className={cn(config.color, 'px-2 py-0.5 text-xs font-medium')}>{config.label}</Badge>;
+  return <Badge className={cn(config.color, 'px-2 py-0.5 text-xs font-medium font-sans')}>{config.label}</Badge>;
 }
 
 interface QrCodeStatProps {
@@ -45,8 +45,8 @@ function QrCodeStat({ icon, label, value, bgColor, iconColor }: QrCodeStatProps)
         <div className={cn('w-4 h-4', iconColor)}>{icon}</div>
       </div>
       <div>
-        <div className="text-xs text-dash-navy/50 font-medium">{label}</div>
-        <div className="text-dash-navy">{value}</div>
+        <div className="text-xs text-dash-navy/50 font-medium font-sans">{label}</div>
+        <div className="text-dash-navy font-sans">{value}</div>
       </div>
     </div>
   );
@@ -74,7 +74,7 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
   };
 
   return (
-    <Card className="border-dash-gray/30 hover:shadow-md transition-all duration-200 group">
+    <Card className="border-dash-gray/30 hover:shadow-md transition-all duration-200 group bg-dash-white">
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-3 flex-1">
@@ -118,13 +118,13 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
 
             <div className="flex gap-3 pt-1">
               {qrCode.usedAt && (
-                <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center">
+                <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center font-sans">
                   <Timer className="w-3 h-3 mr-1" />
                   Used: {formatDateTime(qrCode.usedAt as unknown as string)}
                 </div>
               )}
               {qrCode.invalidatedAt && (
-                <div className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-md flex items-center">
+                <div className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-md flex items-center font-sans">
                   <Trash2 className="w-3 h-3 mr-1" />
                   Invalidated: {formatDateTime(qrCode.invalidatedAt as unknown as string)}
                 </div>
@@ -142,14 +142,14 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <Alert variant="destructive" className="bg-red-50 border-red-200">
       <AlertCircle className="h-4 w-4" />
-      <AlertTitle>Error</AlertTitle>
-      <AlertDescription className="flex items-center justify-between">
+      <AlertTitle className="font-sans">Error</AlertTitle>
+      <AlertDescription className="flex items-center justify-between font-sans">
         <span>Failed to load QR code history.</span>
         <Button
           variant="outline"
           size="sm"
           onClick={onRetry}
-          className="ml-2 border-red-200 hover:bg-red-100/50 text-red-600"
+          className="ml-2 border-red-200 hover:bg-red-100/50 text-red-600 font-sans"
         >
           <RefreshCw className="w-3 h-3 mr-1" />
           Try Again
@@ -161,7 +161,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 
 function QRCodeSkeleton() {
   return (
-    <Card className="border-dash-gray/30">
+    <Card className="border-dash-gray/30 bg-dash-white">
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-3 flex-1">
@@ -257,11 +257,11 @@ function QrCodeStats({ qrCodes }: QrCodeStatsProps) {
               stat.hoverBgColor,
             )}
           >
-            <div className={cn('text-lg font-semibold flex items-center justify-center gap-2', stat.textColor)}>
+            <div className={cn('text-lg font-semibold flex items-center justify-center gap-2 font-sans', stat.textColor)}>
               {stat.icon}
               {stat.value}
             </div>
-            <div className="text-xs text-dash-navy/60 mt-1">{stat.label}</div>
+            <div className="text-xs text-dash-navy/60 mt-1 font-sans">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -289,19 +289,19 @@ export function QRCodeHistoryModal({ isOpen, onClose, event }: QRCodeHistoryModa
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] p-0">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] p-0 bg-dash-white border-dash-gray/30">
         <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+          <DialogTitle className="text-xl font-sans text-dash-navy flex items-center gap-2">
             <QrCodeIcon className="w-5 h-5 text-dash-orange" />
             QR Code History
-            <span className="text-dash-navy/50 text-base font-normal">- {event.name}</span>
+            <span className="text-dash-navy/50 text-base font-normal font-sans">- {event.name}</span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 p-6 pt-2">
           {/* Refresh Button */}
           <div className="flex justify-between items-center bg-dash-gray/5 p-3 rounded-lg">
-            <p className="text-sm text-dash-navy/70 flex items-center gap-2">
+            <p className="text-sm text-dash-navy/70 flex items-center gap-2 font-sans">
               <QrCodeIcon className="w-4 h-4" />
               View all QR codes generated for this event
             </p>
@@ -311,7 +311,7 @@ export function QRCodeHistoryModal({ isOpen, onClose, event }: QRCodeHistoryModa
               onClick={() => refetch()}
               disabled={isLoading || isFetching}
               className={cn(
-                'border-dash-gray/50 hover:bg-dash-gray/10 transition-all duration-200 hover:shadow-sm',
+                'border-dash-gray/50 hover:bg-dash-gray/10 transition-all duration-200 hover:shadow-sm font-sans',
                 isFetching && 'opacity-70',
               )}
             >
@@ -335,7 +335,7 @@ export function QRCodeHistoryModal({ isOpen, onClose, event }: QRCodeHistoryModa
             ) : (
               <div className="text-center py-8 text-dash-navy/60">
                 <QrCodeIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No QR codes found for this event</p>
+                <p className="font-sans">No QR codes found for this event</p>
               </div>
             )}
           </div>

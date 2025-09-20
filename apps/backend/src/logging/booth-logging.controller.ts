@@ -84,7 +84,7 @@ export class BoothLoggingController {
     description: 'Bad request - invalid event data'
   })
   // TODO: Add booth authentication/authorization
-  async logBoothEvent(@Body(ValidationPipe) logData: LogBoothEventDto) {
+  async logBoothEvent(@Body(ValidationPipe) logData: LogBoothEventDto): Promise<LogBoothEventResponseDto> {
     const logId = await this.boothLoggingService.logBoothEvent(logData);
     return {
       logId,
@@ -113,13 +113,13 @@ export class BoothLoggingController {
     @Query('boothIdentifier') boothIdentifier?: string,
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize?: number,
-  ) {
+  ): Promise<BoothSessionsResponseDto> {
     return await this.boothLoggingService.getBoothSessions({
       eventId,
       boothIdentifier,
       page: page || 1,
       pageSize: pageSize || 10,
-    });
+    }) as BoothSessionsResponseDto;
   }
 
   @Get('session/:sessionId/events')
@@ -135,8 +135,8 @@ export class BoothLoggingController {
     description: 'Session events retrieved successfully',
     type: [BoothLogDto]
   })
-  async getSessionEvents(@Param('sessionId') sessionId: string) {
-    return await this.boothLoggingService.getSessionEvents(sessionId);
+  async getSessionEvents(@Param('sessionId') sessionId: string): Promise<BoothLogDto[]> {
+    return await this.boothLoggingService.getSessionEvents(sessionId) as unknown as BoothLogDto[];
   }
 
   @Get('events')
@@ -168,17 +168,17 @@ export class BoothLoggingController {
     @Query('status') status?: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
     @Query('offset', new ParseIntPipe({ optional: true })) offset?: number,
-  ) {
+  ): Promise<BoothLogDto[]> {
     return await this.boothLoggingService.getBoothLogs({
-      boothEventType,
+      boothEventType: boothEventType as any,
       sessionId,
       eventId,
       qrCodeId,
       boothIdentifier,
-      status,
+      status: status as any,
       limit: limit || 50,
       offset: offset || 0,
-    });
+    }) as unknown as BoothLogDto[];
   }
 
   @Get('stats')
@@ -200,7 +200,7 @@ export class BoothLoggingController {
     @Query('eventId') eventId?: string,
     @Query('boothIdentifier') boothIdentifier?: string,
     @Query('sessionId') sessionId?: string,
-  ) {
+  ): Promise<BoothEventStatsDto[]> {
     return await this.boothLoggingService.getBoothEventStats({
       eventId,
       boothIdentifier,

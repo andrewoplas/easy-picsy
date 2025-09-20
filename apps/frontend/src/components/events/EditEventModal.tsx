@@ -67,57 +67,78 @@ export function EditEventModal({ isOpen, onClose, event, onSubmit }: EditEventMo
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="font-normal tracking-wide">Edit Event</DialogTitle>
+      <DialogContent className="sm:max-w-[425px] bg-dash-white border-dash-gray/30">
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-xl font-sans text-dash-navy tracking-wide">
+            Edit Event
+          </DialogTitle>
+          <p className="text-sm text-dash-navy/60 font-sans">
+            Update event details and pricing
+          </p>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-dash-navy mb-2">
-                Event Name *
-              </label>
-              <Input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Sarah's Wedding"
-                className={errors.name ? 'border-destructive' : ''}
-              />
-              {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-dash-navy font-sans">
+              Event Name *
+            </label>
+            <Input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="e.g., Sarah's Wedding"
+              className={`font-sans ${errors.name ? 'border-destructive focus:border-destructive' : 'border-dash-gray/50 focus:border-dash-orange focus:ring-dash-orange/20'}`}
+            />
+            {errors.name && (
+              <p className="text-destructive text-sm font-sans flex items-center gap-1">
+                <span className="w-1 h-1 bg-destructive rounded-full"></span>
+                {errors.name}
+              </p>
+            )}
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-dash-navy mb-2">
-                Price (₱) *
-              </label>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-dash-navy font-sans">
+              Price (₱) *
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dash-navy/60 font-sans">
+                ₱
+              </span>
               <Input
                 type="number"
                 step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 placeholder="0.00"
-                className={errors.price ? 'border-destructive' : ''}
+                className={`pl-8 font-sans ${errors.price ? 'border-destructive focus:border-destructive' : 'border-dash-gray/50 focus:border-dash-orange focus:ring-dash-orange/20'}`}
               />
-              {errors.price && <p className="text-red-600 text-sm mt-1">{errors.price}</p>}
             </div>
+            {errors.price && (
+              <p className="text-destructive text-sm font-sans flex items-center gap-1">
+                <span className="w-1 h-1 bg-destructive rounded-full"></span>
+                {errors.price}
+              </p>
+            )}
+          </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleClose(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-dash-orange hover:bg-dash-orange/90 text-white"
-              >
-                Save Changes
-              </Button>
-            </div>
-          </form>
+          <div className="flex justify-end space-x-3 pt-6 border-t border-dash-gray/30">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleClose(false)}
+              className="font-sans border-dash-gray/50 text-dash-navy hover:bg-dash-gray/10 hover:border-dash-gray/70"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-dash-orange hover:bg-dash-orange/90 text-white font-sans font-medium shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

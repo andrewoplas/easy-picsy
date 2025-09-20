@@ -38,15 +38,15 @@ export class AnalyticsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   /**
-   * Get total analytics across all events
+   * Get total analytics across all events or a specific event
    */
-  async getTotalAnalytics(dateRange?: DateRangeDto): Promise<TotalAnalyticsDto> {
+  async getTotalAnalytics(eventId?: string, dateRange?: DateRangeDto): Promise<TotalAnalyticsDto> {
     try {
       // Use Promise.all for parallel execution
       const [revenueResult, sessionDurations, printStats] = await Promise.all([
-        this.calculateTotalRevenue(dateRange),
-        this.calculateAllSessionDurations(dateRange),
-        this.calculateTotalPrintStats(dateRange),
+        this.calculateTotalRevenue(eventId, dateRange),
+        this.calculateAllSessionDurations(eventId, dateRange),
+        this.calculateTotalPrintStats(eventId, dateRange),
       ]);
 
       const averageSessionTime =
@@ -72,12 +72,49 @@ export class AnalyticsService {
   }
 
   /**
-   * Get analytics for all events
+   * Get analytics for all events or a specific event
    */
-  async getEventAnalytics(dateRange?: DateRangeDto): Promise<EventAnalyticsDto[]> {
+  async getEventAnalytics(eventId?: string, dateRange?: DateRangeDto): Promise<EventAnalyticsDto[]> {
     const db = this.databaseService.getDb();
 
     try {
+      // If eventId is provided, get analytics for that specific event
+      if (eventId) {
+        const eventData = await db
+          .select({
+            eventId: events.id,
+            eventName: events.name,
+          })
+          .from(events)
+          .where(and(eq(events.id, eventId), eq(events.isActive, true)))
+          .limit(1);
+
+        if (eventData.length === 0) {
+          throw new Error(`Event with ID ${eventId} not found or inactive`);
+        }
+
+        const event = eventData[0];
+        const [earnings, sessionDurations, printData] = await Promise.all([
+          this.calculateEventRevenue(event.eventId, dateRange),
+          this.calculateEventSessionDurations(event.eventId, dateRange),
+          this.calculateEventPrintStats(event.eventId, dateRange),
+        ]);
+
+        const avgSessionTime =
+          sessionDurations.length > 0
+            ? sessionDurations.reduce((sum, duration) => sum + duration, 0) / sessionDurations.length
+            : 0;
+
+        return [{
+          eventId: event.eventId,
+          eventName: event.eventName,
+          runningEarnings: earnings,
+          sessionAverageTime: Math.round(avgSessionTime),
+          numberOfPrints: printData.prints,
+          numberOfReprints: printData.reprints,
+        }];
+      }
+
       // Get all active events
       const eventsData = await db
         .select({
@@ -123,7 +160,7 @@ export class AnalyticsService {
   /**
    * Calculate total revenue - DRY helper method
    */
-  private async calculateTotalRevenue(dateRange?: DateRangeDto): Promise<number> {
+  private async calculateTotalRevenue(eventId?: string, dateRange?: DateRangeDto): Promise<number> {
     const db = this.databaseService.getDb();
 
     const result = await db
@@ -131,7 +168,7 @@ export class AnalyticsService {
         totalRevenue: sum(payments.amount),
       })
       .from(payments)
-      .where(this.buildPaymentWhereClause(undefined, dateRange));
+      .where(this.buildPaymentWhereClause(eventId, dateRange));
 
     return Number(result[0]?.totalRevenue || 0);
   }
@@ -171,10 +208,10 @@ export class AnalyticsService {
   }
 
   /**
-   * Calculate session durations for all events
+   * Calculate session durations for all events or a specific event
    */
-  private async calculateAllSessionDurations(dateRange?: DateRangeDto): Promise<number[]> {
-    const sessionEvents = await this.getSessionEvents(undefined, dateRange);
+  private async calculateAllSessionDurations(eventId?: string, dateRange?: DateRangeDto): Promise<number[]> {
+    const sessionEvents = await this.getSessionEvents(eventId, dateRange);
     return this.calculateDurationsFromEvents(sessionEvents);
   }
 
@@ -246,11 +283,21 @@ export class AnalyticsService {
   }
 
   /**
-   * Calculate total print statistics
+   * Calculate total print statistics for all events or a specific event
    */
-  private async calculateTotalPrintStats(dateRange?: DateRangeDto): Promise<TotalPrintAnalyticsDto> {
-    const printEvents = await this.getPrintEvents(undefined, dateRange);
+  private async calculateTotalPrintStats(eventId?: string, dateRange?: DateRangeDto): Promise<TotalPrintAnalyticsDto> {
+    const printEvents = await this.getPrintEvents(eventId, dateRange);
     const stats = this.analyzePrintEvents(printEvents);
+
+    // If filtering by specific event, set averages to the actual values
+    if (eventId) {
+      return {
+        singleSession: stats.prints,
+        reprints: stats.reprints,
+        averagePerEvent: stats.prints,
+        averageReprintsPerEvent: stats.reprints,
+      };
+    }
 
     const eventIds = new Set(printEvents.map((e) => e.eventId).filter(Boolean));
     const eventCount = eventIds.size;

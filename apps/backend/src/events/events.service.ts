@@ -40,11 +40,16 @@ export class EventsService {
   }
 
   async findAll(userId: string): Promise<EventResponseDto[]> {
-    return await this.databaseService.db
+    const results = await this.databaseService.db
       .select()
       .from(events)
       .where(eq(events.createdBy, userId))
       .orderBy(events.createdAt);
+    
+    return results.map(event => ({
+      ...event,
+      description: event.description ?? undefined
+    }));
   }
 
   async findOne(id: string, userId: string): Promise<EventResponseDto> {
@@ -57,7 +62,10 @@ export class EventsService {
       throw new NotFoundException(`Event with id ${id} not found`);
     }
 
-    return event as EventResponseDto;
+    return {
+      ...event,
+      description: event.description ?? undefined
+    };
   }
 
   async update(id: string, updateEventDto: UpdateEventDto, userId: string): Promise<EventResponseDto> {
@@ -77,7 +85,10 @@ export class EventsService {
       .where(eq(events.id, id))
       .returning();
 
-    return updatedEvent as EventResponseDto;
+    return {
+      ...updatedEvent,
+      description: updatedEvent.description ?? undefined
+    };
   }
 
   async remove(id: string, userId: string): Promise<void> {

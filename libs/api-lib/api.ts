@@ -214,28 +214,28 @@ export interface BoothLogDto {
     'timestamp': string;
     /**
      * Event parameter 1
-     * @type {string}
+     * @type {object}
      * @memberof BoothLogDto
      */
-    'param1'?: string;
+    'param1'?: object;
     /**
      * Event parameter 2
-     * @type {string}
+     * @type {object}
      * @memberof BoothLogDto
      */
-    'param2'?: string;
+    'param2'?: object;
     /**
      * Event parameter 3
-     * @type {string}
+     * @type {object}
      * @memberof BoothLogDto
      */
-    'param3'?: string;
+    'param3'?: object;
     /**
      * Event parameter 4
-     * @type {string}
+     * @type {object}
      * @memberof BoothLogDto
      */
-    'param4'?: string;
+    'param4'?: object;
     /**
      * Associated event ID
      * @type {string}
@@ -278,6 +278,12 @@ export interface BoothLogDto {
      * @memberof BoothLogDto
      */
     'createdAt': string;
+    /**
+     * Associated event information
+     * @type {EventInfoDto}
+     * @memberof BoothLogDto
+     */
+    'event'?: EventInfoDto;
 }
 
 export const BoothLogDtoStatusEnum = {
@@ -585,6 +591,49 @@ export interface EventDeleteResponseDto {
 /**
  * 
  * @export
+ * @interface EventInfoDto
+ */
+export interface EventInfoDto {
+    /**
+     * Event ID
+     * @type {string}
+     * @memberof EventInfoDto
+     */
+    'id': string;
+    /**
+     * Event name
+     * @type {string}
+     * @memberof EventInfoDto
+     */
+    'name': string;
+    /**
+     * Event description
+     * @type {object}
+     * @memberof EventInfoDto
+     */
+    'description'?: object;
+    /**
+     * Event price
+     * @type {string}
+     * @memberof EventInfoDto
+     */
+    'price': string;
+    /**
+     * Currency code
+     * @type {string}
+     * @memberof EventInfoDto
+     */
+    'currency': string;
+    /**
+     * Whether the event is active
+     * @type {boolean}
+     * @memberof EventInfoDto
+     */
+    'isActive': boolean;
+}
+/**
+ * 
+ * @export
  * @interface EventResponseDto
  */
 export interface EventResponseDto {
@@ -703,6 +752,12 @@ export interface GroupedSessionDto {
      * @memberof GroupedSessionDto
      */
     'eventId'?: object;
+    /**
+     * Associated event information
+     * @type {EventInfoDto}
+     * @memberof GroupedSessionDto
+     */
+    'event'?: EventInfoDto;
     /**
      * All events in this session
      * @type {Array<BoothLogDto>}
@@ -1584,14 +1639,15 @@ export interface VerifyTokenResponseDto {
 export const AnalyticsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Get analytics data for each event including earnings, session times, and print counts
+         * Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.
          * @summary Get per-event analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        analyticsControllerGetEventAnalytics: async (startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        analyticsControllerGetEventAnalytics: async (eventId?: string, startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/analytics/events`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1607,6 +1663,10 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
             // authentication JWT-auth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
 
             if (startDate !== undefined) {
                 localVarQueryParameter['startDate'] = startDate;
@@ -1628,14 +1688,63 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
             };
         },
         /**
-         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * Get detailed analytics data for a specific event including earnings, session times, and print counts
+         * @summary Get analytics for a specific event
+         * @param {string} eventId 
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetSingleEventAnalytics: async (eventId: string, endDate?: string, startDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'eventId' is not null or undefined
+            assertParamExists('analyticsControllerGetSingleEventAnalytics', 'eventId', eventId)
+            const localVarPath = `/api/analytics/events/{eventId}`
+                .replace(`{${"eventId"}}`, encodeURIComponent(String(eventId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (endDate !== undefined) {
+                localVarQueryParameter['endDate'] = endDate;
+            }
+
+            if (startDate !== undefined) {
+                localVarQueryParameter['startDate'] = startDate;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics
          * @summary Get total analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        analyticsControllerGetTotalAnalytics: async (startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        analyticsControllerGetTotalAnalytics: async (eventId?: string, startDate?: string, endDate?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/analytics/total`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1651,6 +1760,10 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
             // authentication JWT-auth required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
 
             if (startDate !== undefined) {
                 localVarQueryParameter['startDate'] = startDate;
@@ -1682,29 +1795,46 @@ export const AnalyticsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AnalyticsApiAxiosParamCreator(configuration)
     return {
         /**
-         * Get analytics data for each event including earnings, session times, and print counts
+         * Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.
          * @summary Get per-event analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventAnalyticsDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetEventAnalytics(startDate, endDate, options);
+        async analyticsControllerGetEventAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<EventAnalyticsDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetEventAnalytics(eventId, startDate, endDate, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetEventAnalytics']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * Get detailed analytics data for a specific event including earnings, session times, and print counts
+         * @summary Get analytics for a specific event
+         * @param {string} eventId 
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async analyticsControllerGetSingleEventAnalytics(eventId: string, endDate?: string, startDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventAnalyticsDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetSingleEventAnalytics(eventId, endDate, startDate, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetSingleEventAnalytics']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics
          * @summary Get total analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TotalAnalyticsDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetTotalAnalytics(startDate, endDate, options);
+        async analyticsControllerGetTotalAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TotalAnalyticsDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetTotalAnalytics(eventId, startDate, endDate, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetTotalAnalytics']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1720,26 +1850,40 @@ export const AnalyticsApiFactory = function (configuration?: Configuration, base
     const localVarFp = AnalyticsApiFp(configuration)
     return {
         /**
-         * Get analytics data for each event including earnings, session times, and print counts
+         * Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.
          * @summary Get per-event analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventAnalyticsDto>> {
-            return localVarFp.analyticsControllerGetEventAnalytics(startDate, endDate, options).then((request) => request(axios, basePath));
+        analyticsControllerGetEventAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<EventAnalyticsDto>> {
+            return localVarFp.analyticsControllerGetEventAnalytics(eventId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
-         * Get aggregated analytics across all events including revenue, session times, and print statistics
+         * Get detailed analytics data for a specific event including earnings, session times, and print counts
+         * @summary Get analytics for a specific event
+         * @param {string} eventId 
+         * @param {string} [endDate] End date for analytics range (ISO string)
+         * @param {string} [startDate] Start date for analytics range (ISO string)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetSingleEventAnalytics(eventId: string, endDate?: string, startDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<EventAnalyticsDto> {
+            return localVarFp.analyticsControllerGetSingleEventAnalytics(eventId, endDate, startDate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics
          * @summary Get total analytics
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
          * @param {string} [startDate] Start date for analytics range (ISO string)
          * @param {string} [endDate] End date for analytics range (ISO string)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<TotalAnalyticsDto> {
-            return localVarFp.analyticsControllerGetTotalAnalytics(startDate, endDate, options).then((request) => request(axios, basePath));
+        analyticsControllerGetTotalAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<TotalAnalyticsDto> {
+            return localVarFp.analyticsControllerGetTotalAnalytics(eventId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1752,29 +1896,45 @@ export const AnalyticsApiFactory = function (configuration?: Configuration, base
  */
 export class AnalyticsApi extends BaseAPI {
     /**
-     * Get analytics data for each event including earnings, session times, and print counts
+     * Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.
      * @summary Get per-event analytics
+     * @param {string} [eventId] Event ID to filter analytics for a specific event
      * @param {string} [startDate] Start date for analytics range (ISO string)
      * @param {string} [endDate] End date for analytics range (ISO string)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AnalyticsApi
      */
-    public analyticsControllerGetEventAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
-        return AnalyticsApiFp(this.configuration).analyticsControllerGetEventAnalytics(startDate, endDate, options).then((request) => request(this.axios, this.basePath));
+    public analyticsControllerGetEventAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetEventAnalytics(eventId, startDate, endDate, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Get aggregated analytics across all events including revenue, session times, and print statistics
+     * Get detailed analytics data for a specific event including earnings, session times, and print counts
+     * @summary Get analytics for a specific event
+     * @param {string} eventId 
+     * @param {string} [endDate] End date for analytics range (ISO string)
+     * @param {string} [startDate] Start date for analytics range (ISO string)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnalyticsApi
+     */
+    public analyticsControllerGetSingleEventAnalytics(eventId: string, endDate?: string, startDate?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetSingleEventAnalytics(eventId, endDate, startDate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics
      * @summary Get total analytics
+     * @param {string} [eventId] Event ID to filter analytics for a specific event
      * @param {string} [startDate] Start date for analytics range (ISO string)
      * @param {string} [endDate] End date for analytics range (ISO string)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AnalyticsApi
      */
-    public analyticsControllerGetTotalAnalytics(startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
-        return AnalyticsApiFp(this.configuration).analyticsControllerGetTotalAnalytics(startDate, endDate, options).then((request) => request(this.axios, this.basePath));
+    public analyticsControllerGetTotalAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetTotalAnalytics(eventId, startDate, endDate, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1793,6 +1953,35 @@ export const AppApiAxiosParamCreator = function (configuration?: Configuration) 
          */
         appControllerGetData: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appControllerGetHealth: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/health`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1836,6 +2025,17 @@ export const AppApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AppApi.appControllerGetData']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async appControllerGetHealth(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appControllerGetHealth(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AppApi.appControllerGetHealth']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -1853,6 +2053,14 @@ export const AppApiFactory = function (configuration?: Configuration, basePath?:
          */
         appControllerGetData(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.appControllerGetData(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        appControllerGetHealth(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.appControllerGetHealth(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1872,6 +2080,16 @@ export class AppApi extends BaseAPI {
      */
     public appControllerGetData(options?: RawAxiosRequestConfig) {
         return AppApiFp(this.configuration).appControllerGetData(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AppApi
+     */
+    public appControllerGetHealth(options?: RawAxiosRequestConfig) {
+        return AppApiFp(this.configuration).appControllerGetHealth(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

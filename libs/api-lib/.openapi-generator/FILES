@@ -20,6 +20,7 @@ docs/CreateEventResponseDto.md
 docs/CurrentQrCodeResponseDto.md
 docs/EventAnalyticsDto.md
 docs/EventDeleteResponseDto.md
+docs/EventInfoDto.md
 docs/EventResponseDto.md
 docs/EventsApi.md
 docs/GroupedSessionDto.md

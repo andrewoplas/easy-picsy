@@ -43,6 +43,13 @@
       "when": 1758349291757,
       "tag": "0005_brief_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1758358675854,
+      "tag": "0006_calm_changeling",
+      "breakpoints": true
     }
   ]
 }

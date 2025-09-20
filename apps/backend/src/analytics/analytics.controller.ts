@@ -1,8 +1,8 @@
-import { Controller, Get, HttpException, HttpStatus, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
-import { AnalyticsService, DateRange } from './analytics.service';
-import { AnalyticsQueryDto, EventAnalyticsDto, TotalAnalyticsDto } from './dto';
+import { AnalyticsService } from './analytics.service';
+import { AnalyticsQueryDto, EventAnalyticsDto, TotalAnalyticsDto, DateRangeDto } from './dto';
 
 @ApiTags('Analytics')
 @ApiBearerAuth('JWT-auth')
@@ -14,7 +14,14 @@ export class AnalyticsController {
   @Get('total')
   @ApiOperation({
     summary: 'Get total analytics',
-    description: 'Get aggregated analytics across all events including revenue, session times, and print statistics',
+    description: 'Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics',
+  })
+  @ApiQuery({
+    name: 'eventId',
+    required: false,
+    type: String,
+    description: 'Event ID to filter analytics for a specific event',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiQuery({
     name: 'startDate',
@@ -37,11 +44,15 @@ export class AnalyticsController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid date range provided',
+    description: 'Invalid date range or event ID provided',
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event not found (when eventId is provided)',
   })
   @ApiResponse({
     status: 500,
@@ -52,7 +63,7 @@ export class AnalyticsController {
   ): Promise<TotalAnalyticsDto> {
     try {
       const dateRange = this.validateAndBuildDateRange(query);
-      return await this.analyticsService.getTotalAnalytics(dateRange);
+      return await this.analyticsService.getTotalAnalytics(query.eventId, dateRange);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -65,7 +76,14 @@ export class AnalyticsController {
   @Get('events')
   @ApiOperation({
     summary: 'Get per-event analytics',
-    description: 'Get analytics data for each event including earnings, session times, and print counts',
+    description: 'Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.',
+  })
+  @ApiQuery({
+    name: 'eventId',
+    required: false,
+    type: String,
+    description: 'Event ID to filter analytics for a specific event',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiQuery({
     name: 'startDate',
@@ -88,11 +106,15 @@ export class AnalyticsController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid date range provided',
+    description: 'Invalid date range or event ID provided',
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event not found (when eventId is provided)',
   })
   @ApiResponse({
     status: 500,
@@ -103,7 +125,69 @@ export class AnalyticsController {
   ): Promise<EventAnalyticsDto[]> {
     try {
       const dateRange = this.validateAndBuildDateRange(query);
-      return await this.analyticsService.getEventAnalytics(dateRange);
+      return await this.analyticsService.getEventAnalytics(query.eventId, dateRange);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new HttpException('Failed to retrieve event analytics', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('events/:eventId')
+  @ApiOperation({
+    summary: 'Get analytics for a specific event',
+    description: 'Get detailed analytics data for a specific event including earnings, session times, and print counts',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date for analytics range (ISO string)',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date for analytics range (ISO string)',
+    example: '2024-12-31T23:59:59.999Z',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Event analytics retrieved successfully',
+    type: EventAnalyticsDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid date range provided',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event not found or inactive',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error while calculating analytics',
+  })
+  async getSingleEventAnalytics(
+    @Param('eventId') eventId: string,
+    @Query(new ValidationPipe({ transform: true, whitelist: true })) query: Omit<AnalyticsQueryDto, 'eventId'>,
+  ): Promise<EventAnalyticsDto> {
+    try {
+      const dateRange = this.validateAndBuildDateRange(query);
+      const results = await this.analyticsService.getEventAnalytics(eventId, dateRange);
+      
+      if (results.length === 0) {
+        throw new HttpException('Event not found or inactive', HttpStatus.NOT_FOUND);
+      }
+      
+      return results[0];
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -116,7 +200,7 @@ export class AnalyticsController {
   /**
    * Validate and build date range - DRY helper method
    */
-  private validateAndBuildDateRange(query: AnalyticsQueryDto): DateRange | undefined {
+  private validateAndBuildDateRange(query: AnalyticsQueryDto): DateRangeDto | undefined {
     const { startDate, endDate } = query;
 
     // If neither date is provided, return undefined (no filtering)

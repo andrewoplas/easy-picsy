@@ -14,45 +14,56 @@ interface TransactionHistoryProps {
 }
 
 export function TransactionHistory({ eventId }: TransactionHistoryProps) {
-  const { 
-    data: transactions, 
-    isLoading,
-    error,
-    refetch
-  } = useEventTransactions(eventId);
+  const { data: transactions, isLoading, error, refetch } = useEventTransactions(eventId);
 
-  const handleRefund = useCallback(async (transactionId: string) => {
-    try {
-      await transactionsApi.refundTransaction(transactionId);
-      refetch();
-    } catch (error) {
-      // Handle error (could show a toast notification)
-      console.error('Failed to refund transaction:', error);
-    }
-  }, [refetch]);
+  console.log('transactions', transactions);
+
+  const handleRefund = useCallback(
+    async (transactionId: string) => {
+      try {
+        await transactionsApi.refundTransaction(transactionId);
+        refetch();
+      } catch (error) {
+        // Handle error (could show a toast notification)
+        console.error('Failed to refund transaction:', error);
+      }
+    },
+    [refetch],
+  );
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-PH', {
       style: 'currency',
       currency: 'PHP',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
   const totalAmount = transactions?.reduce((sum, t) => sum + t.amount, 0) ?? 0;
 
   if (error) {
+    const isEventNotFound = error.message.includes('not found');
+    const isInvalidDateRange = error.message.includes('Invalid date range');
+    
     return (
       <Card className="bg-dash-white">
         <CardContent>
           <EmptyState
             icon={RefreshCw}
-            title="Failed to load transactions"
-            description="There was an error loading the transaction history. Please try again."
-            action={{
-              label: "Retry",
-              onClick: () => refetch()
-            }}
+            title={isEventNotFound ? "Event not found" : "Failed to load transactions"}
+            description={
+              isEventNotFound 
+                ? "This event could not be found or may be inactive."
+                : isInvalidDateRange
+                ? "The selected date range is invalid. Please check your date selection."
+                : "There was an error loading the transaction history. Please try again."
+            }
+            action={
+              !isEventNotFound && !isInvalidDateRange ? {
+                label: 'Retry',
+                onClick: () => refetch(),
+              } : undefined
+            }
           />
         </CardContent>
       </Card>
@@ -69,9 +80,7 @@ export function TransactionHistory({ eventId }: TransactionHistoryProps) {
             <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
               {formatCurrency(totalAmount)} total
             </div>
-            <div className="text-dash-navy/60 text-sm">
-              {transactions?.length ?? 0} payments
-            </div>
+            <div className="text-dash-navy/60 text-sm">{transactions?.length ?? 0} payments</div>
           </div>
         </CardTitle>
       </CardHeader>
@@ -87,11 +96,7 @@ export function TransactionHistory({ eventId }: TransactionHistoryProps) {
         ) : (
           <div className="space-y-3">
             {transactions?.map((transaction) => (
-              <TransactionItem
-                key={transaction.id}
-                transaction={transaction}
-                onRefund={handleRefund}
-              />
+              <TransactionItem key={transaction.id} transaction={transaction} onRefund={handleRefund} />
             ))}
           </div>
         )}

@@ -1,13 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { and, count, desc, eq, asc } from 'drizzle-orm';
+import { BoothEventData, BoothEventType, BoothStatus, GroupedSession } from '@org/commons';
+import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
-import { boothLogs, NewBoothLog, BoothLog } from '../database/schema';
-import { 
-  BoothEventData, 
-  BoothEventType, 
-  BoothStatus, 
-  GroupedSession 
-} from '@org/commons';
+import { BoothLog, boothLogs, events, NewBoothLog } from '../database/schema';
+
+export interface EventInfo {
+  id: string;
+  name: string;
+  description: string | null;
+  price: string;
+  currency: string;
+  isActive: boolean;
+}
+
+export interface BoothLogWithEvent extends BoothLog {
+  event?: EventInfo;
+}
+
+export interface GroupedSessionWithEvent extends GroupedSession {
+  event?: EventInfo;
+}
 
 export interface LogBoothEventOptions {
   sessionId: string;
@@ -37,7 +49,7 @@ export class BoothLoggingService {
 
   async logBoothEvent(options: LogBoothEventOptions): Promise<string> {
     const db = this.databaseService.getDb();
-    
+
     try {
       const boothLog: NewBoothLog = {
         sessionId: options.sessionId,
@@ -56,8 +68,10 @@ export class BoothLoggingService {
       };
 
       const [created] = await db.insert(boothLogs).values(boothLog).returning();
-      
-      this.logger.log(`Booth event logged: ${options.boothEvent.event_type} (${created.id}) for session ${options.sessionId}`);
+
+      this.logger.log(
+        `Booth event logged: ${options.boothEvent.event_type} (${created.id}) for session ${options.sessionId}`,
+      );
       return created.id;
     } catch (error) {
       this.logger.error('Failed to log booth event:', error);
@@ -74,9 +88,9 @@ export class BoothLoggingService {
     status?: BoothStatus;
     limit?: number;
     offset?: number;
-  }): Promise<BoothLog[]> {
+  }): Promise<BoothLogWithEvent[]> {
     const db = this.databaseService.getDb();
-    
+
     const conditions = [];
     if (options?.boothEventType) conditions.push(eq(boothLogs.boothEventType, options.boothEventType));
     if (options?.sessionId) conditions.push(eq(boothLogs.sessionId, options.sessionId));
@@ -84,29 +98,115 @@ export class BoothLoggingService {
     if (options?.qrCodeId) conditions.push(eq(boothLogs.qrCodeId, options.qrCodeId));
     if (options?.boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, options.boothIdentifier));
     if (options?.status) conditions.push(eq(boothLogs.status, options.status));
-    
+
     const query = db.select().from(boothLogs);
-    
+
     if (conditions.length > 0) {
       query.where(and(...conditions));
     }
-    
+
     query.orderBy(desc(boothLogs.createdAt));
-    
+
     if (options?.limit) query.limit(options.limit);
     if (options?.offset) query.offset(options.offset);
+
+    const boothLogsResults = await query;
+
+    // Get unique event IDs from the booth logs
+    const eventIds = [...new Set(boothLogsResults.map(log => log.eventId).filter(Boolean))];
     
-    return await query;
+    // Fetch events data if there are any event IDs
+    const eventsData: EventInfo[] = [];
+    if (eventIds.length > 0) {
+      // For now, we'll fetch events one by one since we don't have IN operator
+      // This could be optimized with a proper IN query if needed
+      for (const eventId of eventIds) {
+        const eventResult = await db
+          .select({
+            id: events.id,
+            name: events.name,
+            description: events.description,
+            price: events.price,
+            currency: events.currency,
+            isActive: events.isActive,
+          })
+          .from(events)
+          .where(eq(events.id, eventId!))
+          .limit(1);
+        
+        if (eventResult.length > 0) {
+          eventsData.push({
+            id: eventResult[0].id,
+            name: eventResult[0].name,
+            description: eventResult[0].description,
+            price: eventResult[0].price,
+            currency: eventResult[0].currency,
+            isActive: eventResult[0].isActive,
+          });
+        }
+      }
+    }
+    
+    // Create a map for quick event lookup
+    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
+    
+    // Transform the results to match the expected format
+    return boothLogsResults.map(log => ({
+      ...log,
+      event: log.eventId ? eventsMap.get(log.eventId) : undefined,
+    }));
   }
 
-  async getSessionEvents(sessionId: string): Promise<BoothLog[]> {
+  async getSessionEvents(sessionId: string): Promise<BoothLogWithEvent[]> {
     const db = this.databaseService.getDb();
     
-    return await db
+    const boothLogsResults = await db
       .select()
       .from(boothLogs)
       .where(eq(boothLogs.sessionId, sessionId))
       .orderBy(asc(boothLogs.createdAt));
+
+    // Get unique event IDs from the booth logs
+    const eventIds = [...new Set(boothLogsResults.map(log => log.eventId).filter(Boolean))];
+    
+    // Fetch events data if there are any event IDs
+    const eventsData: EventInfo[] = [];
+    if (eventIds.length > 0) {
+      for (const eventId of eventIds) {
+        const eventResult = await db
+          .select({
+            id: events.id,
+            name: events.name,
+            description: events.description,
+            price: events.price,
+            currency: events.currency,
+            isActive: events.isActive,
+          })
+          .from(events)
+          .where(eq(events.id, eventId!))
+          .limit(1);
+        
+        if (eventResult.length > 0) {
+          eventsData.push({
+            id: eventResult[0].id,
+            name: eventResult[0].name,
+            description: eventResult[0].description,
+            price: eventResult[0].price,
+            currency: eventResult[0].currency,
+            isActive: eventResult[0].isActive,
+          });
+        }
+      }
+    }
+    
+    // Create a map for quick event lookup
+    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
+    
+    // Transform the results to match the expected format
+    return boothLogsResults.map(log => ({
+      ...log,
+      event: log.eventId ? eventsMap.get(log.eventId) : undefined,
+    }));
   }
 
   async getBoothSessions(options: {
@@ -115,7 +215,7 @@ export class BoothLoggingService {
     page: number;
     pageSize: number;
   }): Promise<{
-    sessions: GroupedSession[];
+    sessions: GroupedSessionWithEvent[];
     pagination: PaginationInfo;
   }> {
     const db = this.databaseService.getDb();
@@ -146,15 +246,51 @@ export class BoothLoggingService {
       .select({ count: count() })
       .from(boothLogs)
       .where(and(...conditions));
-    
+
     const totalSessions = totalSessionsResult[0]?.count || 0;
 
-    const sessions: GroupedSession[] = await Promise.all(
+    // Get unique event IDs from the sessions
+    const eventIds = [...new Set(sessionsStart.map(session => session.eventId).filter(Boolean))];
+    
+    // Fetch events data if there are any event IDs
+    const eventsData: EventInfo[] = [];
+    if (eventIds.length > 0) {
+      for (const eventId of eventIds) {
+        const eventResult = await db
+          .select({
+            id: events.id,
+            name: events.name,
+            description: events.description,
+            price: events.price,
+            currency: events.currency,
+            isActive: events.isActive,
+          })
+          .from(events)
+          .where(eq(events.id, eventId!))
+          .limit(1);
+        
+        if (eventResult.length > 0) {
+          eventsData.push({
+            id: eventResult[0].id,
+            name: eventResult[0].name,
+            description: eventResult[0].description,
+            price: eventResult[0].price,
+            currency: eventResult[0].currency,
+            isActive: eventResult[0].isActive,
+          });
+        }
+      }
+    }
+    
+    // Create a map for quick event lookup
+    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
+
+    const sessions: GroupedSessionWithEvent[] = await Promise.all(
       sessionsStart.map(async (sessionStart) => {
         const sessionEvents = await this.getSessionEvents(sessionStart.sessionId);
-        
-        const sessionEnd = sessionEvents.find(e => e.boothEventType === BoothEventType.SESSION_END);
-        
+
+        const sessionEnd = sessionEvents.find((e) => e.boothEventType === BoothEventType.SESSION_END);
+
         return {
           sessionId: sessionStart.sessionId,
           startTime: sessionStart.startTime,
@@ -163,7 +299,7 @@ export class BoothLoggingService {
           boothIdentifier: sessionStart.boothIdentifier,
           status: sessionEnd ? 'complete' : 'incomplete',
           eventCount: sessionEvents.length,
-          events: sessionEvents.map(event => ({
+          events: sessionEvents.map((event) => ({
             ...event,
             boothEventType: event.boothEventType as BoothEventType,
             status: event.status as BoothStatus,
@@ -171,8 +307,9 @@ export class BoothLoggingService {
           })),
           qrCodeId: sessionStart.qrCodeId,
           eventId: sessionStart.eventId,
+          event: sessionStart.eventId ? eventsMap.get(sessionStart.eventId) : undefined,
         };
-      })
+      }),
     );
 
     const totalPages = Math.ceil(totalSessions / pageSize);
@@ -190,18 +327,14 @@ export class BoothLoggingService {
     };
   }
 
-  async getBoothEventStats(options?: {
-    eventId?: string;
-    boothIdentifier?: string;
-    sessionId?: string;
-  }) {
+  async getBoothEventStats(options?: { eventId?: string; boothIdentifier?: string; sessionId?: string }) {
     const db = this.databaseService.getDb();
-    
+
     const conditions = [];
     if (options?.eventId) conditions.push(eq(boothLogs.eventId, options.eventId));
     if (options?.boothIdentifier) conditions.push(eq(boothLogs.boothIdentifier, options.boothIdentifier));
     if (options?.sessionId) conditions.push(eq(boothLogs.sessionId, options.sessionId));
-    
+
     const query = db
       .select({
         boothEventType: boothLogs.boothEventType,
@@ -210,11 +343,11 @@ export class BoothLoggingService {
       })
       .from(boothLogs)
       .groupBy(boothLogs.boothEventType, boothLogs.status);
-    
+
     if (conditions.length > 0) {
       query.where(and(...conditions));
     }
-    
+
     return await query;
   }
 
@@ -235,9 +368,13 @@ export class BoothLoggingService {
       case BoothEventType.SHARING_SCREEN:
         return 'Sharing screen displayed';
       case BoothEventType.PRINTING:
-        return `Printing ${boothEvent.param2 || '1'} copies of ${boothEvent.param1 || 'file'} on ${boothEvent.param3 || 'printer'}`;
+        return `Printing ${boothEvent.param2 || '1'} copies of ${boothEvent.param1 || 'file'} on ${
+          boothEvent.param3 || 'printer'
+        }`;
       case BoothEventType.FILE_UPLOAD:
-        return `File uploaded: ${boothEvent.param1 || 'file'} to ${boothEvent.param2 || 'cloud'} as ${boothEvent.param3 || 'unknown type'}`;
+        return `File uploaded: ${boothEvent.param1 || 'file'} to ${boothEvent.param2 || 'cloud'} as ${
+          boothEvent.param3 || 'unknown type'
+        }`;
       case BoothEventType.SESSION_END:
         return 'Booth session completed';
       default:

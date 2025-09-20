@@ -23,17 +23,13 @@ import { CreateEventModal } from '@/components/events/CreateEventModal';
 import { EditEventModal } from '@/components/events/EditEventModal';
 import { QRCodeModal } from '@/components/events/QRCodeModal';
 import { QRCodeHistoryModal } from '@/components/events/QRCodeHistoryModal';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Event, CreateEventDto, UpdateEventDto } from '@/lib/api/events';
 import { useEvents } from '@/hooks/useEvents';
 
 export default function EventsPage() {
   const router = useRouter();
-  const { events, isLoading, createEvent, updateEvent, deleteEvent } = useEvents();
+  const { events, isLoading, createEvent, updateEvent, deleteEvent, isCreatingEvent } = useEvents();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
@@ -49,14 +45,14 @@ export default function EventsPage() {
 
   // Filter events based on search
   const filteredEvents = events.filter((event) =>
-    searchQuery.trim()
-      ? event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false
-      : true
+    searchQuery.trim() ? event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false : true,
   );
 
   const handleCreateEvent = (newEventData: CreateEventDto) => {
     createEvent(newEventData, {
-      onSuccess: () => setShowCreateModal(false),
+      onSuccess: () => {
+        setShowCreateModal(false);
+      },
     });
   };
 
@@ -68,7 +64,7 @@ export default function EventsPage() {
           setShowEditModal(false);
           setSelectedEvent(null);
         },
-      }
+      },
     );
   };
 
@@ -123,10 +119,7 @@ export default function EventsPage() {
         </div>
         <div className="grid gap-4">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-32 bg-dash-gray/30 rounded-lg animate-pulse"
-            ></div>
+            <div key={i} className="h-32 bg-dash-gray/30 rounded-lg animate-pulse"></div>
           ))}
         </div>
       </div>
@@ -139,9 +132,7 @@ export default function EventsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Events</h1>
-          <p className="text-dash-navy/70">
-            Manage your photobooth events and QR codes
-          </p>
+          <p className="text-dash-navy/70">Manage your photobooth events and QR codes</p>
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
@@ -158,12 +149,8 @@ export default function EventsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-dash-navy/70">
-                  Total Events
-                </p>
-                <p className="text-2xl font-normal text-dash-navy tracking-wide">
-                  {events.length}
-                </p>
+                <p className="text-sm font-medium text-dash-navy/70">Total Events</p>
+                <p className="text-2xl font-normal text-dash-navy tracking-wide">{events.length}</p>
               </div>
               <Calendar className="h-8 w-8 text-dash-navy/50" />
             </div>
@@ -174,16 +161,11 @@ export default function EventsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-dash-navy/70">
-                  Avg. Price
-                </p>
+                <p className="text-sm font-medium text-dash-navy/70">Avg. Price</p>
                 <p className="text-2xl font-normal text-dash-navy tracking-wide">
                   ₱
                   {events.length > 0
-                    ? (
-                        events.reduce((sum, e) => sum + (Number(e.price) || 0), 0) /
-                        events.length
-                      ).toFixed(0)
+                    ? (events.reduce((sum, e) => sum + (Number(e.price) || 0), 0) / events.length).toFixed(0)
                     : '0'}
                 </p>
               </div>
@@ -240,22 +222,16 @@ export default function EventsPage() {
           </Card>
         ) : (
           currentEvents.map((event) => (
-            <Card
-              key={event.id}
-              className="bg-dash-white hover:bg-gray-50/50 transition-colors"
-            >
+            <Card key={event.id} className="bg-dash-white hover:bg-gray-50/50 transition-colors">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-normal text-dash-navy tracking-wide">
-                        {event.name}
-                      </h3>
+                      <h3 className="text-xl font-normal text-dash-navy tracking-wide">{event.name}</h3>
                     </div>
                     <div className="flex items-center text-sm text-dash-navy/60">
                       <span className="flex items-center">
-                        <Coins className="w-4 h-4 mr-1" />₱
-                        {Number(event.price || 0)?.toFixed(2)}
+                        <Coins className="w-4 h-4 mr-1" />₱{Number(event.price || 0)?.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -385,8 +361,7 @@ export default function EventsPage() {
 
             <div className="flex items-center space-x-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page =
-                  Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                 if (page > totalPages) return null;
 
                 const pageButton = (
@@ -428,6 +403,7 @@ export default function EventsPage() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateEvent}
+        isLoading={isCreatingEvent}
       />
 
       {selectedEvent && (

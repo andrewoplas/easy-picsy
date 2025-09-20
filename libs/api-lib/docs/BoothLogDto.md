@@ -9,10 +9,10 @@ Name | Type | Description | Notes
 **sessionId** | **string** | Session ID (client-generated identifier) | [default to undefined]
 **boothEventType** | **string** | Booth event type | [default to undefined]
 **timestamp** | **string** | Original booth timestamp | [default to undefined]
-**param1** | **string** | Event parameter 1 | [optional] [default to undefined]
-**param2** | **string** | Event parameter 2 | [optional] [default to undefined]
-**param3** | **string** | Event parameter 3 | [optional] [default to undefined]
-**param4** | **string** | Event parameter 4 | [optional] [default to undefined]
+**param1** | **object** | Event parameter 1 | [optional] [default to undefined]
+**param2** | **object** | Event parameter 2 | [optional] [default to undefined]
+**param3** | **object** | Event parameter 3 | [optional] [default to undefined]
+**param4** | **object** | Event parameter 4 | [optional] [default to undefined]
 **eventId** | **string** | Associated event ID | [optional] [default to undefined]
 **qrCodeId** | **string** | Associated QR code ID | [optional] [default to undefined]
 **boothIdentifier** | **string** | Booth identifier | [optional] [default to undefined]
@@ -20,6 +20,7 @@ Name | Type | Description | Notes
 **message** | **string** | Human-readable message | [optional] [default to undefined]
 **errorDetails** | **string** | Error details if applicable | [optional] [default to undefined]
 **createdAt** | **string** | When this log was created | [default to undefined]
+**event** | [**EventInfoDto**](EventInfoDto.md) | Associated event information | [optional] [default to undefined]
 
 ## Example
 
@@ -42,6 +43,7 @@ const instance: BoothLogDto = {
     message,
     errorDetails,
     createdAt,
+    event,
 };
 ```
 

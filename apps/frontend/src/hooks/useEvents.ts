@@ -58,5 +58,6 @@ export function useEvents() {
     createEvent: createMutation.mutate,
     updateEvent: updateMutation.mutate,
     deleteEvent: deleteMutation.mutate,
+    isCreatingEvent: createMutation.isPending,
   };
 }

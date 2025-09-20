@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **eventCount** | **number** | Number of events in this session | [default to undefined]
 **qrCodeId** | **object** | Associated QR code ID | [optional] [default to undefined]
 **eventId** | **object** | Associated event ID | [optional] [default to undefined]
+**event** | [**EventInfoDto**](EventInfoDto.md) | Associated event information | [optional] [default to undefined]
 **events** | [**Array&lt;BoothLogDto&gt;**](BoothLogDto.md) | All events in this session | [default to undefined]
 
 ## Example
@@ -31,6 +32,7 @@ const instance: GroupedSessionDto = {
     eventCount,
     qrCodeId,
     eventId,
+    event,
     events,
 };
 ```
