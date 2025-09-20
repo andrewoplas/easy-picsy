@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
+import type { AuthenticatedRequest } from '../types/auth.types';
 import { CreateEventResponseDto } from './dto/create-event-response.dto';
 import { CreateEventDto } from './dto/create-event.dto';
 import { CurrentQrCodeResponseDto } from './dto/current-qr-code-response.dto';
@@ -55,9 +56,9 @@ export class EventsController {
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async create(
     @Body() createEventDto: CreateEventDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<CreateEventResponseDto> {
-    return await this.eventsService.create(createEventDto, req.user.sub);
+    return await this.eventsService.create(createEventDto, req.user.id);
   }
 
   @Get()
@@ -71,8 +72,8 @@ export class EventsController {
     type: [EventResponseDto],
   })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findAll(@Request() req: { user: { sub: string } }): Promise<EventResponseDto[]> {
-    return await this.eventsService.findAll(req.user.sub);
+  async findAll(@Request() req: AuthenticatedRequest): Promise<EventResponseDto[]> {
+    return await this.eventsService.findAll(req.user.id);
   }
 
   @Get(':id')
@@ -92,8 +93,8 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async findOne(@Param('id') id: string, @Request() req: { user: { sub: string } }): Promise<EventResponseDto> {
-    return await this.eventsService.findOne(id, req.user.sub);
+  async findOne(@Param('id') id: string, @Request() req: AuthenticatedRequest): Promise<EventResponseDto> {
+    return await this.eventsService.findOne(id, req.user.id);
   }
 
   @Patch(':id')
@@ -118,9 +119,9 @@ export class EventsController {
   async update(
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<EventResponseDto> {
-    return await this.eventsService.update(id, updateEventDto, req.user.sub);
+    return await this.eventsService.update(id, updateEventDto, req.user.id);
   }
 
   @Put(':id')
@@ -145,9 +146,9 @@ export class EventsController {
   async replace(
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<EventResponseDto> {
-    return await this.eventsService.update(id, updateEventDto, req.user.sub);
+    return await this.eventsService.update(id, updateEventDto, req.user.id);
   }
 
   @Delete(':id')
@@ -167,8 +168,8 @@ export class EventsController {
   })
   @ApiNotFoundResponse({ description: 'Event not found' })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async remove(@Param('id') id: string, @Request() req: { user: { sub: string } }): Promise<EventDeleteResponseDto> {
-    await this.eventsService.remove(id, req.user.sub);
+  async remove(@Param('id') id: string, @Request() req: AuthenticatedRequest): Promise<EventDeleteResponseDto> {
+    await this.eventsService.remove(id, req.user.id);
     return { message: 'Event deleted successfully' };
   }
 
@@ -191,9 +192,9 @@ export class EventsController {
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async getCurrentQRCode(
     @Param('id') eventId: string,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<CurrentQrCodeResponseDto> {
-    const qrCode = await this.qrCodesService.getCurrentQRCode(eventId, req.user.sub);
+    const qrCode = await this.qrCodesService.getCurrentQRCode(eventId, req.user.id);
     if (!qrCode) {
       throw new NotFoundException('No active QR code found for this event');
     }
@@ -219,9 +220,9 @@ export class EventsController {
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async regenerateQRCode(
     @Param('id') eventId: string,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<CurrentQrCodeResponseDto> {
-    return await this.qrCodesService.regenerateQRCode(eventId, req.user.sub);
+    return await this.qrCodesService.regenerateQRCode(eventId, req.user.id);
   }
 
   @Get(':id/qr/history')
@@ -243,9 +244,9 @@ export class EventsController {
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async getQRCodeHistory(
     @Param('id') eventId: string,
-    @Request() req: { user: { sub: string } },
+    @Request() req: AuthenticatedRequest,
   ): Promise<CurrentQrCodeResponseDto[]> {
-    return await this.qrCodesService.getQRCodeHistory(eventId, req.user.sub);
+    return await this.qrCodesService.getQRCodeHistory(eventId, req.user.id);
   }
 }
 

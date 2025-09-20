@@ -24,12 +24,12 @@ export class CreateEventDto {
   @ApiProperty({
     description: 'Price per photobooth session',
     example: 50.00,
-    minimum: 0,
+    minimum: 20,
     type: 'number',
     format: 'decimal'
   })
   @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0)
+  @Min(20)
   price: number;
 
   @ApiPropertyOptional({

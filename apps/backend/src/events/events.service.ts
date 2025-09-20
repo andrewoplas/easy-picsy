@@ -13,10 +13,7 @@ import { PublicEventResponseDto } from './dto/public-event-response.dto';
 export class EventsService {
   private readonly logger = new Logger(EventsService.name);
 
-  constructor(
-    private readonly databaseService: DatabaseService,
-    private readonly qrCodesService: QrCodesService,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService, private readonly qrCodesService: QrCodesService) {}
 
   async create(createEventDto: CreateEventDto, userId: string): Promise<CreateEventResponseDto> {
     const newEvent: NewEvent = {
@@ -28,10 +25,7 @@ export class EventsService {
       createdBy: userId,
     };
 
-    const [createdEvent] = await this.databaseService.db
-      .insert(events)
-      .values(newEvent)
-      .returning();
+    const [createdEvent] = await this.databaseService.db.insert(events).values(newEvent).returning();
 
     // Generate initial QR code for the event using Paymongo
     try {
@@ -63,7 +57,7 @@ export class EventsService {
       throw new NotFoundException(`Event with id ${id} not found`);
     }
 
-    return event;
+    return event as EventResponseDto;
   }
 
   async update(id: string, updateEventDto: UpdateEventDto, userId: string): Promise<EventResponseDto> {
@@ -74,7 +68,7 @@ export class EventsService {
     const updateData: Partial<NewEvent> = {
       ...rest,
       ...(price !== undefined && { price: price.toString() }),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const [updatedEvent] = await this.databaseService.db
@@ -83,15 +77,13 @@ export class EventsService {
       .where(eq(events.id, id))
       .returning();
 
-    return updatedEvent;
+    return updatedEvent as EventResponseDto;
   }
 
   async remove(id: string, userId: string): Promise<void> {
     await this.findOne(id, userId); // Check if exists and user owns it
 
-    await this.databaseService.db
-      .delete(events)
-      .where(eq(events.id, id));
+    await this.databaseService.db.delete(events).where(eq(events.id, id));
   }
 
   async findByQrCode(eventId: string): Promise<PublicEventResponseDto> {

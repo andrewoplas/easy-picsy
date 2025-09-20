@@ -9,22 +9,15 @@ export class SupabaseService {
 
   constructor(private configService: ConfigService) {
     // Create regular client (for frontend-facing operations)
-    this.supabase = createClient(
-      this.configService.supabaseUrl,
-      this.configService.supabaseAnonKey,
-    );
+    this.supabase = createClient(this.configService.supabaseUrl, this.configService.supabaseAnonKey);
 
     // Create admin client (for backend operations)
-    this.supabaseAdmin = createClient(
-      this.configService.supabaseUrl,
-      this.configService.supabaseServiceKey,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-        },
+    this.supabaseAdmin = createClient(this.configService.supabaseUrl, this.configService.supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
       },
-    );
+    });
   }
 
   getClient(): SupabaseClient {
@@ -37,8 +30,11 @@ export class SupabaseService {
 
   async verifyToken(token: string) {
     try {
-      const { data: { user }, error } = await this.supabaseAdmin.auth.getUser(token);
-      
+      const {
+        data: { user },
+        error,
+      } = await this.supabaseAdmin.auth.getUser(token);
+
       if (error || !user) {
         return null;
       }
@@ -52,8 +48,11 @@ export class SupabaseService {
 
   async getUserById(userId: string) {
     try {
-      const { data: { user }, error } = await this.supabaseAdmin.auth.admin.getUserById(userId);
-      
+      const {
+        data: { user },
+        error,
+      } = await this.supabaseAdmin.auth.admin.getUserById(userId);
+
       if (error || !user) {
         return null;
       }

@@ -28,6 +28,7 @@ export interface LogEventOptions {
   errorDetails?: string;
 }
 
+
 @Injectable()
 export class LoggingService {
   private readonly logger = new Logger(LoggingService.name);
@@ -196,6 +197,7 @@ export class LoggingService {
     
     return await query;
   }
+
 
   /**
    * Get logs summary/stats
