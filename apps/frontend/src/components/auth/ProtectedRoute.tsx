@@ -4,6 +4,12 @@ import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
+/**
+ * ProtectedRoute Component
+ *
+ * Wrapper component that redirects unauthenticated users to the login page.
+ * Shows loading state while checking authentication status.
+ */
 interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
@@ -22,7 +28,6 @@ export function ProtectedRoute({
     }
   }, [user, loading, router, redirectTo]);
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -34,7 +39,6 @@ export function ProtectedRoute({
     );
   }
 
-  // Don't render protected content if user is not authenticated
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -4,6 +4,12 @@ import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
+/**
+ * PublicRoute Component
+ *
+ * Wrapper component that redirects authenticated users away from public pages
+ * (like login/register) to the dashboard. Shows loading state while checking auth.
+ */
 interface PublicRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
@@ -22,7 +28,6 @@ export function PublicRoute({
     }
   }, [user, loading, router, redirectTo]);
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
@@ -34,7 +39,6 @@ export function PublicRoute({
     );
   }
 
-  // Don't render login/register if user is already authenticated
   if (user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 to-orange-50">
