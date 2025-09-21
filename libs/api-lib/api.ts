@@ -1478,6 +1478,135 @@ export interface TotalPrintAnalyticsDto {
 /**
  * 
  * @export
+ * @interface TrendDataDto
+ */
+export interface TrendDataDto {
+    /**
+     * Percentage change from previous period
+     * @type {number}
+     * @memberof TrendDataDto
+     */
+    'value': number;
+    /**
+     * Whether the trend is positive (increase) or negative (decrease)
+     * @type {boolean}
+     * @memberof TrendDataDto
+     */
+    'isPositive': boolean;
+    /**
+     * Previous period value for comparison
+     * @type {number}
+     * @memberof TrendDataDto
+     */
+    'previousValue': number;
+    /**
+     * Current period value
+     * @type {number}
+     * @memberof TrendDataDto
+     */
+    'currentValue': number;
+}
+/**
+ * 
+ * @export
+ * @interface TrendPrintAnalyticsDto
+ */
+export interface TrendPrintAnalyticsDto {
+    /**
+     * Current period prints from single sessions
+     * @type {number}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'singleSession': number;
+    /**
+     * Current period reprints
+     * @type {number}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'reprints': number;
+    /**
+     * Current period average prints per event
+     * @type {number}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'averagePerEvent': number;
+    /**
+     * Current period average reprints per event
+     * @type {number}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'averageReprintsPerEvent': number;
+    /**
+     * Trend data for single session prints
+     * @type {TrendDataDto}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'singleSessionTrend': TrendDataDto;
+    /**
+     * Trend data for reprints
+     * @type {TrendDataDto}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'reprintsTrend': TrendDataDto;
+    /**
+     * Trend data for average prints per event
+     * @type {TrendDataDto}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'averagePerEventTrend': TrendDataDto;
+    /**
+     * Trend data for average reprints per event
+     * @type {TrendDataDto}
+     * @memberof TrendPrintAnalyticsDto
+     */
+    'averageReprintsPerEventTrend': TrendDataDto;
+}
+/**
+ * 
+ * @export
+ * @interface TrendTotalAnalyticsDto
+ */
+export interface TrendTotalAnalyticsDto {
+    /**
+     * Current period total net revenue
+     * @type {number}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'totalNetRevenue': number;
+    /**
+     * Current period total withdrawable revenue
+     * @type {number}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'totalWithdrawableRevenue': number;
+    /**
+     * Current period average session time in seconds
+     * @type {number}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'averageSessionTime': number;
+    /**
+     * Current period print statistics with trends
+     * @type {TrendPrintAnalyticsDto}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'totalPrints': TrendPrintAnalyticsDto;
+    /**
+     * Trend data for total net revenue
+     * @type {TrendDataDto}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'totalNetRevenueTrend': TrendDataDto;
+    /**
+     * Trend data for average session time
+     * @type {TrendDataDto}
+     * @memberof TrendTotalAnalyticsDto
+     */
+    'averageSessionTimeTrend': TrendDataDto;
+}
+/**
+ * 
+ * @export
  * @interface UpdateEventDto
  */
 export interface UpdateEventDto {
@@ -1784,6 +1913,45 @@ export const AnalyticsApiAxiosParamCreator = function (configuration?: Configura
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Get aggregated analytics with trend calculations comparing current month to previous month
+         * @summary Get total analytics with monthly trends
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetTotalAnalyticsWithMonthlyTrends: async (eventId?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/analytics/total/monthly-trends`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (eventId !== undefined) {
+                localVarQueryParameter['eventId'] = eventId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1839,6 +2007,19 @@ export const AnalyticsApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetTotalAnalytics']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * Get aggregated analytics with trend calculations comparing current month to previous month
+         * @summary Get total analytics with monthly trends
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TrendTotalAnalyticsDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnalyticsApi.analyticsControllerGetTotalAnalyticsWithMonthlyTrends']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -1884,6 +2065,16 @@ export const AnalyticsApiFactory = function (configuration?: Configuration, base
          */
         analyticsControllerGetTotalAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig): AxiosPromise<TotalAnalyticsDto> {
             return localVarFp.analyticsControllerGetTotalAnalytics(eventId, startDate, endDate, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get aggregated analytics with trend calculations comparing current month to previous month
+         * @summary Get total analytics with monthly trends
+         * @param {string} [eventId] Event ID to filter analytics for a specific event
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId?: string, options?: RawAxiosRequestConfig): AxiosPromise<TrendTotalAnalyticsDto> {
+            return localVarFp.analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1935,6 +2126,18 @@ export class AnalyticsApi extends BaseAPI {
      */
     public analyticsControllerGetTotalAnalytics(eventId?: string, startDate?: string, endDate?: string, options?: RawAxiosRequestConfig) {
         return AnalyticsApiFp(this.configuration).analyticsControllerGetTotalAnalytics(eventId, startDate, endDate, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get aggregated analytics with trend calculations comparing current month to previous month
+     * @summary Get total analytics with monthly trends
+     * @param {string} [eventId] Event ID to filter analytics for a specific event
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnalyticsApi
+     */
+    public analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId?: string, options?: RawAxiosRequestConfig) {
+        return AnalyticsApiFp(this.configuration).analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

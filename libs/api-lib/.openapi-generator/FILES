@@ -45,6 +45,9 @@ docs/RefreshTokenResponseDto.md
 docs/RegisterDto.md
 docs/TotalAnalyticsDto.md
 docs/TotalPrintAnalyticsDto.md
+docs/TrendDataDto.md
+docs/TrendPrintAnalyticsDto.md
+docs/TrendTotalAnalyticsDto.md
 docs/UpdateEventDto.md
 docs/UpdateUserDto.md
 docs/UserResponseDto.md

@@ -7,6 +7,7 @@ All URIs are relative to *http://localhost:3000*
 |[**analyticsControllerGetEventAnalytics**](#analyticscontrollergeteventanalytics) | **GET** /api/analytics/events | Get per-event analytics|
 |[**analyticsControllerGetSingleEventAnalytics**](#analyticscontrollergetsingleeventanalytics) | **GET** /api/analytics/events/{eventId} | Get analytics for a specific event|
 |[**analyticsControllerGetTotalAnalytics**](#analyticscontrollergettotalanalytics) | **GET** /api/analytics/total | Get total analytics|
+|[**analyticsControllerGetTotalAnalyticsWithMonthlyTrends**](#analyticscontrollergettotalanalyticswithmonthlytrends) | **GET** /api/analytics/total/monthly-trends | Get total analytics with monthly trends|
 
 # **analyticsControllerGetEventAnalytics**
 > Array<EventAnalyticsDto> analyticsControllerGetEventAnalytics()
@@ -185,6 +186,60 @@ const { status, data } = await apiInstance.analyticsControllerGetTotalAnalytics(
 |-------------|-------------|------------------|
 |**200** | Total analytics retrieved successfully |  -  |
 |**400** | Invalid date range or event ID provided |  -  |
+|**401** | Unauthorized - invalid or missing JWT token |  -  |
+|**404** | Event not found (when eventId is provided) |  -  |
+|**500** | Internal server error while calculating analytics |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **analyticsControllerGetTotalAnalyticsWithMonthlyTrends**
+> TrendTotalAnalyticsDto analyticsControllerGetTotalAnalyticsWithMonthlyTrends()
+
+Get aggregated analytics with trend calculations comparing current month to previous month
+
+### Example
+
+```typescript
+import {
+    AnalyticsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AnalyticsApi(configuration);
+
+let eventId: string; //Event ID to filter analytics for a specific event (optional) (default to undefined)
+
+const { status, data } = await apiInstance.analyticsControllerGetTotalAnalyticsWithMonthlyTrends(
+    eventId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **eventId** | [**string**] | Event ID to filter analytics for a specific event | (optional) defaults to undefined|
+
+
+### Return type
+
+**TrendTotalAnalyticsDto**
+
+### Authorization
+
+[JWT-auth](../README.md#JWT-auth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Total analytics with monthly trends retrieved successfully |  -  |
 |**401** | Unauthorized - invalid or missing JWT token |  -  |
 |**404** | Event not found (when eventId is provided) |  -  |
 |**500** | Internal server error while calculating analytics |  -  |
