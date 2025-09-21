@@ -1,0 +1,1 @@
+ALTER TABLE "qr_codes" ALTER COLUMN "session_id" SET DATA TYPE text;

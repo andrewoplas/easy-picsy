@@ -1,8 +1,11 @@
 import { Controller, Get, HttpException, HttpStatus, Param, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthUser } from '../types/auth.types';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsQueryDto, EventAnalyticsDto, TotalAnalyticsDto, DateRangeDto } from './dto';
+import { TrendTotalAnalyticsDto } from './dto/trend-analytics.dto';
 
 @ApiTags('Analytics')
 @ApiBearerAuth('JWT-auth')
@@ -60,16 +63,61 @@ export class AnalyticsController {
   })
   async getTotalAnalytics(
     @Query(new ValidationPipe({ transform: true, whitelist: true })) query: AnalyticsQueryDto,
+    @CurrentUser() user: AuthUser,
   ): Promise<TotalAnalyticsDto> {
     try {
       const dateRange = this.validateAndBuildDateRange(query);
-      return await this.analyticsService.getTotalAnalytics(query.eventId, dateRange);
+      return await this.analyticsService.getTotalAnalytics(user.id, query.eventId, dateRange);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
 
       throw new HttpException('Failed to retrieve total analytics', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('total/monthly-trends')
+  @ApiOperation({
+    summary: 'Get total analytics with monthly trends',
+    description: 'Get aggregated analytics with trend calculations comparing current month to previous month',
+  })
+  @ApiQuery({
+    name: 'eventId',
+    required: false,
+    type: String,
+    description: 'Event ID to filter analytics for a specific event',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Total analytics with monthly trends retrieved successfully',
+    type: TrendTotalAnalyticsDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Event not found (when eventId is provided)',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error while calculating analytics',
+  })
+  async getTotalAnalyticsWithMonthlyTrends(
+    @Query('eventId') eventId: string | undefined,
+    @CurrentUser() user: AuthUser,
+  ): Promise<TrendTotalAnalyticsDto> {
+    try {
+      return await this.analyticsService.getTotalAnalyticsWithMonthlyTrends(user.id, eventId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new HttpException('Failed to retrieve total analytics with monthly trends', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -122,10 +170,11 @@ export class AnalyticsController {
   })
   async getEventAnalytics(
     @Query(new ValidationPipe({ transform: true, whitelist: true })) query: AnalyticsQueryDto,
+    @CurrentUser() user: AuthUser,
   ): Promise<EventAnalyticsDto[]> {
     try {
       const dateRange = this.validateAndBuildDateRange(query);
-      return await this.analyticsService.getEventAnalytics(query.eventId, dateRange);
+      return await this.analyticsService.getEventAnalytics(user.id, query.eventId, dateRange);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -178,10 +227,11 @@ export class AnalyticsController {
   async getSingleEventAnalytics(
     @Param('eventId') eventId: string,
     @Query(new ValidationPipe({ transform: true, whitelist: true })) query: Omit<AnalyticsQueryDto, 'eventId'>,
+    @CurrentUser() user: AuthUser,
   ): Promise<EventAnalyticsDto> {
     try {
       const dateRange = this.validateAndBuildDateRange(query);
-      const results = await this.analyticsService.getEventAnalytics(eventId, dateRange);
+      const results = await this.analyticsService.getEventAnalytics(user.id, eventId, dateRange);
       
       if (results.length === 0) {
         throw new HttpException('Event not found or inactive', HttpStatus.NOT_FOUND);

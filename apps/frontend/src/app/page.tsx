@@ -377,13 +377,13 @@ export default function LandingPage() {
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <nav ref={navRef} className="fixed top-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-50">
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 px-6 py-3">
+      <nav ref={navRef} className="fixed top-2 sm:top-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-2 sm:px-4 z-50">
+        <div className="bg-white/95 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg border border-white/20 px-3 sm:px-6 py-2 sm:py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Image src="/logo.svg" alt="Easy Picsy" width={32} height={32} className="h-8 w-auto transition-all duration-300 cursor-pointer" />
+              <Image src="/logo.svg" alt="Easy Picsy" width={32} height={32} className="h-6 sm:h-8 w-auto transition-all duration-300 cursor-pointer" />
             </div>
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
               <a href="#features" className="text-gray-600 hover:text-easy-black transition-colors text-sm font-medium">
                 Features
               </a>
@@ -398,7 +398,16 @@ export default function LandingPage() {
               </a>
               <a
                 href="#waitlist"
-                className="bg-easy-yellow text-easy-black px-4 py-2 rounded-xl text-sm font-semibold hover:bg-easy-yellow/90 transition-all duration-300"
+                className="bg-easy-yellow text-easy-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold hover:bg-easy-yellow/90 transition-all duration-300"
+              >
+                Join Waitlist
+              </a>
+            </div>
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <a
+                href="#waitlist"
+                className="bg-easy-yellow text-easy-black px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-easy-yellow/90 transition-all duration-300"
               >
                 Join Waitlist
               </a>
@@ -408,7 +417,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-24 px-4 bg-[#f9fafb] relative overflow-hidden">
+      <section className="pt-20 sm:pt-24 md:pt-32 pb-16 sm:pb-20 md:pb-24 px-4 bg-[#f9fafb] relative overflow-hidden">
         <div
           className="absolute inset-0 z-0 grid-background"
           style={{
@@ -416,22 +425,22 @@ export default function LandingPage() {
               linear-gradient(to right, #d1d5db 1px, transparent 1px),
               linear-gradient(to bottom, #d1d5db 1px, transparent 1px)
             `,
-            backgroundSize: '32px 32px',
+            backgroundSize: '24px 24px',
             WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 100% 0%, #000 50%, transparent 90%)',
             maskImage: 'radial-gradient(ellipse 80% 80% at 100% 0%, #000 50%, transparent 90%)',
           }}
         />
 
         <div className="container mx-auto max-w-6xl relative z-20">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div ref={heroContentRef}>
-              <div className="inline-block bg-easy-yellow/20 px-4 py-2 rounded-full mb-6">
-                <span className="text-sm font-semibold text-easy-black flex items-center gap-2">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            <div ref={heroContentRef} className="order-1 lg:order-1">
+              <div className="inline-block bg-easy-yellow/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
+                <span className="text-xs sm:text-sm font-semibold text-easy-black flex items-center gap-1 sm:gap-2">
                   ⚡ Official QRPh Standard - Works with Your Existing dslrBooth
                 </span>
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 sm:mb-6 leading-tight">
                 Add Cashless Payments
                 <br />
                 <span className="text-easy-yellow bg-gradient-to-r from-easy-yellow to-yellow-400 bg-clip-text text-transparent">
@@ -439,75 +448,75 @@ export default function LandingPage() {
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8">
                 Keep your existing dslrBooth setup and{' '}
                 <span className="font-semibold text-gray-800">add QR code payments in minutes</span>. Accept GCash,
                 Maya, and 30+ other Philippine banks and e-wallets without replacing any hardware.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
                 <Button
                   ref={ctaButtonRef}
                   size="lg"
-                  className="px-8 py-4 text-lg font-semibold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 hover:shadow-lg transition-all duration-300 rounded-2xl"
+                  className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 hover:shadow-lg transition-all duration-300 rounded-xl sm:rounded-2xl"
                   onClick={handleJoinWaitlist}
                 >
                   <span>Join Waitlist</span>
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="px-8 py-4 text-lg font-semibold rounded-2xl"
+                  className="px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl sm:rounded-2xl"
                   onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <span>See How It Works</span>
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <div className="flex items-center gap-1">
-                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
-                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
-                  <span className="text-sm font-medium text-gray-600 ml-2">
+                  <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-easy-yellow sparkle-icon" />
+                  <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-easy-yellow sparkle-icon" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 ml-1 sm:ml-2">
                     <span className="font-bold text-gray-800">No equipment replacement needed!</span> Works with your
                     current setup
                   </span>
-                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
-                  <Sparkles className="w-4 h-4 text-easy-yellow sparkle-icon" />
+                  <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-easy-yellow sparkle-icon" />
+                  <Sparkles className="w-3 sm:w-4 h-3 sm:h-4 text-easy-yellow sparkle-icon" />
                 </div>
               </div>
             </div>
 
-            <div ref={heroImageRef} className="relative">
+            <div ref={heroImageRef} className="relative order-2 lg:order-2 mb-8 lg:mb-0">
               <div className="relative">
-                <div className="bg-white rounded-3xl p-8 shadow-xl">
-                  <div className="aspect-square bg-gradient-to-br from-easy-yellow/20 to-easy-yellow/10 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl">
+                  <div className="aspect-square bg-gradient-to-br from-easy-yellow/20 to-easy-yellow/10 rounded-xl sm:rounded-2xl flex items-center justify-center relative overflow-hidden">
                     <div className="text-center">
-                      <div className="relative mb-6">
-                        <MonitorSpeaker className="w-20 h-20 text-gray-600 mx-auto mb-4" />
-                        <div className="absolute -top-2 -right-2">
-                          <div ref={floatingQrRef} className="bg-easy-yellow rounded-lg p-2">
-                            <QrCode className="w-8 h-8 text-easy-black" />
+                      <div className="relative mb-4 sm:mb-6">
+                        <MonitorSpeaker className="w-16 sm:w-20 h-16 sm:h-20 text-gray-600 mx-auto mb-3 sm:mb-4" />
+                        <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2">
+                          <div ref={floatingQrRef} className="bg-easy-yellow rounded-md sm:rounded-lg p-1.5 sm:p-2">
+                            <QrCode className="w-6 sm:w-8 h-6 sm:h-8 text-easy-black" />
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="w-3 h-3 bg-easy-yellow rounded-full animate-pulse"></div>
-                        <ArrowRight className="w-4 h-4 text-gray-400" />
-                        <Smartphone className="w-6 h-6 text-easy-yellow" />
-                        <ArrowRight className="w-4 h-4 text-gray-400" />
-                        <DollarSign className="w-6 h-6 text-green-500" />
+                      <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                        <div className="w-2 sm:w-3 h-2 sm:h-3 bg-easy-yellow rounded-full animate-pulse"></div>
+                        <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
+                        <Smartphone className="w-5 sm:w-6 h-5 sm:h-6 text-easy-yellow" />
+                        <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
+                        <DollarSign className="w-5 sm:w-6 h-5 sm:h-6 text-green-500" />
                       </div>
 
-                      <p className="text-sm text-gray-600 font-medium">Scan → Pay → Booth Unlocks</p>
+                      <p className="text-xs sm:text-sm text-gray-600 font-medium">Scan → Pay → Booth Unlocks</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute -top-6 -right-6 w-16 h-16 bg-easy-yellow/20 rounded-2xl blur-xl"></div>
-                <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-easy-yellow/15 rounded-full blur-xl"></div>
+                <div className="absolute -top-4 sm:-top-6 -right-4 sm:-right-6 w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow/20 rounded-xl sm:rounded-2xl blur-xl"></div>
+                <div className="absolute -bottom-3 sm:-bottom-4 -left-3 sm:-left-4 w-8 sm:w-12 h-8 sm:h-12 bg-easy-yellow/15 rounded-full blur-xl"></div>
               </div>
             </div>
           </div>
@@ -563,167 +572,167 @@ export default function LandingPage() {
       </section> */}
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white">
+      <section id="how-it-works" className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">Setup in Just 4 Simple Steps</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-easy-black mb-3 sm:mb-4">Setup in Just 4 Simple Steps</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
               From setup to earning - watch how easy it is to add cashless payments to your dslrBooth
             </p>
           </div>
 
           <div ref={processStepsRef} className="relative">
             {/* Desktop arrows - hidden on mobile */}
-            <div className="hidden lg:block absolute top-20 left-0 right-0 h-1 pointer-events-none">
+            <div className="hidden lg:block absolute top-16 sm:top-20 left-0 right-0 h-1 pointer-events-none">
               <div className="flex justify-between items-center h-full max-w-5xl mx-auto px-16">
                 <div className="animated-arrow flex-1 flex items-center justify-center">
-                  <ArrowRight className="w-8 h-8 text-easy-yellow/60" />
+                  <ArrowRight className="w-6 sm:w-8 h-6 sm:h-8 text-easy-yellow/60" />
                 </div>
                 <div className="animated-arrow flex-1 flex items-center justify-center">
-                  <ArrowRight className="w-8 h-8 text-easy-yellow/60" />
+                  <ArrowRight className="w-6 sm:w-8 h-6 sm:h-8 text-easy-yellow/60" />
                 </div>
                 <div className="animated-arrow flex-1 flex items-center justify-center">
-                  <ArrowRight className="w-8 h-8 text-easy-yellow/60" />
+                  <ArrowRight className="w-6 sm:w-8 h-6 sm:h-8 text-easy-yellow/60" />
                 </div>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12 sm:mb-16">
               <div className="process-step text-center relative">
-                <div className="step-number w-16 h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
-                  <span className="text-2xl font-bold text-easy-black">1</span>
+                <div className="step-number w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+                  <span className="text-lg sm:text-2xl font-bold text-easy-black">1</span>
                 </div>
-                <div className="card-icon mb-4">
-                  <Globe className="w-12 h-12 text-easy-yellow mx-auto" />
+                <div className="card-icon mb-3 sm:mb-4">
+                  <Globe className="w-10 sm:w-12 h-10 sm:h-12 text-easy-yellow mx-auto" />
                 </div>
-                <h3 className="text-lg font-bold mb-3 text-gray-800">Create Event Online</h3>
-                <p className="text-gray-600">Log into our web app and create your event with pricing details</p>
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-gray-800">Create Event Online</h3>
+                <p className="text-sm sm:text-base text-gray-600">Log into our web app and create your event with pricing details</p>
               </div>
 
               <div className="process-step text-center relative">
-                <div className="step-number w-16 h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
-                  <span className="text-2xl font-bold text-easy-black">2</span>
+                <div className="step-number w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+                  <span className="text-lg sm:text-2xl font-bold text-easy-black">2</span>
                 </div>
-                <div className="card-icon mb-4">
-                  <MonitorSpeaker className="w-12 h-12 text-easy-yellow mx-auto" />
+                <div className="card-icon mb-3 sm:mb-4">
+                  <MonitorSpeaker className="w-10 sm:w-12 h-10 sm:h-12 text-easy-yellow mx-auto" />
                 </div>
-                <h3 className="text-lg font-bold mb-3 text-gray-800">Start Our Desktop App</h3>
-                <p className="text-gray-600">Run our app on your dslrBooth computer and select your event</p>
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-gray-800">Start Our Desktop App</h3>
+                <p className="text-sm sm:text-base text-gray-600">Run our app on your dslrBooth computer and select your event</p>
               </div>
 
               <div className="process-step text-center relative">
-                <div className="step-number w-16 h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
-                  <span className="text-2xl font-bold text-easy-black">3</span>
+                <div className="step-number w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+                  <span className="text-lg sm:text-2xl font-bold text-easy-black">3</span>
                 </div>
-                <div className="card-icon mb-4">
-                  <Smartphone className="w-12 h-12 text-easy-yellow mx-auto" />
+                <div className="card-icon mb-3 sm:mb-4">
+                  <Smartphone className="w-10 sm:w-12 h-10 sm:h-12 text-easy-yellow mx-auto" />
                 </div>
-                <h3 className="text-lg font-bold mb-3 text-gray-800">Guest Pays with Phone</h3>
-                <p className="text-gray-600">
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-gray-800">Guest Pays with Phone</h3>
+                <p className="text-sm sm:text-base text-gray-600">
                   Guest scans QR code and pays instantly with GCash, Maya, or any Philippine bank app
                 </p>
               </div>
 
               <div className="process-step text-center relative">
-                <div className="step-number w-16 h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6 relative z-10">
-                  <span className="text-2xl font-bold text-easy-black">4</span>
+                <div className="step-number w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 relative z-10">
+                  <span className="text-lg sm:text-2xl font-bold text-easy-black">4</span>
                 </div>
-                <div className="card-icon mb-4">
-                  <Zap className="w-12 h-12 text-easy-yellow mx-auto" />
+                <div className="card-icon mb-3 sm:mb-4">
+                  <Zap className="w-10 sm:w-12 h-10 sm:h-12 text-easy-yellow mx-auto" />
                 </div>
-                <h3 className="text-lg font-bold mb-3 text-gray-800">Everything is Automatic</h3>
-                <p className="text-gray-600">Our app handles booth unlock, session management, and locking</p>
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-gray-800">Everything is Automatic</h3>
+                <p className="text-sm sm:text-base text-gray-600">Our app handles booth unlock, session management, and locking</p>
               </div>
             </div>
           </div>
 
           <div className="text-center">
-            <div className="celebration-box inline-block bg-gradient-to-br from-easy-yellow/20 via-yellow-100/30 to-easy-yellow/10 border-2 border-easy-yellow/30 rounded-3xl p-8 relative overflow-hidden">
+            <div className="celebration-box inline-block bg-gradient-to-br from-easy-yellow/20 via-yellow-100/30 to-easy-yellow/10 border-2 border-easy-yellow/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 relative overflow-hidden">
               {/* Floating confetti inside the box */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Top layer confetti - will float down */}
                 <div className="confetti-container absolute inset-0">
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-easy-yellow rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-easy-yellow rounded-full"
                     style={{ left: '10%', top: '-10px', animationDelay: '0s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-3 h-3 bg-red-400 rounded-sm rotate-45"
+                    className="confetti-piece absolute w-2 sm:w-3 h-2 sm:h-3 bg-red-400 rounded-sm rotate-45"
                     style={{ left: '20%', top: '-10px', animationDelay: '0.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-3 bg-blue-400"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-2 sm:h-3 bg-blue-400"
                     style={{ left: '30%', top: '-10px', animationDelay: '1s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-green-400 rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-green-400 rounded-full"
                     style={{ left: '40%', top: '-10px', animationDelay: '1.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-3 h-2 bg-purple-400 rotate-12"
+                    className="confetti-piece absolute w-2 sm:w-3 h-1.5 sm:h-2 bg-purple-400 rotate-12"
                     style={{ left: '50%', top: '-10px', animationDelay: '2s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-pink-400 rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-pink-400 rounded-full"
                     style={{ left: '60%', top: '-10px', animationDelay: '2.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-3 bg-orange-400"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-2 sm:h-3 bg-orange-400"
                     style={{ left: '70%', top: '-10px', animationDelay: '3s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-3 h-3 bg-teal-400 rounded-sm rotate-45"
+                    className="confetti-piece absolute w-2 sm:w-3 h-2 sm:h-3 bg-teal-400 rounded-sm rotate-45"
                     style={{ left: '80%', top: '-10px', animationDelay: '3.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-yellow-300 rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-yellow-300 rounded-full"
                     style={{ left: '90%', top: '-10px', animationDelay: '4s' }}
                   ></div>
 
                   {/* Second wave */}
                   <div
-                    className="confetti-piece absolute w-3 h-3 bg-indigo-400 rounded-sm"
+                    className="confetti-piece absolute w-2 sm:w-3 h-2 sm:h-3 bg-indigo-400 rounded-sm"
                     style={{ left: '15%', top: '-10px', animationDelay: '4.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-rose-400 rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-rose-400 rounded-full"
                     style={{ left: '25%', top: '-10px', animationDelay: '5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-3 bg-cyan-400 rotate-45"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-2 sm:h-3 bg-cyan-400 rotate-45"
                     style={{ left: '35%', top: '-10px', animationDelay: '5.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-3 h-2 bg-lime-400"
+                    className="confetti-piece absolute w-2 sm:w-3 h-1.5 sm:h-2 bg-lime-400"
                     style={{ left: '45%', top: '-10px', animationDelay: '6s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-amber-400 rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-amber-400 rounded-full"
                     style={{ left: '55%', top: '-10px', animationDelay: '6.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-3 h-3 bg-violet-400 rotate-12"
+                    className="confetti-piece absolute w-2 sm:w-3 h-2 sm:h-3 bg-violet-400 rotate-12"
                     style={{ left: '65%', top: '-10px', animationDelay: '7s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-3 bg-emerald-400"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-2 sm:h-3 bg-emerald-400"
                     style={{ left: '75%', top: '-10px', animationDelay: '7.5s' }}
                   ></div>
                   <div
-                    className="confetti-piece absolute w-2 h-2 bg-easy-yellow rounded-full"
+                    className="confetti-piece absolute w-1.5 sm:w-2 h-1.5 sm:h-2 bg-easy-yellow rounded-full"
                     style={{ left: '85%', top: '-10px', animationDelay: '8s' }}
                   ></div>
                 </div>
               </div>
 
               <div className="flex flex-col items-center justify-center text-center text-easy-black relative z-10">
-                <div className="celebration-emoji text-5xl mb-4">🎉</div>
+                <div className="celebration-emoji text-3xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">🎉</div>
                 <div className="mb-2">
-                  <span className="text-xl font-bold">
+                  <span className="text-lg sm:text-xl font-bold">
                     That&apos;s it! Your dslrBooth now accepts cashless payments
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 font-medium">Start earning more money from every event! 💰</p>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Start earning more money from every event! 💰</p>
               </div>
             </div>
           </div>
@@ -731,73 +740,73 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50">
+      <section id="features" className="py-12 sm:py-16 md:py-20 bg-gray-50">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">Why Business Owners Love This</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-easy-black mb-3 sm:mb-4">Why Business Owners Love This</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Real benefits that make your photobooth business more profitable and easier to run
             </p>
           </div>
 
-          <div ref={featureCardsRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
-                <DollarSign className="w-8 h-8 text-green-600" />
+          <div ref={featureCardsRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-green-100 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <DollarSign className="w-6 sm:w-8 h-6 sm:h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Guarantee Payment Before Use</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Guarantee Payment Before Use</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Every person who uses your booth has paid first through the secure, BSP-supervised QRPh system. No more
                 guests skipping payment
               </p>
             </div>
 
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                <Clock className="w-8 h-8 text-blue-600" />
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-blue-100 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <Clock className="w-6 sm:w-8 h-6 sm:h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">No More Cash Handling</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">No More Cash Handling</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Stop counting money, making change, or worrying about theft. Everything is digital and automatic
               </p>
             </div>
 
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-easy-yellow/20 rounded-2xl flex items-center justify-center mb-6">
-                <MonitorSpeaker className="w-8 h-8 text-easy-yellow" />
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-easy-yellow/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <MonitorSpeaker className="w-6 sm:w-8 h-6 sm:h-8 text-easy-yellow" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Keep Your Current Setup</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Keep Your Current Setup</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 No need to replace dslrBooth or buy new hardware. Works with what you already have
               </p>
             </div>
 
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-8 h-8 text-purple-600" />
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-purple-100 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <Zap className="w-6 sm:w-8 h-6 sm:h-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Automatic Booth Control</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Automatic Booth Control</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Payment unlocks booth, session ends and locks again. No manual intervention needed
               </p>
             </div>
 
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
-                <QrCode className="w-8 h-8 text-orange-600" />
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-orange-100 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <QrCode className="w-6 sm:w-8 h-6 sm:h-8 text-orange-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Automatic QR Code Display</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Automatic QR Code Display</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Our app automatically generates and displays QR codes on your booth screen - no printing needed!
               </p>
             </div>
 
-            <div className="feature-card bg-white rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
-              <div className="card-icon w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
-                <Sparkles className="w-8 h-8 text-red-600" />
+            <div className="feature-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 border">
+              <div className="card-icon w-12 sm:w-16 h-12 sm:h-16 bg-red-100 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
+                <Sparkles className="w-6 sm:w-8 h-6 sm:h-8 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Government-Standard Security</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Government-Standard Security</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 Trust the official QRPh payment standard supervised by BSP. Secure, tamper-proof payments with instant
                 confirmation
               </p>
@@ -807,89 +816,89 @@ export default function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 bg-white">
+      <section id="benefits" className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-easy-black mb-4">Everyone Wins</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Benefits for you, your guests, and your events</p>
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-easy-black mb-3 sm:mb-4">Everyone Wins</h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">Benefits for you, your guests, and your events</p>
           </div>
 
-          <div ref={benefitCardsRef} className="grid md:grid-cols-3 gap-8">
-            <div className="benefit-card ">
-              <div className="bg-easy-yellow/10 rounded-3xl p-8 hover:bg-easy-yellow/20 transition-all duration-300 hover:shadow-lg">
-                <div className="card-icon w-20 h-20 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-3xl">👑</span>
+          <div ref={benefitCardsRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="benefit-card">
+              <div className="bg-easy-yellow/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:bg-easy-yellow/20 transition-all duration-300 hover:shadow-lg">
+                <div className="card-icon w-16 sm:w-20 h-16 sm:h-20 bg-easy-yellow rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <span className="text-2xl sm:text-3xl">👑</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">For Business Owners</h3>
-                <ul className="text-gray-600 space-y-2">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800 text-center">For Business Owners</h3>
+                <ul className="text-sm sm:text-base text-gray-600 space-y-2">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     More revenue per event
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Less work and worry
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Professional modern image
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Real-time earnings tracking
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div className="benefit-card ">
-              <div className="bg-blue-50 rounded-3xl p-8 hover:bg-blue-100 transition-all duration-300 hover:shadow-lg">
-                <div className="card-icon w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-3xl">😊</span>
+            <div className="benefit-card">
+              <div className="bg-blue-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:bg-blue-100 transition-all duration-300 hover:shadow-lg">
+                <div className="card-icon w-16 sm:w-20 h-16 sm:h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <span className="text-2xl sm:text-3xl">😊</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">For Your Guests</h3>
-                <ul className="text-gray-600 space-y-2">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800 text-center">For Your Guests</h3>
+                <ul className="text-sm sm:text-base text-gray-600 space-y-2">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Quick, easy payments
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     No need for exact change
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Use any Philippine bank or e-wallet app
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Modern, convenient experience
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div className="benefit-card ">
-              <div className="bg-purple-50 rounded-3xl p-8 hover:bg-purple-100 transition-all duration-300 hover:shadow-lg">
-                <div className="card-icon w-20 h-20 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-3xl">🎉</span>
+            <div className="benefit-card">
+              <div className="bg-purple-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 hover:bg-purple-100 transition-all duration-300 hover:shadow-lg">
+                <div className="card-icon w-16 sm:w-20 h-16 sm:h-20 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <span className="text-2xl sm:text-3xl">🎉</span>
                 </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800 text-center">For Your Events</h3>
-                <ul className="text-gray-600 space-y-2">
+                <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800 text-center">For Your Events</h3>
+                <ul className="text-sm sm:text-base text-gray-600 space-y-2">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Faster moving lines
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Happier, satisfied guests
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     More photos taken
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <Check className="w-3 sm:w-4 h-3 sm:h-4 text-green-500 flex-shrink-0" />
                     Professional event experience
                   </li>
                 </ul>
@@ -900,7 +909,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="waitlist" className="py-20 bg-[#f8fafc] relative overflow-hidden">
+      <section id="waitlist" className="py-12 sm:py-16 md:py-20 bg-[#f8fafc] relative overflow-hidden">
         <div
           className="absolute inset-0 z-0"
           style={{
@@ -908,93 +917,93 @@ export default function LandingPage() {
               linear-gradient(to right, #e2e8f0 1px, transparent 1px),
               linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)
             `,
-            backgroundSize: '20px 30px',
+            backgroundSize: '16px 24px',
             WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 100%, #000 60%, transparent 100%)',
             maskImage: 'radial-gradient(ellipse 70% 60% at 50% 100%, #000 60%, transparent 100%)',
           }}
         />
 
         <div className="container mx-auto px-4 max-w-4xl text-center relative z-10">
-          <div className="mb-12">
-            <div className="inline-block bg-easy-yellow/20 px-4 py-2 rounded-full mb-6">
-              <span className="text-sm font-semibold text-easy-black flex items-center gap-2">⚡ Ready to Launch</span>
+          <div className="mb-8 sm:mb-12">
+            <div className="inline-block bg-easy-yellow/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
+              <span className="text-xs sm:text-sm font-semibold text-easy-black flex items-center gap-1 sm:gap-2">⚡ Ready to Launch</span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-easy-black mb-6 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-easy-black mb-4 sm:mb-6 leading-tight">
               Transform Your dslrBooth
               <br />
               <span className="text-easy-yellow bg-gradient-to-r from-easy-yellow to-yellow-400 bg-clip-text text-transparent">
                 Into a Money Machine
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Be among the first dslrBooth owners to add cashless payments to your business
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="text-2xl mb-3">🚀</div>
-              <h3 className="font-semibold text-gray-800 mb-2">Priority Access</h3>
-              <p className="text-sm text-gray-600">Be first to add cashless payments</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
+              <div className="text-xl sm:text-2xl mb-2 sm:mb-3">🚀</div>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">Priority Access</h3>
+              <p className="text-xs sm:text-sm text-gray-600">Be first to add cashless payments</p>
             </div>
-            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="text-2xl mb-3">💰</div>
-              <h3 className="font-semibold text-gray-800 mb-2">Special Pricing</h3>
-              <p className="text-sm text-gray-600">Exclusive launch discounts</p>
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
+              <div className="text-xl sm:text-2xl mb-2 sm:mb-3">💰</div>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">Special Pricing</h3>
+              <p className="text-xs sm:text-sm text-gray-600">Exclusive launch discounts</p>
             </div>
-            <div className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border">
-              <div className="text-2xl mb-3">🏆</div>
-              <h3 className="font-semibold text-gray-800 mb-2">Priority Support</h3>
-              <p className="text-sm text-gray-600">Direct access to our team</p>
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border sm:col-span-2 lg:col-span-1">
+              <div className="text-xl sm:text-2xl mb-2 sm:mb-3">🏆</div>
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">Priority Support</h3>
+              <p className="text-xs sm:text-sm text-gray-600">Direct access to our team</p>
             </div>
           </div>
 
           <div>
             <Button
               size="lg"
-              className="px-10 py-4 text-xl font-bold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 transition-all duration-300 rounded-2xl shadow-lg"
+              className="px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg md:text-xl font-bold bg-easy-yellow text-easy-black hover:bg-easy-yellow/90 transition-all duration-300 rounded-xl sm:rounded-2xl shadow-lg"
               onClick={handleJoinWaitlist}
             >
               <span>Join Waitlist Now</span>
-              <ArrowRight className="w-6 h-6 ml-2" />
+              <ArrowRight className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 ml-2" />
             </Button>
-            <p className="text-sm text-gray-500 mt-4">Join the waitlist and start earning more from your dslrBooth</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">Join the waitlist and start earning more from your dslrBooth</p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-easy-black text-white">
+      <footer className="py-6 sm:py-8 bg-easy-black text-white">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center">
-            <div className="mb-4">
+            <div className="mb-3 sm:mb-4">
               <Image
                 src="/logo.svg"
                 alt="Easy Picsy"
                 width={32}
                 height={32}
-                className="h-8 w-auto brightness-0 invert mx-auto transition-all duration-300"
+                className="h-6 sm:h-8 w-auto brightness-0 invert mx-auto transition-all duration-300"
               />
             </div>
-            <p className="text-gray-400 mb-4">Cashless payments for your dslrBooth. More revenue, less work.</p>
-            <div className="flex justify-center space-x-6 mb-4">
+            <p className="text-sm sm:text-base text-gray-400 mb-3 sm:mb-4">Cashless payments for your dslrBooth. More revenue, less work.</p>
+            <div className="flex justify-center space-x-4 sm:space-x-6 mb-3 sm:mb-4">
               <a
                 href="https://instagram.com/easypicsybooths"
                 className="text-gray-400 hover:text-easy-yellow transition-colors"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 sm:w-5 h-4 sm:h-5" />
               </a>
               <a href="https://easypicsybooths.com" className="text-gray-400 hover:text-easy-yellow transition-colors">
-                <Globe className="w-5 h-5" />
+                <Globe className="w-4 sm:w-5 h-4 sm:h-5" />
               </a>
               <a
                 href="mailto:hello@easypicsybooths.com"
                 className="text-gray-400 hover:text-easy-yellow transition-colors"
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="w-4 sm:w-5 h-4 sm:h-5" />
               </a>
             </div>
-            <p className="text-sm text-gray-500">&copy; 2025 Easy Picsy. All rights reserved.</p>
+            <p className="text-xs sm:text-sm text-gray-500">&copy; 2025 Easy Picsy. All rights reserved.</p>
           </div>
         </div>
       </footer>

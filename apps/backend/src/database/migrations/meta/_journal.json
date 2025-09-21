@@ -50,6 +50,13 @@
       "when": 1758358675854,
       "tag": "0006_calm_changeling",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1758434914965,
+      "tag": "0007_curious_black_bird",
+      "breakpoints": true
     }
   ]
 }

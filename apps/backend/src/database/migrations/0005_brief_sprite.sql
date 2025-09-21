@@ -1,0 +1,3 @@
+-- Migration 0005_brief_sprite
+-- This migration file was missing and is being created to maintain migration sequence
+-- No actual schema changes needed

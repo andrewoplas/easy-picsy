@@ -53,5 +53,9 @@ test-output
 # MCP configuration files
 .mcp.json
 .cursor/mcp.json
+.mcp/
+mcp.json
+mcp.config.json
+*.mcp-secrets.json
 
 .env*

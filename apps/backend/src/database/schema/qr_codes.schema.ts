@@ -6,7 +6,7 @@ import { QrCodeStatus } from '@org/commons';
 export const qrCodes = pgTable('qr_codes', {
   id: uuid('id').primaryKey().defaultRandom(),
   eventId: uuid('event_id').notNull().references(() => events.id, { onDelete: 'cascade' }),
-  sessionId: uuid('session_id'), // Will link to sessions table in Module 6
+  sessionId: text('session_id'), // Client-generated session identifier
   paymentId: uuid('payment_id').references(() => payments.id, { onDelete: 'set null' }),
   qrData: text('qr_data').notNull(), // The actual QR code content/URL
   paymentIntentId: text('payment_intent_id').notNull(), // PayMongo Payment Intent ID for QR Ph payments

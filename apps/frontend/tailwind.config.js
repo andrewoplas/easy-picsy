@@ -19,11 +19,43 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['var(--font-inter)', 'Inter', 'sans-serif'],
-        'passion': ['var(--font-passion-one)', 'cursive'],
-        'jost': ['var(--font-jost)', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        passion: ['var(--font-passion-one)', 'cursive'],
+        jost: ['var(--font-jost)', 'sans-serif'],
       },
       colors: {
+        border: 'var(--color-border)',
+        input: 'var(--color-input)',
+        ring: 'var(--color-ring)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        'page-background': '#F9F9F9',
+        primary: 'var(--color-primary)',
+        'primary-foreground': 'var(--color-primary-foreground)',
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
         'easy-yellow': '#F5D547',
         'easy-yellow-light': '#FFF9E5',
         'easy-black': '#2C2C2C',
@@ -37,7 +69,6 @@ module.exports = {
         'dash-orange': '#fca311',
         'dash-gray': '#e5e5e5',
         'dash-white': '#ffffff',
-        'destructive': 'red',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',
@@ -48,16 +79,16 @@ module.exports = {
         'scale-in': 'scaleIn 0.4s ease-out',
         'hover-bounce': 'hoverBounce 0.6s ease-in-out',
         'card-hover': 'cardHover 0.3s ease-out',
-        'float': 'float 6s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'wiggle': 'wiggle 1s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
+        wiggle: 'wiggle 1s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite alternate',
         'subtle-float': 'subtleFloat 8s ease-in-out infinite',
         'gentle-bounce': 'gentleBounce 3s ease-in-out infinite',
         'smooth-pulse': 'smoothPulse 6s ease-in-out infinite',
-        'drift': 'drift 12s linear infinite',
-        'breathe': 'breathe 4s ease-in-out infinite',
-        'shimmer': 'shimmer 3s ease-in-out infinite',
+        drift: 'drift 12s linear infinite',
+        breathe: 'breathe 4s ease-in-out infinite',
+        shimmer: 'shimmer 3s ease-in-out infinite',
         'rotate-slow': 'rotateSlow 20s linear infinite',
       },
       keyframes: {

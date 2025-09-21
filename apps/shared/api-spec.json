@@ -1,0 +1,3532 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "AppController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "description": "Authenticate user with email and password using Supabase",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials"
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "description": "Register new user with email and password using Supabase",
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or email already exists"
+          }
+        },
+        "summary": "User registration",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "description": "Logout user and invalidate JWT token",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "User logout",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "description": "Generate new access token using refresh token",
+        "operationId": "AuthController_refreshToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refresh successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid refresh token"
+          }
+        },
+        "summary": "Refresh access token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/profile": {
+      "get": {
+        "description": "Retrieve current user profile information",
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get user profile",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/auth/verify": {
+      "get": {
+        "description": "Validate current JWT token and return user information",
+        "operationId": "AuthController_verifyToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyTokenResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Verify JWT token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/events": {
+      "post": {
+        "description": "Create a new photobooth event with pricing information",
+        "operationId": "EventsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Event created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateEventResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Create event",
+        "tags": [
+          "Events"
+        ]
+      },
+      "get": {
+        "description": "Retrieve all events created by the authenticated user",
+        "operationId": "EventsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get all events",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}": {
+      "get": {
+        "description": "Retrieve a specific event by its UUID",
+        "operationId": "EventsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get event by ID",
+        "tags": [
+          "Events"
+        ]
+      },
+      "patch": {
+        "description": "Update specific fields of an event",
+        "operationId": "EventsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Partially update event",
+        "tags": [
+          "Events"
+        ]
+      },
+      "put": {
+        "description": "Completely replace an event with new data",
+        "operationId": "EventsController_replace",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEventDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event replaced successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Replace event",
+        "tags": [
+          "Events"
+        ]
+      },
+      "delete": {
+        "description": "Permanently delete an event and all associated data",
+        "operationId": "EventsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDeleteResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Delete event",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}/qr/current": {
+      "get": {
+        "description": "Get the currently active QR code for this event",
+        "operationId": "EventsController_getCurrentQRCode",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active QR code retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentQrCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found or no active QR code"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get current QR code",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}/qr/regenerate": {
+      "post": {
+        "description": "Generate new QR code for this event (invalidates current one)",
+        "operationId": "EventsController_regenerateQRCode",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "New QR code generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentQrCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Regenerate QR code",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/events/{id}/qr/history": {
+      "get": {
+        "description": "Get complete QR code generation history for this event",
+        "operationId": "EventsController_getQRCodeHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code history retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CurrentQrCodeResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get QR code history",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/api/public/events/{id}": {
+      "get": {
+        "description": "Public endpoint to retrieve event details for QR code payment processing",
+        "operationId": "PublicEventsController_getEventForPayment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Event or QR Code UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicEventResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found or not accessible"
+          }
+        },
+        "summary": "Get event for payment",
+        "tags": [
+          "Public Events"
+        ]
+      }
+    },
+    "/api/qr-codes/event/{eventId}/current": {
+      "get": {
+        "description": "Retrieve the currently active QR code for a specific event (if any)",
+        "operationId": "QrCodesController_getCurrentQRCode",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active QR code retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QrCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found or no active QR code"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get current active QR code",
+        "tags": [
+          "QR Codes"
+        ]
+      }
+    },
+    "/api/qr-codes/event/{eventId}/regenerate": {
+      "post": {
+        "description": "Generate new QR code for an event (manual regeneration). Invalidates current QR code if active.",
+        "operationId": "QrCodesController_regenerateQRCode",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "New QR code generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QrCodeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Regenerate QR code",
+        "tags": [
+          "QR Codes"
+        ]
+      }
+    },
+    "/api/qr-codes/event/{eventId}/history": {
+      "get": {
+        "description": "Retrieve complete QR code generation history for a specific event",
+        "operationId": "QrCodesController_getQRCodeHistory",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "description": "Event UUID",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code history retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QrCodeResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing token"
+          },
+          "404": {
+            "description": "Event not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get QR code history",
+        "tags": [
+          "QR Codes"
+        ]
+      }
+    },
+    "/api/qr-codes/{qrCodeId}/status": {
+      "get": {
+        "description": "Check the current status of a specific QR code by its ID",
+        "operationId": "QrCodesController_getQRCodeStatus",
+        "parameters": [
+          {
+            "name": "qrCodeId",
+            "required": true,
+            "in": "path",
+            "description": "QR Code UUID",
+            "schema": {
+              "example": "456e7890-e12c-34d5-b678-901234567890",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QrCodeStatusResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "QR code not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get QR code status",
+        "tags": [
+          "QR Codes"
+        ]
+      }
+    },
+    "/api/qr-codes/{qrCodeId}/image": {
+      "get": {
+        "description": "Retrieve the QR code as base64-encoded string.",
+        "operationId": "QrCodesController_getQRCodeImage",
+        "parameters": [
+          {
+            "name": "qrCodeId",
+            "required": true,
+            "in": "path",
+            "description": "QR Code UUID",
+            "schema": {
+              "example": "456e7890-e12c-34d5-b678-901234567890",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "QR code retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Base64-encoded QR code",
+                  "example": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "QR code not found"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get QR code image",
+        "tags": [
+          "QR Codes"
+        ]
+      }
+    },
+    "/api/webhook": {
+      "post": {
+        "description": "Handle PayMongo webhook events for payment status updates",
+        "operationId": "WebhooksController_handleWebhook",
+        "parameters": [
+          {
+            "name": "paymongo-signature",
+            "required": true,
+            "in": "header",
+            "description": "PayMongo webhook signature for verification",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook processed successfully"
+          },
+          "400": {
+            "description": "Invalid webhook signature or payload"
+          }
+        },
+        "summary": "PayMongo webhook endpoint",
+        "tags": [
+          "Webhooks"
+        ]
+      }
+    },
+    "/api/logs/webhooks": {
+      "get": {
+        "description": "Retrieve PayMongo webhook logs with optional filtering",
+        "operationId": "LoggingController_getWebhookLogs",
+        "parameters": [
+          {
+            "name": "eventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by processing status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qrCodeId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by QR code ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limit results (default: 50)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Offset for pagination",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook logs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "eventType": {
+                        "type": "string"
+                      },
+                      "paymongoEventId": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "received",
+                          "processing",
+                          "completed",
+                          "failed"
+                        ]
+                      },
+                      "qrCodeId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "paymentIntentId": {
+                        "type": "string"
+                      },
+                      "signatureVerified": {
+                        "type": "boolean"
+                      },
+                      "errorMessage": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "processedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get webhook logs",
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/api/logs/events": {
+      "get": {
+        "description": "Retrieve application event logs with optional filtering",
+        "operationId": "LoggingController_getEventLogs",
+        "parameters": [
+          {
+            "name": "eventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event source",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qrCodeId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by QR code ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by user ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limit results (default: 50)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Offset for pagination",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event logs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "eventType": {
+                        "type": "string"
+                      },
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "webhook",
+                          "api",
+                          "cron_job",
+                          "manual"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "success",
+                          "error",
+                          "warning"
+                        ]
+                      },
+                      "message": {
+                        "type": "string"
+                      },
+                      "qrCodeId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "eventData": {
+                        "type": "object"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      },
+                      "errorDetails": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get event logs",
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/api/logs/summary": {
+      "get": {
+        "description": "Get summary statistics of webhook and event logs",
+        "operationId": "LoggingController_getLogsSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logs summary retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhooks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "eventType": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get logs summary",
+        "tags": [
+          "Logs"
+        ]
+      }
+    },
+    "/api/logs/booth/event": {
+      "post": {
+        "description": "Log a single DSLR booth event with structured data. Public endpoint for booth integration.",
+        "operationId": "BoothLoggingController_logBoothEvent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Booth event data to log",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogBoothEventDto"
+              },
+              "examples": {
+                "sessionStart": {
+                  "summary": "Session Start Event",
+                  "value": {
+                    "sessionId": "abc-123-def-456",
+                    "boothEvent": {
+                      "event_type": "session_start",
+                      "param1": "PrintAndGIF",
+                      "timestamp": "16:20:7.287"
+                    },
+                    "eventId": "event-uuid",
+                    "qrCodeId": "qr-uuid",
+                    "boothIdentifier": "Booth-1"
+                  }
+                },
+                "countdown": {
+                  "summary": "Countdown Progress Event",
+                  "value": {
+                    "sessionId": "abc-123-def-456",
+                    "boothEvent": {
+                      "event_type": "countdown",
+                      "param1": "75",
+                      "timestamp": "16:20:12.624"
+                    },
+                    "boothIdentifier": "Booth-1"
+                  }
+                },
+                "printing": {
+                  "summary": "Printing Event",
+                  "value": {
+                    "sessionId": "abc-123-def-456",
+                    "boothEvent": {
+                      "event_type": "printing",
+                      "param1": "c:\\booth\\Prints\\file.jpg",
+                      "param2": "1",
+                      "param3": "DS-RX1",
+                      "timestamp": "16:19:47.130"
+                    },
+                    "boothIdentifier": "Booth-1"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booth event logged successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogBoothEventResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid event data"
+          }
+        },
+        "summary": "Log DSLR booth event",
+        "tags": [
+          "Booth Logs"
+        ]
+      }
+    },
+    "/api/logs/booth/sessions": {
+      "get": {
+        "description": "Retrieve booth sessions with pagination. Admin access required.",
+        "operationId": "BoothLoggingController_getBoothSessions",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "boothIdentifier",
+            "required": false,
+            "in": "query",
+            "description": "Filter by booth identifier",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default: 10)",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sessions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoothSessionsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get paginated booth sessions",
+        "tags": [
+          "Booth Logs"
+        ]
+      }
+    },
+    "/api/logs/booth/session/{sessionId}/events": {
+      "get": {
+        "description": "Retrieve all booth events for a specific session in chronological order. Admin access required.",
+        "operationId": "BoothLoggingController_getSessionEvents",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoothLogDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get all events for a specific session",
+        "tags": [
+          "Booth Logs"
+        ]
+      }
+    },
+    "/api/logs/booth/events": {
+      "get": {
+        "description": "Retrieve booth event logs with optional filtering. Admin access required.",
+        "operationId": "BoothLoggingController_getBoothEvents",
+        "parameters": [
+          {
+            "name": "boothEventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by booth event type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "qrCodeId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by QR code ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "boothIdentifier",
+            "required": false,
+            "in": "query",
+            "description": "Filter by booth identifier",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Limit results (default: 50)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Offset for pagination",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booth events retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoothLogDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get booth event logs",
+        "tags": [
+          "Booth Logs"
+        ]
+      }
+    },
+    "/api/logs/booth/stats": {
+      "get": {
+        "description": "Get statistical overview of booth events. Admin access required.",
+        "operationId": "BoothLoggingController_getBoothStats",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Filter stats by event ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "boothIdentifier",
+            "required": false,
+            "in": "query",
+            "description": "Filter stats by booth identifier",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Filter stats by session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booth statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoothEventStatsDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get booth event statistics",
+        "tags": [
+          "Booth Logs"
+        ]
+      }
+    },
+    "/api/analytics/total": {
+      "get": {
+        "description": "Get aggregated analytics across all events or a specific event including revenue, session times, and print statistics",
+        "operationId": "AnalyticsController_getTotalAnalytics",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Event ID to filter analytics for a specific event",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-01-01T00:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "End date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-12-31T23:59:59.999Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Total analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TotalAnalyticsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range or event ID provided"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "404": {
+            "description": "Event not found (when eventId is provided)"
+          },
+          "500": {
+            "description": "Internal server error while calculating analytics"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get total analytics",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/api/analytics/total/monthly-trends": {
+      "get": {
+        "description": "Get aggregated analytics with trend calculations comparing current month to previous month",
+        "operationId": "AnalyticsController_getTotalAnalyticsWithMonthlyTrends",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Event ID to filter analytics for a specific event",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Total analytics with monthly trends retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendTotalAnalyticsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "404": {
+            "description": "Event not found (when eventId is provided)"
+          },
+          "500": {
+            "description": "Internal server error while calculating analytics"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get total analytics with monthly trends",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/api/analytics/events": {
+      "get": {
+        "description": "Get analytics data for each event including earnings, session times, and print counts. Use eventId to filter for a specific event.",
+        "operationId": "AnalyticsController_getEventAnalytics",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": false,
+            "in": "query",
+            "description": "Event ID to filter analytics for a specific event",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-01-01T00:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "End date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-12-31T23:59:59.999Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventAnalyticsDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range or event ID provided"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "404": {
+            "description": "Event not found (when eventId is provided)"
+          },
+          "500": {
+            "description": "Internal server error while calculating analytics"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get per-event analytics",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/api/analytics/events/{eventId}": {
+      "get": {
+        "description": "Get detailed analytics data for a specific event including earnings, session times, and print counts",
+        "operationId": "AnalyticsController_getSingleEventAnalytics",
+        "parameters": [
+          {
+            "name": "eventId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "End date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-12-31T23:59:59.999Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date for analytics range (ISO string)",
+            "schema": {
+              "example": "2024-01-01T00:00:00.000Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventAnalyticsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range provided"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "404": {
+            "description": "Event not found or inactive"
+          },
+          "500": {
+            "description": "Internal server error while calculating analytics"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get analytics for a specific event",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Easy Picsy - Photobooth Payment API",
+    "description": "\n      A comprehensive API for managing photobooth events, QR code payments, and real-time communication.\n      \n      ## Features\n      - 🎫 Event Management (CRUD operations)\n      - 💳 PayMongo Payment Integration  \n      - 🔄 Dynamic QR Code Generation (30-min expiry)\n      - ⚡ Real-time WebSocket Updates\n      - 🔐 Supabase Authentication\n      - 📊 Payment Analytics\n      \n      ## Authentication\n      Most endpoints require a Bearer token from Supabase authentication.\n      Add your token to the \"Authorize\" button above to test endpoints.\n      \n      ## WebSocket Real-time Communication\n      \n      **Connection URL:** `ws://localhost:3000/events`\n      \n      **Authentication:** Include JWT token in one of these ways:\n      - `auth.token` in connection options\n      - `Authorization: Bearer <token>` header\n      - `token` query parameter\n      \n      **Available Events:**\n      \n      ### Client → Server\n      - `joinEvent` - Join event room for updates\n        ```json\n        { \"eventId\": \"uuid\" }\n        ```\n      - `leaveEvent` - Leave event room\n        ```json\n        { \"eventId\": \"uuid\" }\n        ```\n      \n      ### Server → Client\n      - `qrStatusUpdate` - QR code status changed\n      - `paymentReceived` - Payment completed\n      - `qrCodeGenerated` - New QR code created\n      - `qrExpiryWarning` - QR code expires soon\n      - `connectionStatus` - Connection status updates\n      \n      **Room-based Broadcasting:** Events are sent only to clients in specific event rooms.\n    ",
+    "version": "1.0",
+    "contact": {
+      "name": "Easy Picsy",
+      "url": "https://github.com/your-org/easy-picsy",
+      "email": "support@easypicsy.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization"
+    },
+    {
+      "name": "Events",
+      "description": "Event management operations"
+    },
+    {
+      "name": "QR Codes",
+      "description": "QR code generation and lifecycle management"
+    },
+    {
+      "name": "Payments",
+      "description": "PayMongo payment integration"
+    },
+    {
+      "name": "Users",
+      "description": "User profile management"
+    },
+    {
+      "name": "WebSocket",
+      "description": "Real-time communication"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Enter your Supabase JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "securepassword123",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthUserBasicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "id",
+          "email"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "JWT refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expires_in": {
+            "type": "number",
+            "description": "Token expiration time in seconds",
+            "example": 3600
+          },
+          "user": {
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthUserBasicDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "expires_in",
+          "user"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "newuser@example.com",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "securepassword123",
+            "minLength": 6
+          },
+          "fullName": {
+            "type": "string",
+            "description": "User full name",
+            "example": "John Doe"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Logout status message",
+            "example": "Logout successful"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "RefreshTokenRequestDto": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "description": "Valid refresh token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "refresh_token"
+        ]
+      },
+      "RefreshTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "New JWT access token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expires_in": {
+            "type": "number",
+            "description": "Token expiration time in seconds",
+            "example": 3600
+          }
+        },
+        "required": [
+          "access_token",
+          "expires_in"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the user",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "supabaseId": {
+            "type": "string",
+            "description": "Supabase user identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          },
+          "fullName": {
+            "type": "object",
+            "description": "User full name",
+            "example": "John Doe"
+          },
+          "avatarUrl": {
+            "type": "object",
+            "description": "User avatar URL",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role",
+            "example": "user",
+            "enum": [
+              "admin",
+              "user"
+            ]
+          },
+          "permissions": {
+            "description": "User permissions array",
+            "example": [
+              "read",
+              "write"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "User creation timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "User last update timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "lastLoginAt": {
+            "type": "object",
+            "description": "User last login timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional user metadata",
+            "example": {
+              "preferences": {
+                "theme": "dark"
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "supabaseId",
+          "email",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          },
+          "supabaseId": {
+            "type": "string",
+            "description": "Supabase user identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "supabaseId"
+        ]
+      },
+      "VerifyTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Whether the token is valid",
+            "example": true
+          },
+          "user": {
+            "description": "User information associated with the token",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuthUserDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "valid",
+          "user"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "URL of the user avatar image",
+            "example": "https://example.com/avatar.jpg"
+          }
+        }
+      },
+      "CreateEventDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Birthday Party Photobooth",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "description": "Event description",
+            "example": "Capture memories at John's 25th birthday celebration"
+          },
+          "price": {
+            "type": "number",
+            "description": "Price per photobooth session",
+            "example": 50,
+            "minimum": 20,
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP",
+            "default": "PHP",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true,
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      },
+      "CurrentQrCodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "QR code unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Event ID associated with this QR code",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "sessionId": {
+            "type": "object",
+            "description": "Session ID (for future use)",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "paymentId": {
+            "type": "object",
+            "description": "Payment ID if payment was made",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "qrData": {
+            "type": "string",
+            "description": "QR code data/content (PayMongo checkout URL)",
+            "example": "https://checkout.paymongo.com/checkout?id=cs_test_..."
+          },
+          "paymentIntentId": {
+            "type": "string",
+            "description": "PayMongo Payment Intent ID for QR Ph payments",
+            "example": "pi_test_123456789"
+          },
+          "paymongoLinkUrl": {
+            "type": "object",
+            "description": "PayMongo payment link URL (deprecated)",
+            "example": "https://links.paymongo.com/link_test_123456789"
+          },
+          "paymongoQrphId": {
+            "type": "object",
+            "description": "PayMongo QR Ph resource ID",
+            "example": "qrph_test_123456789"
+          },
+          "status": {
+            "type": "string",
+            "description": "QR code status",
+            "example": "active",
+            "enum": [
+              "active",
+              "expired",
+              "used",
+              "invalidated",
+              "paid",
+              "failed"
+            ]
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "QR code expiration timestamp",
+            "example": "2023-01-01T01:00:00.000Z"
+          },
+          "usageCount": {
+            "type": "number",
+            "description": "Number of times QR code was scanned",
+            "example": 0
+          },
+          "maxUsage": {
+            "type": "number",
+            "description": "Maximum allowed usage count",
+            "example": 1
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the QR code is active",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "QR code creation timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "usedAt": {
+            "type": "object",
+            "description": "QR code usage timestamp",
+            "example": "2023-01-01T00:30:00.000Z",
+            "format": "date-time"
+          },
+          "invalidatedAt": {
+            "type": "object",
+            "description": "QR code invalidation timestamp",
+            "example": "2023-01-01T00:45:00.000Z",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "eventId",
+          "qrData",
+          "paymentIntentId",
+          "status",
+          "expiresAt",
+          "usageCount",
+          "maxUsage",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "CreateEventResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Birthday Party Photobooth"
+          },
+          "description": {
+            "type": "string",
+            "description": "Event description",
+            "example": "Capture memories at John's 25th birthday celebration"
+          },
+          "price": {
+            "type": "string",
+            "description": "Price per photobooth session",
+            "example": "50.00",
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User ID who created the event",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Event creation timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Event last update timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "qrCode": {
+            "description": "Generated QR code for the event (if successful)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentQrCodeResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "isActive",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "EventResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Birthday Party Photobooth"
+          },
+          "description": {
+            "type": "string",
+            "description": "Event description",
+            "example": "Capture memories at John's 25th birthday celebration"
+          },
+          "price": {
+            "type": "string",
+            "description": "Price per photobooth session",
+            "example": "50.00",
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User ID who created the event",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Event creation timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Event last update timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "isActive",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateEventDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Birthday Party Photobooth",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "description": "Event description",
+            "example": "Capture memories at John's 25th birthday celebration"
+          },
+          "price": {
+            "type": "number",
+            "description": "Price per photobooth session",
+            "example": 50,
+            "minimum": 20,
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP",
+            "default": "PHP",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true,
+            "default": true
+          }
+        }
+      },
+      "EventDeleteResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Deletion confirmation message",
+            "example": "Event deleted successfully"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "PublicEventResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Birthday Party Photobooth"
+          },
+          "description": {
+            "type": "object",
+            "description": "Event description",
+            "example": "Capture memories at John's 25th birthday celebration"
+          },
+          "price": {
+            "type": "string",
+            "description": "Price per photobooth session",
+            "example": "50.00",
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "isActive"
+        ]
+      },
+      "QrCodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "QR code unique identifier",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Event ID associated with this QR code",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID (for future use)",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid",
+            "nullable": true
+          },
+          "paymentId": {
+            "type": "string",
+            "description": "Payment ID if payment was made",
+            "example": "123e4567-e89b-12d3-a456-426614174000",
+            "format": "uuid",
+            "nullable": true
+          },
+          "qrData": {
+            "type": "string",
+            "description": "QR code data/content (PayMongo checkout URL)",
+            "example": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+          },
+          "paymentIntentId": {
+            "type": "string",
+            "description": "PayMongo payment intent ID",
+            "example": "pi_test_123456789"
+          },
+          "paymongoLinkUrl": {
+            "type": "string",
+            "description": "PayMongo payment link URL",
+            "example": "https://links.paymongo.com/link_test_123456789",
+            "nullable": true
+          },
+          "paymongoQrphId": {
+            "type": "string",
+            "description": "PayMongo QR Ph resource ID",
+            "example": "qrph_test_123456789",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "QR code status",
+            "example": "active",
+            "enum": [
+              "active",
+              "expired",
+              "used",
+              "invalidated",
+              "paid",
+              "failed"
+            ]
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "QR code expiration timestamp",
+            "example": "2023-01-01T01:00:00.000Z"
+          },
+          "usageCount": {
+            "type": "number",
+            "description": "Number of times QR code was scanned",
+            "example": 0
+          },
+          "maxUsage": {
+            "type": "number",
+            "description": "Maximum allowed usage count",
+            "example": 1
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the QR code is active",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "QR code creation timestamp",
+            "example": "2023-01-01T00:00:00.000Z"
+          },
+          "usedAt": {
+            "type": "string",
+            "description": "QR code usage timestamp",
+            "example": "2023-01-01T00:30:00.000Z",
+            "format": "date-time",
+            "nullable": true
+          },
+          "invalidatedAt": {
+            "type": "string",
+            "description": "QR code invalidation timestamp",
+            "example": "2023-01-01T00:45:00.000Z",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "eventId",
+          "qrData",
+          "paymentIntentId",
+          "status",
+          "expiresAt",
+          "usageCount",
+          "maxUsage",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "QrCodeStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "qrCode": {
+            "description": "QR code details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QrCodeResponseDto"
+              }
+            ]
+          },
+          "isValid": {
+            "type": "boolean",
+            "description": "Whether the QR code is currently valid and usable",
+            "example": true
+          },
+          "timeUntilExpiry": {
+            "type": "number",
+            "description": "Time until QR code expiry in milliseconds",
+            "example": 1800000
+          }
+        },
+        "required": [
+          "qrCode",
+          "isValid"
+        ]
+      },
+      "BoothEventDataDto": {
+        "type": "object",
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "description": "Type of booth event",
+            "example": "session_start",
+            "enum": [
+              "session_start",
+              "countdown_start",
+              "countdown",
+              "capture_start",
+              "file_download",
+              "processing_start",
+              "sharing_screen",
+              "printing",
+              "file_upload",
+              "session_end"
+            ]
+          },
+          "param1": {
+            "type": "string",
+            "description": "First parameter (usage depends on event type)",
+            "example": "PrintAndGIF"
+          },
+          "param2": {
+            "type": "string",
+            "description": "Second parameter (usage depends on event type)",
+            "example": "1"
+          },
+          "param3": {
+            "type": "string",
+            "description": "Third parameter (usage depends on event type)",
+            "example": "DS-RX1"
+          },
+          "param4": {
+            "type": "string",
+            "description": "Fourth parameter (usage depends on event type)",
+            "example": "Album Name"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Booth event timestamp in HH:MM:SS.mmm format",
+            "example": "16:20:7.287"
+          }
+        },
+        "required": [
+          "event_type",
+          "timestamp"
+        ]
+      },
+      "LogBoothEventDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Client-generated session identifier (any unique string format)",
+            "example": "session-abc123-2024"
+          },
+          "boothEvent": {
+            "description": "Booth event data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BoothEventDataDto"
+              }
+            ]
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Event ID (photo booth package/event)",
+            "example": "event-uuid-123",
+            "format": "uuid"
+          },
+          "qrCodeId": {
+            "type": "string",
+            "description": "QR code ID associated with this session",
+            "example": "qr-uuid-456",
+            "format": "uuid"
+          },
+          "boothIdentifier": {
+            "type": "string",
+            "description": "Physical booth identifier",
+            "example": "Booth-1"
+          },
+          "status": {
+            "type": "string",
+            "description": "Event status",
+            "example": "success",
+            "enum": [
+              "success",
+              "error",
+              "warning"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Custom message for this event",
+            "example": "Custom booth event message"
+          },
+          "errorDetails": {
+            "type": "string",
+            "description": "Error details if status is error",
+            "example": "Printer connection failed"
+          }
+        },
+        "required": [
+          "sessionId",
+          "boothEvent"
+        ]
+      },
+      "LogBoothEventResponseDto": {
+        "type": "object",
+        "properties": {
+          "logId": {
+            "type": "string",
+            "description": "Generated log ID",
+            "example": "log-uuid-123",
+            "format": "uuid"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Booth event session_start logged successfully"
+          }
+        },
+        "required": [
+          "logId",
+          "message"
+        ]
+      },
+      "EventInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Event ID",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Wedding Photo Booth Package"
+          },
+          "description": {
+            "type": "object",
+            "description": "Event description",
+            "example": "Premium photo booth package for wedding events"
+          },
+          "price": {
+            "type": "string",
+            "description": "Event price",
+            "example": "15000.00"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "PHP"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the event is active",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price",
+          "currency",
+          "isActive"
+        ]
+      },
+      "BoothLogDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Log entry ID",
+            "format": "uuid"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID (client-generated identifier)",
+            "example": "session-abc123-2024"
+          },
+          "boothEventType": {
+            "type": "string",
+            "description": "Booth event type",
+            "example": "session_start"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Original booth timestamp",
+            "example": "16:20:7.287"
+          },
+          "param1": {
+            "type": "object",
+            "description": "Event parameter 1",
+            "example": "PrintAndGIF"
+          },
+          "param2": {
+            "type": "object",
+            "description": "Event parameter 2",
+            "example": "1"
+          },
+          "param3": {
+            "type": "object",
+            "description": "Event parameter 3",
+            "example": "DS-RX1"
+          },
+          "param4": {
+            "type": "object",
+            "description": "Event parameter 4",
+            "example": "Album Name"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Associated event ID",
+            "format": "uuid"
+          },
+          "qrCodeId": {
+            "type": "string",
+            "description": "Associated QR code ID",
+            "format": "uuid"
+          },
+          "boothIdentifier": {
+            "type": "string",
+            "description": "Booth identifier",
+            "example": "Booth-1"
+          },
+          "status": {
+            "type": "string",
+            "description": "Event status",
+            "example": "success",
+            "enum": [
+              "success",
+              "error",
+              "warning"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable message",
+            "example": "Booth session started with mode: PrintAndGIF"
+          },
+          "errorDetails": {
+            "type": "string",
+            "description": "Error details if applicable"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When this log was created",
+            "format": "date-time"
+          },
+          "event": {
+            "description": "Associated event information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EventInfoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "boothEventType",
+          "timestamp",
+          "status",
+          "createdAt"
+        ]
+      },
+      "GroupedSessionDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID (client-generated identifier)",
+            "example": "session-abc123-2024"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Session start time",
+            "example": "16:20:7.287"
+          },
+          "endTime": {
+            "type": "object",
+            "description": "Session end time (null if incomplete)",
+            "example": "16:22:15.445"
+          },
+          "boothMode": {
+            "type": "object",
+            "description": "Booth mode from session_start event",
+            "example": "PrintAndGIF"
+          },
+          "boothIdentifier": {
+            "type": "object",
+            "description": "Booth identifier",
+            "example": "Booth-1"
+          },
+          "status": {
+            "type": "string",
+            "description": "Session completion status",
+            "example": "complete",
+            "enum": [
+              "complete",
+              "incomplete"
+            ]
+          },
+          "eventCount": {
+            "type": "number",
+            "description": "Number of events in this session",
+            "example": 15
+          },
+          "qrCodeId": {
+            "type": "object",
+            "description": "Associated QR code ID",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "object",
+            "description": "Associated event ID",
+            "format": "uuid"
+          },
+          "event": {
+            "description": "Associated event information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EventInfoDto"
+              }
+            ]
+          },
+          "events": {
+            "description": "All events in this session",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BoothLogDto"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "startTime",
+          "status",
+          "eventCount",
+          "events"
+        ]
+      },
+      "PaginationInfoDto": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 10
+          },
+          "totalSessions": {
+            "type": "number",
+            "description": "Total number of sessions",
+            "example": 45
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 5
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "Whether there is a next page",
+            "example": true
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "description": "Whether there is a previous page",
+            "example": false
+          }
+        },
+        "required": [
+          "currentPage",
+          "pageSize",
+          "totalSessions",
+          "totalPages",
+          "hasNext",
+          "hasPrevious"
+        ]
+      },
+      "BoothSessionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "description": "Array of booth sessions",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupedSessionDto"
+            }
+          },
+          "pagination": {
+            "description": "Pagination information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationInfoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sessions",
+          "pagination"
+        ]
+      },
+      "BoothEventStatsDto": {
+        "type": "object",
+        "properties": {
+          "boothEventType": {
+            "type": "string",
+            "description": "Booth event type",
+            "example": "session_start"
+          },
+          "status": {
+            "type": "string",
+            "description": "Event status",
+            "example": "success"
+          },
+          "count": {
+            "type": "number",
+            "description": "Count of events",
+            "example": 25
+          }
+        },
+        "required": [
+          "boothEventType",
+          "status",
+          "count"
+        ]
+      },
+      "TotalPrintAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "singleSession": {
+            "type": "number",
+            "description": "Total prints from single sessions (not reprints)",
+            "example": 150
+          },
+          "reprints": {
+            "type": "number",
+            "description": "Total reprints across all sessions",
+            "example": 45
+          },
+          "averagePerEvent": {
+            "type": "number",
+            "description": "Average prints per event",
+            "example": 12.5
+          },
+          "averageReprintsPerEvent": {
+            "type": "number",
+            "description": "Average reprints per event",
+            "example": 3.2
+          }
+        },
+        "required": [
+          "singleSession",
+          "reprints",
+          "averagePerEvent",
+          "averageReprintsPerEvent"
+        ]
+      },
+      "TotalAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "totalNetRevenue": {
+            "type": "number",
+            "description": "Total net revenue from all completed payments",
+            "example": 15750
+          },
+          "totalWithdrawableRevenue": {
+            "type": "number",
+            "description": "Total withdrawable/cashout-able revenue",
+            "example": 15750
+          },
+          "averageSessionTime": {
+            "type": "number",
+            "description": "Average session time in seconds",
+            "example": 180
+          },
+          "totalPrints": {
+            "description": "Print statistics breakdown",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TotalPrintAnalyticsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "totalNetRevenue",
+          "totalWithdrawableRevenue",
+          "averageSessionTime",
+          "totalPrints"
+        ]
+      },
+      "TrendDataDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Percentage change from previous period",
+            "example": 15.5
+          },
+          "isPositive": {
+            "type": "boolean",
+            "description": "Whether the trend is positive (increase) or negative (decrease)",
+            "example": true
+          },
+          "previousValue": {
+            "type": "number",
+            "description": "Previous period value for comparison",
+            "example": 80
+          },
+          "currentValue": {
+            "type": "number",
+            "description": "Current period value",
+            "example": 92.4
+          }
+        },
+        "required": [
+          "value",
+          "isPositive",
+          "previousValue",
+          "currentValue"
+        ]
+      },
+      "TrendPrintAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "singleSession": {
+            "type": "number",
+            "description": "Current period prints from single sessions",
+            "example": 150
+          },
+          "reprints": {
+            "type": "number",
+            "description": "Current period reprints",
+            "example": 45
+          },
+          "averagePerEvent": {
+            "type": "number",
+            "description": "Current period average prints per event",
+            "example": 12.5
+          },
+          "averageReprintsPerEvent": {
+            "type": "number",
+            "description": "Current period average reprints per event",
+            "example": 3.2
+          },
+          "singleSessionTrend": {
+            "description": "Trend data for single session prints",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          },
+          "reprintsTrend": {
+            "description": "Trend data for reprints",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          },
+          "averagePerEventTrend": {
+            "description": "Trend data for average prints per event",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          },
+          "averageReprintsPerEventTrend": {
+            "description": "Trend data for average reprints per event",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "singleSession",
+          "reprints",
+          "averagePerEvent",
+          "averageReprintsPerEvent",
+          "singleSessionTrend",
+          "reprintsTrend",
+          "averagePerEventTrend",
+          "averageReprintsPerEventTrend"
+        ]
+      },
+      "TrendTotalAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "totalNetRevenue": {
+            "type": "number",
+            "description": "Current period total net revenue",
+            "example": 15750
+          },
+          "totalWithdrawableRevenue": {
+            "type": "number",
+            "description": "Current period total withdrawable revenue",
+            "example": 15750
+          },
+          "averageSessionTime": {
+            "type": "number",
+            "description": "Current period average session time in seconds",
+            "example": 180
+          },
+          "totalPrints": {
+            "description": "Current period print statistics with trends",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendPrintAnalyticsDto"
+              }
+            ]
+          },
+          "totalNetRevenueTrend": {
+            "description": "Trend data for total net revenue",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          },
+          "averageSessionTimeTrend": {
+            "description": "Trend data for average session time",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrendDataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "totalNetRevenue",
+          "totalWithdrawableRevenue",
+          "averageSessionTime",
+          "totalPrints",
+          "totalNetRevenueTrend",
+          "averageSessionTimeTrend"
+        ]
+      },
+      "EventAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "description": "Event ID",
+            "example": "event-uuid-123"
+          },
+          "eventName": {
+            "type": "string",
+            "description": "Event name",
+            "example": "Wedding Photo Booth"
+          },
+          "runningEarnings": {
+            "type": "number",
+            "description": "Running earnings for this event",
+            "example": 2500
+          },
+          "sessionAverageTime": {
+            "type": "number",
+            "description": "Session average time for this event in seconds",
+            "example": 165
+          },
+          "numberOfPrints": {
+            "type": "number",
+            "description": "Number of prints for this event",
+            "example": 24
+          },
+          "numberOfReprints": {
+            "type": "number",
+            "description": "Number of reprints for this event",
+            "example": 7
+          }
+        },
+        "required": [
+          "eventId",
+          "eventName",
+          "runningEarnings",
+          "sessionAverageTime",
+          "numberOfPrints",
+          "numberOfReprints"
+        ]
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@ import {
   Configuration,
   EventAnalyticsDto,
   TotalAnalyticsDto,
+  TrendTotalAnalyticsDto,
 } from '@org/api-lib';
 import axiosInstance from './client';
 
@@ -18,8 +19,9 @@ export interface AnalyticsDateRange {
 }
 
 export const analyticsApi = {
-  async getEventAnalytics(dateRange?: AnalyticsDateRange): Promise<EventAnalytics[]> {
+  async getEventAnalytics(dateRange?: AnalyticsDateRange, eventId?: string): Promise<EventAnalytics[]> {
     const response = await analyticsApiInstance.analyticsControllerGetEventAnalytics(
+      eventId,
       dateRange?.startDate,
       dateRange?.endDate
     );
@@ -31,6 +33,11 @@ export const analyticsApi = {
       dateRange?.startDate,
       dateRange?.endDate
     );
+    return response.data;
+  },
+
+  async getTotalAnalyticsWithMonthlyTrends(eventId?: string): Promise<TrendTotalAnalyticsDto> {
+    const response = await analyticsApiInstance.analyticsControllerGetTotalAnalyticsWithMonthlyTrends(eventId);
     return response.data;
   },
 

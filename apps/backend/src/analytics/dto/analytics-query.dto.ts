@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsDateString, IsOptional, IsUUID } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class AnalyticsQueryDto {
   @ApiPropertyOptional({
@@ -16,8 +16,11 @@ export class AnalyticsQueryDto {
     example: '2024-01-01T00:00:00.000Z',
   })
   @IsOptional()
-  @IsDateString()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? undefined : date;
+  })
   startDate?: Date;
 
   @ApiPropertyOptional({
@@ -25,7 +28,10 @@ export class AnalyticsQueryDto {
     example: '2024-12-31T23:59:59.999Z',
   })
   @IsOptional()
-  @IsDateString()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? undefined : date;
+  })
   endDate?: Date;
 }

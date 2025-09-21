@@ -18,7 +18,8 @@ export function useEventTransactions(
     queryKey: TRANSACTIONS_QUERY_KEYS.event(eventId, options),
     queryFn: () => transactionsApi.getEventTransactions(eventId, options),
     enabled: !!eventId,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 0, // No caching - always fetch fresh data
+    gcTime: 0, // No garbage collection time - don't keep in cache
     refetchInterval: 30 * 1000, // 30 seconds
     retry: (failureCount, error) => {
       // Don't retry on 404 (event not found) or 400 (invalid date range)
@@ -34,7 +35,8 @@ export function useAllEventsTransactions(options?: TransactionQueryOptions) {
   return useQuery<Transaction[], Error>({
     queryKey: TRANSACTIONS_QUERY_KEYS.allEvents(options),
     queryFn: () => transactionsApi.getAllEventsTransactions(options),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 0, // No caching - always fetch fresh data
+    gcTime: 0, // No garbage collection time - don't keep in cache
     refetchInterval: 30 * 1000, // 30 seconds
     retry: (failureCount, error) => {
       // Don't retry on 400 (invalid date range)

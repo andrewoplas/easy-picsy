@@ -6,14 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
-import { PublicRoute } from '../../../components/auth/PublicRoute';
+import { AuthContainer } from '../../../components/auth/AuthContainer';
 import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -71,111 +70,83 @@ function LoginForm() {
   };
 
   return (
-    <PublicRoute>
-      <div className="min-h-screen bg-white flex font-sans">
-        {/* Left Section - Visual/Testimonial */}
-        <div
-          className="w-2/5 relative bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/login-graphic.jpg')" }}
-        >
-          {/* Brand Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-easy-black/60 to-brand-brown/70" />
+    <AuthContainer
+      title="Welcome back to Easy Picsy"
+      subtitle="Build your photo booth business effortlessly with our powerful platform."
+      footerText="Don't have an account?"
+      footerLinkText="Sign up"
+      footerLinkHref="/admin/register"
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
 
-          {/* Logo */}
-          <div className="relative z-10 p-8">
-            <div className="flex items-center">
-              <Image
-                src="/logo.svg"
-                alt="Easy Picsy"
-                width={200}
-                height={66}
-                className="h-12 w-auto brightness-0 invert"
-                priority
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-easy-black mb-2">
+              Email
+            </label>
+            <Input
+              {...register('email')}
+              type="email"
+              autoComplete="email"
+              placeholder="Enter your email"
+              className="focus-visible:ring-easy-yellow"
+            />
+            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-easy-black mb-2">
+              Password
+            </label>
+            <div className="relative">
+              <Input
+                {...register('password')}
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                className="pr-10 focus-visible:ring-easy-yellow"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-easy-black focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
           </div>
         </div>
 
-        {/* Right Section - Login Form */}
-        <div className="w-3/5 p-16 flex flex-col justify-center font-sans">
-          <div className="max-w-lg mx-auto w-full">
-            {/* Header */}
-            <div className="text-center mb-10">
-              <h1 className="text-4xl font-bold text-easy-black mb-3">Welcome back to Easy Picsy</h1>
-              <p className="text-lg text-gray-600">
-                Build your photo booth business effortlessly with our powerful platform.
-              </p>
-            </div>
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg py-3 px-4 rounded-lg font-semibold"
+        >
+          {isLoading ? 'Signing in...' : 'Log in'}
+        </Button>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {error && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
-              )}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-4 text-gray-500">OR</span>
+          </div>
+        </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-easy-black mb-3">
-                    Email
-                  </label>
-                  <input
-                    {...register('email')}
-                    type="email"
-                    autoComplete="email"
-                    className="w-full px-4 py-4 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:border-transparent transition-all duration-200 text-lg"
-                  />
-                  {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-easy-black mb-3">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      {...register('password')}
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      className="w-full px-4 py-4 bg-white border border-easy-yellow rounded-lg focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:border-transparent transition-all duration-200 pr-12 text-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-easy-black focus:outline-none"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                  {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>}
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg py-6 px-4 rounded-lg font-semibold text-lg"
-              >
-                {isLoading ? 'Signing in...' : 'Log in'}
-              </Button>
-
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-base">
-                  <span className="bg-white px-4 text-gray-500">OR</span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={isLoading}
-                variant="outline"
-                className="w-full bg-white border border-gray-300 text-easy-black hover:bg-gradient-to-r hover:from-dash-orange/10 hover:to-easy-yellow/10 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center justify-center gap-3 py-6 px-4 rounded-lg font-medium text-lg"
-              >
+        <Button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading}
+          variant="outline"
+          className="w-full bg-white border border-gray-300 text-easy-black hover:bg-gradient-to-r hover:from-dash-orange/10 hover:to-easy-yellow/10 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center justify-center gap-3 py-3 px-4 rounded-lg font-medium"
+        >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
@@ -197,17 +168,8 @@ function LoginForm() {
                 Continue with Google
               </Button>
 
-              <div className="text-center text-base text-gray-600">
-                Don&apos;t have an account?{' '}
-                <Link href="/admin/register" className="text-easy-yellow hover:text-brand-orange font-medium">
-                  Sign up
-                </Link>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </PublicRoute>
+      </form>
+    </AuthContainer>
   );
 }
 
