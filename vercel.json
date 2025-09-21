@@ -2,5 +2,18 @@
   "buildCommand": "npx nx build frontend --prod",
   "outputDirectory": "apps/frontend/.next",
   "framework": "nextjs",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "easypicsybooths.com"
+        }
+      ],
+      "destination": "https://www.easypicsybooths.com/$1",
+      "permanent": true
+    }
+  ]
 }

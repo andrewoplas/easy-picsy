@@ -11,6 +11,24 @@ const nextConfig = {
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {},
+  
+  // Add redirects to fix the www/non-www redirect issues
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'easypicsybooths.com',
+          },
+        ],
+        destination: 'https://www.easypicsybooths.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Add webpack aliases for workspace packages
     config.resolve.alias = {

@@ -28,6 +28,7 @@ const inter = Inter({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://www.easypicsybooths.com'),
   title: 'Easy Picsy - Professional Photobooth Software with GCash Payments | Philippines',
   description:
     'Easy Picsy is the leading photobooth management software for rental businesses in the Philippines. Features GCash/QRPh payments, real-time analytics, cloud management, and white-label branding for weddings and corporate events.',
