@@ -25,7 +25,7 @@ export class WebhookReconciliationService {
   /**
    * Run reconciliation every 5 minutes to check for missed events
    */
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  // @Cron(CronExpression.EVERY_5_MINUTES)
   async reconcileMissedPayments() {
     try {
       this.logger.log('Starting webhook reconciliation check');
