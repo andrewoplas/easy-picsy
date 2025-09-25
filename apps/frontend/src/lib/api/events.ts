@@ -106,7 +106,7 @@ export const eventsApi = {
 
       // The backend returns a nested structure: {qrCode: {...}, isValid: boolean, timeUntilExpiry: number}
       // We should use the backend's calculated values instead of recalculating
-      const backendResponse = response.data as any;
+      const backendResponse = response.data as { qrCode: QrCode; isValid: boolean; timeUntilExpiry?: number };
       const qrCode = backendResponse.qrCode as QrCode;
 
       return {
@@ -120,6 +120,44 @@ export const eventsApi = {
       const response = await qrCodesApiInstance.qrCodesControllerGetQRCodeImage(qrCodeId);
       const imageResponse = response.data as { qrCodeImage?: string };
       return imageResponse.qrCodeImage || '';
+    },
+  },
+
+  lockScreen: {
+    async upload(eventId: string, file: File, onProgress?: (progress: number) => void): Promise<Event> {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      await axiosInstance.post(
+        `/api/events/${eventId}/lock-screen-design`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const progress = (progressEvent.loaded * 100) / progressEvent.total;
+            onProgress?.(progress);
+          }
+        },
+      });
+
+      // The backend returns just the URL string, but we need to return the full Event
+      // We'll need to fetch the updated event after upload
+      const updatedEventResponse = await eventsApiInstance.eventsControllerFindOne(eventId);
+      return updatedEventResponse.data;
+    },
+
+    async get(eventId: string): Promise<string | null> {
+      const response = await eventsApiInstance.eventsControllerGetLockScreenDesign(eventId);
+      return response.data;
+    },
+
+    async delete(eventId: string): Promise<void> {
+      // Note: There's no delete endpoint in the generated API client yet
+      // We'll need to add this to the backend first
+      throw new Error('Delete lock screen design endpoint not yet implemented');
     },
   },
 };

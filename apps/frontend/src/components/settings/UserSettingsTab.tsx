@@ -73,7 +73,7 @@ export function UserSettingsTab({ user }: UserSettingsTabProps) {
           <Button
             onClick={handleSaveUserSettings}
             disabled={loading}
-            className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+            variant="gradient"
           >
             <Save className="w-4 h-4 mr-2" />
             {loading ? 'Saving...' : 'Save Changes'}

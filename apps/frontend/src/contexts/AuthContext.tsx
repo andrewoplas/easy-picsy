@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '../lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/routes';
 
 interface AuthContextType {
   user: User | null;
@@ -44,9 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (event === 'SIGNED_IN') {
-          router.push('/admin/dashboard');
+          router.push(ROUTES.ADMIN.DASHBOARD);
         } else if (event === 'SIGNED_OUT') {
-          router.push('/admin/login');
+          router.push(ROUTES.ADMIN.LOGIN);
         }
       }
     );

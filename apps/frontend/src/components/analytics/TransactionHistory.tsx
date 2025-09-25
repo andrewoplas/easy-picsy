@@ -16,8 +16,6 @@ interface TransactionHistoryProps {
 export function TransactionHistory({ eventId }: TransactionHistoryProps) {
   const { data: transactions, isLoading, error, refetch } = useEventTransactions(eventId);
 
-  console.log('transactions', transactions);
-
   const handleRefund = useCallback(
     async (transactionId: string) => {
       try {
@@ -44,25 +42,27 @@ export function TransactionHistory({ eventId }: TransactionHistoryProps) {
   if (error) {
     const isEventNotFound = error.message.includes('not found');
     const isInvalidDateRange = error.message.includes('Invalid date range');
-    
+
     return (
       <Card className="bg-dash-white">
         <CardContent>
           <EmptyState
             icon={RefreshCw}
-            title={isEventNotFound ? "Event not found" : "Failed to load transactions"}
+            title={isEventNotFound ? 'Event not found' : 'Failed to load transactions'}
             description={
-              isEventNotFound 
-                ? "This event could not be found or may be inactive."
+              isEventNotFound
+                ? 'This event could not be found or may be inactive.'
                 : isInvalidDateRange
-                ? "The selected date range is invalid. Please check your date selection."
-                : "There was an error loading the transaction history. Please try again."
+                ? 'The selected date range is invalid. Please check your date selection.'
+                : 'There was an error loading the transaction history. Please try again.'
             }
             action={
-              !isEventNotFound && !isInvalidDateRange ? {
-                label: 'Retry',
-                onClick: () => refetch(),
-              } : undefined
+              !isEventNotFound && !isInvalidDateRange
+                ? {
+                    label: 'Retry',
+                    onClick: () => refetch(),
+                  }
+                : undefined
             }
           />
         </CardContent>

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/routes';
 
 /**
  * ProtectedRoute Component
@@ -17,7 +18,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ 
   children, 
-  redirectTo = '/admin/login' 
+  redirectTo = ROUTES.ADMIN.LOGIN 
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();

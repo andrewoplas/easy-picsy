@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { ROUTES } from './src/lib/routes';
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
@@ -9,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
+    return NextResponse.redirect(new URL(ROUTES.ADMIN.LOGIN, request.url));
   }
 
   const supabase = createServerClient(
@@ -34,28 +35,28 @@ export async function middleware(request: NextRequest) {
 
   // Handle redirects for clean URLs
   if (request.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/admin/login', request.url));
+    return NextResponse.redirect(new URL(ROUTES.ADMIN.LOGIN, request.url));
   }
   
   if (request.nextUrl.pathname === '/register') {
-    return NextResponse.redirect(new URL('/admin/register', request.url));
+    return NextResponse.redirect(new URL(ROUTES.ADMIN.REGISTER, request.url));
   }
 
   // Protected routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Allow access to login page
-    if (request.nextUrl.pathname === '/admin/login' || 
-        request.nextUrl.pathname === '/admin/register') {
+    if (request.nextUrl.pathname === ROUTES.ADMIN.LOGIN || 
+        request.nextUrl.pathname === ROUTES.ADMIN.REGISTER) {
       // If user is already logged in, redirect to performance dashboard
       if (session) {
-        return NextResponse.redirect(new URL('/admin/dashboard/performance', request.url));
+        return NextResponse.redirect(new URL(ROUTES.ADMIN.PERFORMANCE, request.url));
       }
       return response;
     }
 
     // For all other admin routes, require authentication
     if (!session) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL(ROUTES.ADMIN.LOGIN, request.url));
     }
   }
 

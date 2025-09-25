@@ -49,6 +49,10 @@ export class ConfigService {
     return this.configService.get<string>('SUPABASE_SERVICE_KEY') ?? '';
   }
 
+  get supabaseStorageBucket(): string {
+    return this.configService.get<string>('SUPABASE_STORAGE_BUCKET') ?? '';
+  }
+
   // JWT configuration
   get jwtSecret(): string {
     return this.configService.get<string>('JWT_SECRET') ?? '';

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES, buildRoute } from '@/lib/routes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,19 +20,16 @@ import {
   BarChart,
   Activity,
 } from 'lucide-react';
-import { CreateEventModal } from '@/components/events/CreateEventModal';
-import { EditEventModal } from '@/components/events/EditEventModal';
 import { QRCodeModal } from '@/components/events/QRCodeModal';
 import { QRCodeHistoryModal } from '@/components/events/QRCodeHistoryModal';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Event, CreateEventDto, UpdateEventDto } from '@/lib/api/events';
+import { EventsSkeleton } from '@/components/events/events-skeleton';
+import type { Event } from '@/lib/api/events';
 import { useEvents } from '@/hooks/useEvents';
 
 export default function EventsPage() {
   const router = useRouter();
-  const { events, isLoading, createEvent, updateEvent, deleteEvent, isCreatingEvent } = useEvents();
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const { events, isLoading, deleteEvent } = useEvents();
   const [showQRModal, setShowQRModal] = useState(false);
   const [showQRHistoryModal, setShowQRHistoryModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -48,35 +46,11 @@ export default function EventsPage() {
     searchQuery.trim() ? event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false : true,
   );
 
-  const handleCreateEvent = (newEventData: CreateEventDto) => {
-    createEvent(newEventData, {
-      onSuccess: () => {
-        setShowCreateModal(false);
-      },
-    });
-  };
-
-  const handleEditEvent = (eventId: string, updateData: UpdateEventDto) => {
-    updateEvent(
-      { id: eventId, data: updateData },
-      {
-        onSuccess: () => {
-          setShowEditModal(false);
-          setSelectedEvent(null);
-        },
-      },
-    );
-  };
 
   const handleDeleteEvent = (eventId: string) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       deleteEvent(eventId);
     }
-  };
-
-  const openEditModal = (event: Event) => {
-    setSelectedEvent(event);
-    setShowEditModal(true);
   };
 
   const openQRModal = (event: Event) => {
@@ -90,11 +64,11 @@ export default function EventsPage() {
   };
 
   const openAnalytics = (event: Event) => {
-    router.push(`/admin/dashboard/events/${event.id}/analytics`);
+    router.push(buildRoute.eventAnalytics(event.id));
   };
 
   const openRemoteControl = (event: Event) => {
-    router.push(`/admin/dashboard/events/${event.id}/remote`);
+    router.push(buildRoute.eventRemote(event.id));
   };
 
   // Pagination logic
@@ -108,22 +82,7 @@ export default function EventsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-normal text-dash-navy tracking-wide">Events</h1>
-            <p className="text-dash-navy/70">Manage your photobooth events</p>
-          </div>
-          <div className="w-32 h-10 bg-dash-gray/30 rounded-lg animate-pulse"></div>
-        </div>
-        <div className="grid gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 bg-dash-gray/30 rounded-lg animate-pulse"></div>
-          ))}
-        </div>
-      </div>
-    );
+    return <EventsSkeleton eventCount={3} />;
   }
 
   return (
@@ -135,8 +94,8 @@ export default function EventsPage() {
           <p className="text-dash-navy/70">Manage your photobooth events and QR codes</p>
         </div>
         <Button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+          onClick={() => router.push(ROUTES.ADMIN.EVENTS.NEW)}
+          variant="gradient"
         >
           <Plus className="w-4 h-4 mr-2" />
           Create Event
@@ -211,8 +170,8 @@ export default function EventsPage() {
               </p>
               {events.length === 0 && (
                 <Button
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+                  onClick={() => router.push(ROUTES.ADMIN.EVENTS.NEW)}
+                  variant="gradient"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create Event
@@ -306,7 +265,7 @@ export default function EventsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => openEditModal(event)}
+                          onClick={() => router.push(buildRoute.eventEdit(event.id))}
                           className="border-dash-gray/50 hover:bg-dash-gray/10"
                         >
                           <Edit className="w-4 h-4" />
@@ -398,26 +357,9 @@ export default function EventsPage() {
         </div>
       )}
 
-      {/* Modals */}
-      <CreateEventModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSubmit={handleCreateEvent}
-        isLoading={isCreatingEvent}
-      />
-
+      {/* QR Code Modals */}
       {selectedEvent && (
         <>
-          <EditEventModal
-            isOpen={showEditModal}
-            onClose={() => {
-              setShowEditModal(false);
-              setSelectedEvent(null);
-            }}
-            event={selectedEvent}
-            onSubmit={handleEditEvent}
-          />
-
           <QRCodeModal
             isOpen={showQRModal}
             onClose={() => {

@@ -63,4 +63,46 @@ export class SupabaseService {
       return null;
     }
   }
+
+  async uploadLockScreenDesign(
+    eventId: string,
+    file: Buffer,
+    originalFilename: string,
+    fileOptions?: { contentType?: string }
+  ): Promise<string> {
+    const timestamp = new Date().getTime();
+    const filePath = `${eventId}/${timestamp}-${originalFilename}`;
+
+    const { error } = await this.supabaseAdmin
+      .storage
+      .from(this.configService.supabaseStorageBucket)
+      .upload(filePath, file, {
+        upsert: false,
+        contentType: fileOptions?.contentType,
+      });
+
+    if (error) {
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+
+    const { data } = this.supabaseAdmin
+      .storage
+      .from(this.configService.supabaseStorageBucket)
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  }
+
+  async deleteLockScreenDesign(filePath: string): Promise<void> {
+    const { error } = await this.supabaseAdmin
+      .storage
+      .from(this.configService.supabaseStorageBucket)
+      .remove([filePath]);
+
+    if (error) {
+      console.error('Error deleting file:', error);
+      throw error;
+    }
+  }
 }

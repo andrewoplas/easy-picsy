@@ -23,6 +23,7 @@ docs/EventDeleteResponseDto.md
 docs/EventInfoDto.md
 docs/EventResponseDto.md
 docs/EventsApi.md
+docs/EventsControllerUploadLockScreenDesignRequest.md
 docs/GroupedSessionDto.md
 docs/LogBoothEventDto.md
 docs/LogBoothEventResponseDto.md

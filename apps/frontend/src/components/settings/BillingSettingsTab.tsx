@@ -150,7 +150,8 @@ export function BillingSettingsTab() {
           <Button
             onClick={handleSaveBillingSettings}
             disabled={loading || !billingSettings.qrCodeFile}
-            className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="gradient"
+            className="disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4 mr-2" />
             {loading ? 'Uploading...' : 'Upload QR Code'}

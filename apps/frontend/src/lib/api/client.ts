@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createClient } from '../supabase/client';
+import { ROUTES } from '../routes';
 
 const supabase = createClient();
 
@@ -36,7 +37,7 @@ axiosInstance.interceptors.response.use(
         error.config.headers.Authorization = `Bearer ${session.access_token}`;
         return axiosInstance.request(error.config);
       } else {
-        window.location.href = '/admin/login';
+        window.location.href = ROUTES.ADMIN.LOGIN;
       }
     }
     return Promise.reject(error);

@@ -10,7 +10,16 @@ import {
   Put,
   Request,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Express } from 'express';
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE, FILE_UPLOAD_ERRORS } from './utils/file-validation.util';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -247,6 +256,83 @@ export class EventsController {
     @Request() req: AuthenticatedRequest,
   ): Promise<CurrentQrCodeResponseDto[]> {
     return await this.qrCodesService.getQRCodeHistory(eventId, req.user.id);
+  }
+
+  @Post(':id/lock-screen-design')
+  @ApiOperation({
+    summary: 'Upload lock screen design',
+    description: 'Upload a new lock screen design for the event',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Lock screen design file (JPG, PNG, WebP, MP4, WebM)',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Design uploaded successfully',
+    type: String,
+  })
+  @ApiNotFoundResponse({ description: 'Event not found' })
+  @ApiBadRequestResponse({ description: 'Invalid file type or size' })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLockScreenDesign(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: MAX_FILE_SIZE }),
+          new FileTypeValidator({ fileType: ALLOWED_FILE_TYPES.join('|') }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<string> {
+    if (!file) {
+      throw new BadRequestException(FILE_UPLOAD_ERRORS.NO_FILE);
+    }
+
+    return await this.eventsService.uploadLockScreenDesign(id, file, req.user.id);
+  }
+
+  @Get(':id/lock-screen-design')
+  @ApiOperation({
+    summary: 'Get lock screen design URL',
+    description: 'Get the URL of the current lock screen design for the event',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Design URL retrieved successfully',
+    type: String,
+  })
+  @ApiNotFoundResponse({ description: 'Event or design not found' })
+  async getLockScreenDesign(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<string> {
+    const url = await this.eventsService.getLockScreenDesign(id, req.user.id);
+    if (!url) {
+      throw new NotFoundException(FILE_UPLOAD_ERRORS.NOT_FOUND);
+    }
+    return url;
   }
 }
 

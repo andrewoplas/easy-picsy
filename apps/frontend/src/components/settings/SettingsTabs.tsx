@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { User, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { UserSettingsTab } from './UserSettingsTab';
 import { BillingSettingsTab } from './BillingSettingsTab';
 
@@ -46,20 +47,15 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
             const isActive = activeTab === tab.id;
             
             return (
-              <button
+              <Button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`
-                  w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-dash-orange to-easy-yellow text-white shadow-md' 
-                    : 'text-dash-navy hover:bg-gray-100'
-                  }
-                `}
+                variant={isActive ? "gradient" : "ghost"}
+                className="w-full justify-start"
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-5 h-5 mr-3" />
                 <span className="font-medium">{tab.label}</span>
-              </button>
+              </Button>
             );
           })}
         </nav>

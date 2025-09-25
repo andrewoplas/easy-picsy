@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { ProtectedRoute } from '../../../components/auth/ProtectedRoute';
+import { navigation as routesNavigation, ROUTES } from '../../../lib/routes';
 import {
   CreditCard,
   TrendingUp,
@@ -17,12 +18,13 @@ import {
 } from 'lucide-react';
 import LogoSvg from '../../../assets/logo.svg';
 
-const navigation = [
-  { name: 'Performance', href: '/admin/dashboard/performance', icon: TrendingUp },
-  { name: 'Payout', href: '/admin/dashboard/payout', icon: CreditCard },
-  { name: 'Events', href: '/admin/dashboard/events', icon: Calendar },
-  { name: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
-];
+const navigation = routesNavigation.sidebar.map(item => ({
+  ...item,
+  icon: item.name === 'Performance' ? TrendingUp :
+        item.name === 'Payout' ? CreditCard :
+        item.name === 'Events' ? Calendar :
+        item.name === 'Settings' ? Settings : Settings,
+}));
 
 export default function DashboardLayout({
   children,
@@ -167,7 +169,7 @@ export default function DashboardLayout({
 
             {/* User Profile - Rightmost */}
             <Link 
-              href="/admin/dashboard/settings"
+              href={ROUTES.ADMIN.SETTINGS}
               className="flex items-center space-x-3 ml-auto hover:bg-gray-50 rounded-lg p-2 transition-colors cursor-pointer"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-dash-orange to-easy-yellow rounded-full flex items-center justify-center">

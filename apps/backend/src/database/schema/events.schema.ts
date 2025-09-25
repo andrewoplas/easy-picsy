@@ -11,6 +11,7 @@ export const events = pgTable('events', {
   createdBy: uuid('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  lockScreenDesignUrl: text('lock_screen_design_url'),
 });
 
 export type Event = typeof events.$inferSelect;

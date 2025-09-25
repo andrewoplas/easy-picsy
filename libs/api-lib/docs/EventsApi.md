@@ -8,11 +8,13 @@ All URIs are relative to *http://localhost:3000*
 |[**eventsControllerFindAll**](#eventscontrollerfindall) | **GET** /api/events | Get all events|
 |[**eventsControllerFindOne**](#eventscontrollerfindone) | **GET** /api/events/{id} | Get event by ID|
 |[**eventsControllerGetCurrentQRCode**](#eventscontrollergetcurrentqrcode) | **GET** /api/events/{id}/qr/current | Get current QR code|
+|[**eventsControllerGetLockScreenDesign**](#eventscontrollergetlockscreendesign) | **GET** /api/events/{id}/lock-screen-design | Get lock screen design URL|
 |[**eventsControllerGetQRCodeHistory**](#eventscontrollergetqrcodehistory) | **GET** /api/events/{id}/qr/history | Get QR code history|
 |[**eventsControllerRegenerateQRCode**](#eventscontrollerregenerateqrcode) | **POST** /api/events/{id}/qr/regenerate | Regenerate QR code|
 |[**eventsControllerRemove**](#eventscontrollerremove) | **DELETE** /api/events/{id} | Delete event|
 |[**eventsControllerReplace**](#eventscontrollerreplace) | **PUT** /api/events/{id} | Replace event|
 |[**eventsControllerUpdate**](#eventscontrollerupdate) | **PATCH** /api/events/{id} | Partially update event|
+|[**eventsControllerUploadLockScreenDesign**](#eventscontrolleruploadlockscreendesign) | **POST** /api/events/{id}/lock-screen-design | Upload lock screen design|
 
 # **eventsControllerCreate**
 > CreateEventResponseDto eventsControllerCreate(createEventDto)
@@ -216,6 +218,58 @@ const { status, data } = await apiInstance.eventsControllerGetCurrentQRCode(
 |**200** | Active QR code retrieved successfully |  -  |
 |**401** | Invalid or missing token |  -  |
 |**404** | Event not found or no active QR code |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsControllerGetLockScreenDesign**
+> string eventsControllerGetLockScreenDesign()
+
+Get the URL of the current lock screen design for the event
+
+### Example
+
+```typescript
+import {
+    EventsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new EventsApi(configuration);
+
+let id: string; //Event UUID (default to undefined)
+
+const { status, data } = await apiInstance.eventsControllerGetLockScreenDesign(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**string**] | Event UUID | defaults to undefined|
+
+
+### Return type
+
+**string**
+
+### Authorization
+
+[JWT-auth](../README.md#JWT-auth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Design URL retrieved successfully |  -  |
+|**404** | Event or design not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -490,6 +544,63 @@ const { status, data } = await apiInstance.eventsControllerUpdate(
 |**200** | Event updated successfully |  -  |
 |**400** | Invalid input data |  -  |
 |**401** | Invalid or missing token |  -  |
+|**404** | Event not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsControllerUploadLockScreenDesign**
+> string eventsControllerUploadLockScreenDesign(eventsControllerUploadLockScreenDesignRequest)
+
+Upload a new lock screen design for the event
+
+### Example
+
+```typescript
+import {
+    EventsApi,
+    Configuration,
+    EventsControllerUploadLockScreenDesignRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new EventsApi(configuration);
+
+let id: string; //Event UUID (default to undefined)
+let eventsControllerUploadLockScreenDesignRequest: EventsControllerUploadLockScreenDesignRequest; //
+
+const { status, data } = await apiInstance.eventsControllerUploadLockScreenDesign(
+    id,
+    eventsControllerUploadLockScreenDesignRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **eventsControllerUploadLockScreenDesignRequest** | **EventsControllerUploadLockScreenDesignRequest**|  | |
+| **id** | [**string**] | Event UUID | defaults to undefined|
+
+
+### Return type
+
+**string**
+
+### Authorization
+
+[JWT-auth](../README.md#JWT-auth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** | Design uploaded successfully |  -  |
+|**400** | Invalid file type or size |  -  |
 |**404** | Event not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

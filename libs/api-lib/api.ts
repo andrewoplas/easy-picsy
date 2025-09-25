@@ -411,6 +411,12 @@ export interface CreateEventResponseDto {
      */
     'updatedAt': string;
     /**
+     * URL of the lock screen design
+     * @type {string}
+     * @memberof CreateEventResponseDto
+     */
+    'lockScreenDesignUrl'?: string;
+    /**
      * Generated QR code for the event (if successful)
      * @type {CurrentQrCodeResponseDto}
      * @memberof CreateEventResponseDto
@@ -691,6 +697,25 @@ export interface EventResponseDto {
      * @memberof EventResponseDto
      */
     'updatedAt': string;
+    /**
+     * URL of the lock screen design
+     * @type {string}
+     * @memberof EventResponseDto
+     */
+    'lockScreenDesignUrl'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface EventsControllerUploadLockScreenDesignRequest
+ */
+export interface EventsControllerUploadLockScreenDesignRequest {
+    /**
+     * Lock screen design file (JPG, PNG, WebP, MP4, WebM)
+     * @type {File}
+     * @memberof EventsControllerUploadLockScreenDesignRequest
+     */
+    'file'?: File;
 }
 /**
  * 
@@ -3406,6 +3431,44 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
+         * Get the URL of the current lock screen design for the event
+         * @summary Get lock screen design URL
+         * @param {string} id Event UUID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerGetLockScreenDesign: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsControllerGetLockScreenDesign', 'id', id)
+            const localVarPath = `/api/events/{id}/lock-screen-design`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Get complete QR code generation history for this event
          * @summary Get QR code history
          * @param {string} id Event UUID
@@ -3607,6 +3670,50 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Upload a new lock screen design for the event
+         * @summary Upload lock screen design
+         * @param {string} id Event UUID
+         * @param {EventsControllerUploadLockScreenDesignRequest} eventsControllerUploadLockScreenDesignRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerUploadLockScreenDesign: async (id: string, eventsControllerUploadLockScreenDesignRequest: EventsControllerUploadLockScreenDesignRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsControllerUploadLockScreenDesign', 'id', id)
+            // verify required parameter 'eventsControllerUploadLockScreenDesignRequest' is not null or undefined
+            assertParamExists('eventsControllerUploadLockScreenDesign', 'eventsControllerUploadLockScreenDesignRequest', eventsControllerUploadLockScreenDesignRequest)
+            const localVarPath = `/api/events/{id}/lock-screen-design`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(eventsControllerUploadLockScreenDesignRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -3666,6 +3773,19 @@ export const EventsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetCurrentQRCode(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetCurrentQRCode']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get the URL of the current lock screen design for the event
+         * @summary Get lock screen design URL
+         * @param {string} id Event UUID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsControllerGetLockScreenDesign(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerGetLockScreenDesign(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerGetLockScreenDesign']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3735,6 +3855,20 @@ export const EventsApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerUpdate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * Upload a new lock screen design for the event
+         * @summary Upload lock screen design
+         * @param {string} id Event UUID
+         * @param {EventsControllerUploadLockScreenDesignRequest} eventsControllerUploadLockScreenDesignRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsControllerUploadLockScreenDesign(id: string, eventsControllerUploadLockScreenDesignRequest: EventsControllerUploadLockScreenDesignRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<string>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerUploadLockScreenDesign(id, eventsControllerUploadLockScreenDesignRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerUploadLockScreenDesign']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -3783,6 +3917,16 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig): AxiosPromise<CurrentQrCodeResponseDto> {
             return localVarFp.eventsControllerGetCurrentQRCode(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get the URL of the current lock screen design for the event
+         * @summary Get lock screen design URL
+         * @param {string} id Event UUID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerGetLockScreenDesign(id: string, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.eventsControllerGetLockScreenDesign(id, options).then((request) => request(axios, basePath));
         },
         /**
          * Get complete QR code generation history for this event
@@ -3835,6 +3979,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
             return localVarFp.eventsControllerUpdate(id, updateEventDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Upload a new lock screen design for the event
+         * @summary Upload lock screen design
+         * @param {string} id Event UUID
+         * @param {EventsControllerUploadLockScreenDesignRequest} eventsControllerUploadLockScreenDesignRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerUploadLockScreenDesign(id: string, eventsControllerUploadLockScreenDesignRequest: EventsControllerUploadLockScreenDesignRequest, options?: RawAxiosRequestConfig): AxiosPromise<string> {
+            return localVarFp.eventsControllerUploadLockScreenDesign(id, eventsControllerUploadLockScreenDesignRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -3891,6 +4046,18 @@ export class EventsApi extends BaseAPI {
      */
     public eventsControllerGetCurrentQRCode(id: string, options?: RawAxiosRequestConfig) {
         return EventsApiFp(this.configuration).eventsControllerGetCurrentQRCode(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get the URL of the current lock screen design for the event
+     * @summary Get lock screen design URL
+     * @param {string} id Event UUID
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public eventsControllerGetLockScreenDesign(id: string, options?: RawAxiosRequestConfig) {
+        return EventsApiFp(this.configuration).eventsControllerGetLockScreenDesign(id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3953,6 +4120,19 @@ export class EventsApi extends BaseAPI {
      */
     public eventsControllerUpdate(id: string, updateEventDto: UpdateEventDto, options?: RawAxiosRequestConfig) {
         return EventsApiFp(this.configuration).eventsControllerUpdate(id, updateEventDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Upload a new lock screen design for the event
+     * @summary Upload lock screen design
+     * @param {string} id Event UUID
+     * @param {EventsControllerUploadLockScreenDesignRequest} eventsControllerUploadLockScreenDesignRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public eventsControllerUploadLockScreenDesign(id: string, eventsControllerUploadLockScreenDesignRequest: EventsControllerUploadLockScreenDesignRequest, options?: RawAxiosRequestConfig) {
+        return EventsApiFp(this.configuration).eventsControllerUploadLockScreenDesign(id, eventsControllerUploadLockScreenDesignRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ROUTES } from '@/lib/routes';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Easy Picsy',
@@ -14,7 +15,7 @@ export default function PrivacyPolicyPage() {
       <div className="max-w-4xl mx-auto px-4 py-4 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link href="/admin/register">
+          <Link href={ROUTES.ADMIN.REGISTER}>
             <Button variant="ghost" className="mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Registration

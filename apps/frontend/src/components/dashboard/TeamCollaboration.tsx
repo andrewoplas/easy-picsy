@@ -82,7 +82,7 @@ export function TeamCollaboration({ teamMembers = defaultTeamMembers }: TeamColl
           <CardTitle className="text-xl font-normal text-dash-navy tracking-wide">Team Collaboration</CardTitle>
           <Button 
             size="sm" 
-            className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+            variant="gradient"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Member

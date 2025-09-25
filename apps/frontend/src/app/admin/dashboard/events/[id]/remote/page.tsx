@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { buildRoute } from '@/lib/routes';
 import {
   Lock,
   Unlock,
@@ -73,7 +74,7 @@ export default function RemoteControlPage() {
   };
 
   const handleBack = () => {
-    router.push(`/admin/dashboard/events/${eventId}/analytics`);
+    router.push(buildRoute.eventAnalytics(eventId));
   };
 
   if (eventLoading) {
@@ -115,10 +116,9 @@ export default function RemoteControlPage() {
         <div className="flex flex-col items-center">
           <Button
             onClick={handleLockToggle}
+            variant={boothLocked ? "gradient" : "default"}
             className={`w-48 h-48 rounded-full text-white shadow-lg transform transition-all duration-300 hover:scale-105 active:scale-95 ${
-              boothLocked
-                ? 'bg-gradient-to-br from-dash-orange to-easy-yellow hover:from-dash-orange/90 hover:to-easy-yellow/90'
-                : 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
+              !boothLocked ? 'bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' : ''
             }`}
           >
             {boothLocked ? (

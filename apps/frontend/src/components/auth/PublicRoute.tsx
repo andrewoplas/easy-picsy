@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/routes';
 
 /**
  * PublicRoute Component
@@ -17,7 +18,7 @@ interface PublicRouteProps {
 
 export function PublicRoute({ 
   children, 
-  redirectTo = '/admin/dashboard' 
+  redirectTo = ROUTES.ADMIN.DASHBOARD 
 }: PublicRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();

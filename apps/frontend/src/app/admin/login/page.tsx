@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ROUTES } from '@/lib/routes';
 import { Eye, EyeOff } from 'lucide-react';
 import { AuthContainer } from '../../../components/auth/AuthContainer';
 import { Button } from '../../../components/ui/button';
@@ -48,7 +49,7 @@ function LoginForm() {
 
     try {
       await signIn(data.email, data.password);
-      router.push('/admin/dashboard');
+      router.push(ROUTES.ADMIN.DASHBOARD);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred during login');
     } finally {
@@ -75,7 +76,7 @@ function LoginForm() {
       subtitle="Build your photo booth business effortlessly with our powerful platform."
       footerText="Don't have an account?"
       footerLinkText="Sign up"
-      footerLinkHref="/admin/register"
+      footerLinkHref={ROUTES.ADMIN.REGISTER}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {error && (
@@ -126,7 +127,8 @@ function LoginForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg py-3 px-4 rounded-lg font-semibold"
+          variant="gradient"
+          className="w-full focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg py-3 px-4 rounded-lg font-semibold"
         >
           {isLoading ? 'Signing in...' : 'Log in'}
         </Button>
@@ -145,7 +147,7 @@ function LoginForm() {
           onClick={handleGoogleSignIn}
           disabled={isLoading}
           variant="outline"
-          className="w-full bg-white border border-gray-300 text-easy-black hover:bg-gradient-to-r hover:from-dash-orange/10 hover:to-easy-yellow/10 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center justify-center gap-3 py-3 px-4 rounded-lg font-medium"
+          className="w-full bg-white border border-gray-300 text-easy-black hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-easy-yellow focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm flex items-center justify-center gap-3 py-3 px-4 rounded-lg font-medium"
         >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path

@@ -13,11 +13,13 @@ const buttonVariants = cva(
         destructive:
           "bg-red-500 text-white hover:bg-red-500/90",
         outline:
-          "border border-easy-black bg-background hover:bg-easy-yellow hover:text-easy-black",
+          "border border-neutral-200 bg-background hover:bg-easy-yellow hover:border-easy-yellow hover:text-easy-black",
         secondary:
           "bg-easy-black text-white hover:bg-easy-black/80",
         ghost: "hover:bg-easy-yellow/20 hover:text-easy-black",
         link: "text-easy-black underline-offset-4 hover:underline",
+        gradient: 
+          "bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90",
       },
       size: {
         default: "h-10 px-4 py-2",

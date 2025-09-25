@@ -60,4 +60,10 @@ export class EventResponseDto {
     format: 'date-time',
   })
   updatedAt: Date;
+
+  @ApiPropertyOptional({
+    description: 'URL of the lock screen design',
+    example: 'https://example.com/lock-screen-designs/event-123/design.png',
+  })
+  lockScreenDesignUrl?: string;
 }

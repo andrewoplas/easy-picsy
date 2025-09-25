@@ -326,7 +326,7 @@ export function PayoutSummary({
                 </p>
               </div>
               <Button 
-                className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+                variant="gradient"
                 size="sm"
               >
                 Request Cashout

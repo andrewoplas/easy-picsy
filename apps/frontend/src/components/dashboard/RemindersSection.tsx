@@ -102,7 +102,7 @@ export function RemindersSection({ reminders = defaultReminders }: RemindersSect
                 {primaryReminder.type}
               </div>
             </div>
-            <Button className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90 w-full">
+            <Button variant="gradient" className="w-full">
               <Calendar className="w-4 h-4 mr-2" />
               Start Meeting
             </Button>

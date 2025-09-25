@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ROUTES, buildRoute, navigation } from '@/lib/routes';
 import {
   TrendingUp,
   DollarSign,
@@ -159,7 +160,7 @@ export default function EventAnalyticsPage() {
       {/* Breadcrumbs */}
       <div className="flex items-center space-x-2 text-sm text-dash-navy/60 mb-4">
         <button
-          onClick={() => router.push('/admin/dashboard')}
+          onClick={() => router.push(ROUTES.ADMIN.DASHBOARD)}
           className="flex items-center hover:text-dash-navy transition-colors"
         >
           <Home className="w-4 h-4 mr-1" />
@@ -167,7 +168,7 @@ export default function EventAnalyticsPage() {
         </button>
         <ChevronRight className="w-4 h-4" />
         <button
-          onClick={() => router.push('/admin/dashboard/events')}
+          onClick={() => router.push(ROUTES.ADMIN.EVENTS.LIST)}
           className="hover:text-dash-navy transition-colors"
         >
           Events
@@ -214,8 +215,8 @@ export default function EventAnalyticsPage() {
               </div>
             </div>
             <Button
-              onClick={() => router.push(`/admin/dashboard/events/${eventId}/remote`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => router.push(buildRoute.eventRemote(eventId))}
+              variant="gradient"
             >
               Open Remote
             </Button>

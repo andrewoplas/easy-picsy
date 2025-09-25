@@ -123,7 +123,7 @@ export function ProjectTasks({ tasks = defaultTasks }: ProjectTasksProps) {
           </div>
           <Button 
             size="sm" 
-            className="bg-gradient-to-r from-dash-orange to-easy-yellow text-white hover:from-dash-orange/90 hover:to-easy-yellow/90"
+            variant="gradient"
           >
             <Plus className="w-4 h-4 mr-2" />
             New

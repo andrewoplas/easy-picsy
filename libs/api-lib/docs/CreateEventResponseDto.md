@@ -14,6 +14,7 @@ Name | Type | Description | Notes
 **createdBy** | **string** | User ID who created the event | [default to undefined]
 **createdAt** | **string** | Event creation timestamp | [default to undefined]
 **updatedAt** | **string** | Event last update timestamp | [default to undefined]
+**lockScreenDesignUrl** | **string** | URL of the lock screen design | [optional] [default to undefined]
 **qrCode** | [**CurrentQrCodeResponseDto**](CurrentQrCodeResponseDto.md) | Generated QR code for the event (if successful) | [optional] [default to undefined]
 
 ## Example
@@ -31,6 +32,7 @@ const instance: CreateEventResponseDto = {
     createdBy,
     createdAt,
     updatedAt,
+    lockScreenDesignUrl,
     qrCode,
 };
 ```

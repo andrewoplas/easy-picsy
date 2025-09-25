@@ -2,13 +2,14 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/routes';
 
 export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
     // Redirect to performance page as the default
-    router.replace('/admin/dashboard/performance');
+    router.replace(ROUTES.ADMIN.PERFORMANCE);
   }, [router]);
 
   return (
