@@ -34,9 +34,11 @@ import {
 import { SupabaseAuthGuard } from '../auth/guards/supabase-auth.guard';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
 import type { AuthenticatedRequest } from '../types/auth.types';
+import { ActivateEventDto } from './dto/activate-event.dto';
 import { CreateEventResponseDto } from './dto/create-event-response.dto';
 import { CreateEventDto } from './dto/create-event.dto';
 import { CurrentQrCodeResponseDto } from './dto/current-qr-code-response.dto';
+import { DeactivateEventDto } from './dto/deactivate-event.dto';
 import { EventDeleteResponseDto } from './dto/event-delete-response.dto';
 import { EventResponseDto } from './dto/event-response.dto';
 import { PublicEventResponseDto } from './dto/public-event-response.dto';
@@ -258,6 +260,60 @@ export class EventsController {
     return await this.qrCodesService.getQRCodeHistory(eventId, req.user.id);
   }
 
+  @Post(':id/activate')
+  @ApiOperation({
+    summary: 'Activate event',
+    description: 'Activate an event for a specific device (MAC address). Only one event can be active per device.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiBody({ type: ActivateEventDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Event activated successfully',
+    type: EventResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Event not found' })
+  @ApiBadRequestResponse({ description: 'Invalid MAC address or device already in use' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async activateEvent(
+    @Param('id') id: string,
+    @Body() activateEventDto: ActivateEventDto,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<EventResponseDto> {
+    return await this.eventsService.activateEvent(id, activateEventDto, req.user.id);
+  }
+
+  @Post(':id/deactivate')
+  @ApiOperation({
+    summary: 'Deactivate event',
+    description: 'Deactivate an event and free up the device for other events',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Event UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @ApiBody({ type: DeactivateEventDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Event deactivated successfully',
+    type: EventResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'Event not found' })
+  @ApiBadRequestResponse({ description: 'Event is already inactive' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async deactivateEvent(
+    @Param('id') id: string,
+    @Body() deactivateEventDto: DeactivateEventDto,
+    @Request() req: AuthenticatedRequest,
+  ): Promise<EventResponseDto> {
+    return await this.eventsService.deactivateEvent(id, deactivateEventDto, req.user.id);
+  }
+
   @Post(':id/lock-screen-design')
   @ApiOperation({
     summary: 'Upload lock screen design',
@@ -359,5 +415,29 @@ export class PublicEventsController {
   @ApiNotFoundResponse({ description: 'Event not found or not accessible' })
   async getEventForPayment(@Param('id') id: string): Promise<PublicEventResponseDto> {
     return await this.eventsService.findByQrCode(id);
+  }
+
+  @Get('active/:macAddress')
+  @ApiOperation({
+    summary: 'Get active event by MAC address',
+    description: 'Public endpoint to retrieve the currently active event for a specific device',
+  })
+  @ApiParam({
+    name: 'macAddress',
+    description: 'Device MAC address',
+    example: 'AA:BB:CC:DD:EE:FF',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Active event retrieved successfully',
+    type: EventResponseDto,
+  })
+  @ApiNotFoundResponse({ description: 'No active event found for this device' })
+  async getActiveEventByMacAddress(@Param('macAddress') macAddress: string): Promise<EventResponseDto> {
+    const event = await this.eventsService.getActiveEventByMacAddress(macAddress);
+    if (!event) {
+      throw new NotFoundException(`No active event found for device ${macAddress}`);
+    }
+    return event;
   }
 }

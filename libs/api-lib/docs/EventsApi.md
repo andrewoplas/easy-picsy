@@ -4,7 +4,9 @@ All URIs are relative to *http://localhost:3000*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**eventsControllerActivateEvent**](#eventscontrolleractivateevent) | **POST** /api/events/{id}/activate | Activate event|
 |[**eventsControllerCreate**](#eventscontrollercreate) | **POST** /api/events | Create event|
+|[**eventsControllerDeactivateEvent**](#eventscontrollerdeactivateevent) | **POST** /api/events/{id}/deactivate | Deactivate event|
 |[**eventsControllerFindAll**](#eventscontrollerfindall) | **GET** /api/events | Get all events|
 |[**eventsControllerFindOne**](#eventscontrollerfindone) | **GET** /api/events/{id} | Get event by ID|
 |[**eventsControllerGetCurrentQRCode**](#eventscontrollergetcurrentqrcode) | **GET** /api/events/{id}/qr/current | Get current QR code|
@@ -15,6 +17,63 @@ All URIs are relative to *http://localhost:3000*
 |[**eventsControllerReplace**](#eventscontrollerreplace) | **PUT** /api/events/{id} | Replace event|
 |[**eventsControllerUpdate**](#eventscontrollerupdate) | **PATCH** /api/events/{id} | Partially update event|
 |[**eventsControllerUploadLockScreenDesign**](#eventscontrolleruploadlockscreendesign) | **POST** /api/events/{id}/lock-screen-design | Upload lock screen design|
+
+# **eventsControllerActivateEvent**
+> EventResponseDto eventsControllerActivateEvent(body)
+
+Activate an event for a specific device (MAC address). Only one event can be active per device.
+
+### Example
+
+```typescript
+import {
+    EventsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new EventsApi(configuration);
+
+let id: string; //Event UUID (default to undefined)
+let body: object; //
+
+const { status, data } = await apiInstance.eventsControllerActivateEvent(
+    id,
+    body
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **body** | **object**|  | |
+| **id** | [**string**] | Event UUID | defaults to undefined|
+
+
+### Return type
+
+**EventResponseDto**
+
+### Authorization
+
+[JWT-auth](../README.md#JWT-auth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Event activated successfully |  -  |
+|**400** | Invalid MAC address or device already in use |  -  |
+|**401** | Invalid or missing token |  -  |
+|**404** | Event not found |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **eventsControllerCreate**
 > CreateEventResponseDto eventsControllerCreate(createEventDto)
@@ -67,6 +126,63 @@ const { status, data } = await apiInstance.eventsControllerCreate(
 |**201** | Event created successfully |  -  |
 |**400** | Invalid input data |  -  |
 |**401** | Invalid or missing token |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **eventsControllerDeactivateEvent**
+> EventResponseDto eventsControllerDeactivateEvent(body)
+
+Deactivate an event and free up the device for other events
+
+### Example
+
+```typescript
+import {
+    EventsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new EventsApi(configuration);
+
+let id: string; //Event UUID (default to undefined)
+let body: object; //
+
+const { status, data } = await apiInstance.eventsControllerDeactivateEvent(
+    id,
+    body
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **body** | **object**|  | |
+| **id** | [**string**] | Event UUID | defaults to undefined|
+
+
+### Return type
+
+**EventResponseDto**
+
+### Authorization
+
+[JWT-auth](../README.md#JWT-auth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Event deactivated successfully |  -  |
+|**400** | Event is already inactive |  -  |
+|**401** | Invalid or missing token |  -  |
+|**404** | Event not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

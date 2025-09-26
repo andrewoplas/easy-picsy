@@ -4,8 +4,10 @@ import { DatabaseService } from '../database/database.service';
 import { events, NewEvent } from '../database/schema';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ActivateEventDto } from './dto/activate-event.dto';
 import { CreateEventResponseDto } from './dto/create-event-response.dto';
 import { CreateEventDto } from './dto/create-event.dto';
+import { DeactivateEventDto } from './dto/deactivate-event.dto';
 import { EventResponseDto } from './dto/event-response.dto';
 import { PublicEventResponseDto } from './dto/public-event-response.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -156,5 +158,97 @@ export class EventsService {
   async getLockScreenDesign(eventId: string, userId: string): Promise<string | null> {
     const event = await this.findOne(eventId, userId);
     return event.lockScreenDesignUrl ?? null;
+  }
+
+  async activateEvent(eventId: string, activateEventDto: ActivateEventDto, userId: string): Promise<EventResponseDto> {
+    // Verify the event exists and user owns it
+    const event = await this.findOne(eventId, userId);
+
+    // Check if there's already an active event for this MAC address
+    const [existingActiveEvent] = await this.databaseService.db
+      .select()
+      .from(events)
+      .where(and(eq(events.macAddress, activateEventDto.macAddress), eq(events.isActive, true)));
+
+    if (existingActiveEvent && existingActiveEvent.id !== eventId) {
+      this.logger.warn(`MAC address ${activateEventDto.macAddress} is already associated with active event ${existingActiveEvent.id}`);
+      throw new BadRequestException(
+        `Device with MAC address ${activateEventDto.macAddress} is already running event "${existingActiveEvent.name}". Please deactivate the current event first.`
+      );
+    }
+
+    // Deactivate any other active events for this user
+    await this.databaseService.db
+      .update(events)
+      .set({ 
+        isActive: false, 
+        macAddress: null,
+        updatedAt: new Date() 
+      })
+      .where(and(eq(events.createdBy, userId), eq(events.isActive, true), eq(events.id, eventId).not()));
+
+    // Activate the current event
+    const [activatedEvent] = await this.databaseService.db
+      .update(events)
+      .set({ 
+        isActive: true, 
+        macAddress: activateEventDto.macAddress,
+        updatedAt: new Date() 
+      })
+      .where(eq(events.id, eventId))
+      .returning();
+
+    this.logger.log(`Event ${eventId} activated for MAC address ${activateEventDto.macAddress}`);
+
+    return {
+      ...activatedEvent,
+      description: activatedEvent.description ?? undefined,
+      lockScreenDesignUrl: activatedEvent.lockScreenDesignUrl ?? undefined,
+    };
+  }
+
+  async deactivateEvent(eventId: string, deactivateEventDto: DeactivateEventDto, userId: string): Promise<EventResponseDto> {
+    // Verify the event exists and user owns it
+    const event = await this.findOne(eventId, userId);
+
+    if (!event.isActive) {
+      throw new BadRequestException(`Event "${event.name}" is already inactive`);
+    }
+
+    // Deactivate the event
+    const [deactivatedEvent] = await this.databaseService.db
+      .update(events)
+      .set({ 
+        isActive: false, 
+        macAddress: null,
+        updatedAt: new Date() 
+      })
+      .where(eq(events.id, eventId))
+      .returning();
+
+    this.logger.log(`Event ${eventId} deactivated${deactivateEventDto.reason ? ` - Reason: ${deactivateEventDto.reason}` : ''}`);
+
+    return {
+      ...deactivatedEvent,
+      description: deactivatedEvent.description ?? undefined,
+      lockScreenDesignUrl: deactivatedEvent.lockScreenDesignUrl ?? undefined,
+    };
+  }
+
+  async getActiveEventByMacAddress(macAddress: string): Promise<EventResponseDto | null> {
+    const [event] = await this.databaseService.db
+      .select()
+      .from(events)
+      .where(and(eq(events.macAddress, macAddress), eq(events.isActive, true)));
+
+    if (!event) {
+      return null;
+    }
+
+    return {
+      ...event,
+      description: event.description ?? undefined,
+      lockScreenDesignUrl: event.lockScreenDesignUrl ?? undefined,
+    };
   }
 }

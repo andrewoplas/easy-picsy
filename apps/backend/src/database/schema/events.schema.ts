@@ -7,7 +7,8 @@ export const events = pgTable('events', {
   description: text('description'),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   currency: varchar('currency', { length: 3 }).notNull().default('PHP'),
-  isActive: boolean('is_active').notNull().default(true),
+  isActive: boolean('is_active').notNull().default(false),
+  macAddress: varchar('mac_address', { length: 100 }), // MAC address of device activating this event
   createdBy: uuid('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

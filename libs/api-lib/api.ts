@@ -3281,6 +3281,50 @@ export class BoothLogsApi extends BaseAPI {
 export const EventsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Activate an event for a specific device (MAC address). Only one event can be active per device.
+         * @summary Activate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerActivateEvent: async (id: string, body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsControllerActivateEvent', 'id', id)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('eventsControllerActivateEvent', 'body', body)
+            const localVarPath = `/api/events/{id}/activate`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Create a new photobooth event with pricing information
          * @summary Create event
          * @param {CreateEventDto} createEventDto 
@@ -3314,6 +3358,50 @@ export const EventsApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createEventDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Deactivate an event and free up the device for other events
+         * @summary Deactivate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerDeactivateEvent: async (id: string, body: object, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('eventsControllerDeactivateEvent', 'id', id)
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('eventsControllerDeactivateEvent', 'body', body)
+            const localVarPath = `/api/events/{id}/deactivate`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3725,6 +3813,20 @@ export const EventsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = EventsApiAxiosParamCreator(configuration)
     return {
         /**
+         * Activate an event for a specific device (MAC address). Only one event can be active per device.
+         * @summary Activate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsControllerActivateEvent(id: string, body: object, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerActivateEvent(id, body, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerActivateEvent']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Create a new photobooth event with pricing information
          * @summary Create event
          * @param {CreateEventDto} createEventDto 
@@ -3735,6 +3837,20 @@ export const EventsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerCreate(createEventDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Deactivate an event and free up the device for other events
+         * @summary Deactivate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async eventsControllerDeactivateEvent(id: string, body: object, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.eventsControllerDeactivateEvent(id, body, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventsApi.eventsControllerDeactivateEvent']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3880,6 +3996,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
     const localVarFp = EventsApiFp(configuration)
     return {
         /**
+         * Activate an event for a specific device (MAC address). Only one event can be active per device.
+         * @summary Activate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerActivateEvent(id: string, body: object, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
+            return localVarFp.eventsControllerActivateEvent(id, body, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Create a new photobooth event with pricing information
          * @summary Create event
          * @param {CreateEventDto} createEventDto 
@@ -3888,6 +4015,17 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
          */
         eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig): AxiosPromise<CreateEventResponseDto> {
             return localVarFp.eventsControllerCreate(createEventDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Deactivate an event and free up the device for other events
+         * @summary Deactivate event
+         * @param {string} id Event UUID
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        eventsControllerDeactivateEvent(id: string, body: object, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
+            return localVarFp.eventsControllerDeactivateEvent(id, body, options).then((request) => request(axios, basePath));
         },
         /**
          * Retrieve all events created by the authenticated user
@@ -4002,6 +4140,19 @@ export const EventsApiFactory = function (configuration?: Configuration, basePat
  */
 export class EventsApi extends BaseAPI {
     /**
+     * Activate an event for a specific device (MAC address). Only one event can be active per device.
+     * @summary Activate event
+     * @param {string} id Event UUID
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public eventsControllerActivateEvent(id: string, body: object, options?: RawAxiosRequestConfig) {
+        return EventsApiFp(this.configuration).eventsControllerActivateEvent(id, body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Create a new photobooth event with pricing information
      * @summary Create event
      * @param {CreateEventDto} createEventDto 
@@ -4011,6 +4162,19 @@ export class EventsApi extends BaseAPI {
      */
     public eventsControllerCreate(createEventDto: CreateEventDto, options?: RawAxiosRequestConfig) {
         return EventsApiFp(this.configuration).eventsControllerCreate(createEventDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Deactivate an event and free up the device for other events
+     * @summary Deactivate event
+     * @param {string} id Event UUID
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof EventsApi
+     */
+    public eventsControllerDeactivateEvent(id: string, body: object, options?: RawAxiosRequestConfig) {
+        return EventsApiFp(this.configuration).eventsControllerDeactivateEvent(id, body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4494,6 +4658,40 @@ export class LogsApi extends BaseAPI {
 export const PublicEventsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Public endpoint to retrieve the currently active event for a specific device
+         * @summary Get active event by MAC address
+         * @param {string} macAddress Device MAC address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        publicEventsControllerGetActiveEventByMacAddress: async (macAddress: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'macAddress' is not null or undefined
+            assertParamExists('publicEventsControllerGetActiveEventByMacAddress', 'macAddress', macAddress)
+            const localVarPath = `/api/public/events/active/{macAddress}`
+                .replace(`{${"macAddress"}}`, encodeURIComponent(String(macAddress)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Public endpoint to retrieve event details for QR code payment processing
          * @summary Get event for payment
          * @param {string} id Event or QR Code UUID
@@ -4538,6 +4736,19 @@ export const PublicEventsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PublicEventsApiAxiosParamCreator(configuration)
     return {
         /**
+         * Public endpoint to retrieve the currently active event for a specific device
+         * @summary Get active event by MAC address
+         * @param {string} macAddress Device MAC address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async publicEventsControllerGetActiveEventByMacAddress(macAddress: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.publicEventsControllerGetActiveEventByMacAddress(macAddress, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PublicEventsApi.publicEventsControllerGetActiveEventByMacAddress']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Public endpoint to retrieve event details for QR code payment processing
          * @summary Get event for payment
          * @param {string} id Event or QR Code UUID
@@ -4561,6 +4772,16 @@ export const PublicEventsApiFactory = function (configuration?: Configuration, b
     const localVarFp = PublicEventsApiFp(configuration)
     return {
         /**
+         * Public endpoint to retrieve the currently active event for a specific device
+         * @summary Get active event by MAC address
+         * @param {string} macAddress Device MAC address
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        publicEventsControllerGetActiveEventByMacAddress(macAddress: string, options?: RawAxiosRequestConfig): AxiosPromise<EventResponseDto> {
+            return localVarFp.publicEventsControllerGetActiveEventByMacAddress(macAddress, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Public endpoint to retrieve event details for QR code payment processing
          * @summary Get event for payment
          * @param {string} id Event or QR Code UUID
@@ -4580,6 +4801,18 @@ export const PublicEventsApiFactory = function (configuration?: Configuration, b
  * @extends {BaseAPI}
  */
 export class PublicEventsApi extends BaseAPI {
+    /**
+     * Public endpoint to retrieve the currently active event for a specific device
+     * @summary Get active event by MAC address
+     * @param {string} macAddress Device MAC address
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicEventsApi
+     */
+    public publicEventsControllerGetActiveEventByMacAddress(macAddress: string, options?: RawAxiosRequestConfig) {
+        return PublicEventsApiFp(this.configuration).publicEventsControllerGetActiveEventByMacAddress(macAddress, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Public endpoint to retrieve event details for QR code payment processing
      * @summary Get event for payment

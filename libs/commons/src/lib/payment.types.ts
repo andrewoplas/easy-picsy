@@ -17,6 +17,7 @@ export enum PaymentMethod {
   GCASH = 'gcash',
   GRABPAY = 'grabpay',
   PAYMAYA = 'paymaya',
+  QRPH = 'qrph',
 }
 
 /**
@@ -49,4 +50,34 @@ export interface Transaction {
   status: PaymentStatus;
   sessionId: string;
   paymentMethod: PaymentMethod;
+}
+
+/**
+ * Webhook event types from PayMongo
+ * @description Supported webhook events for payment processing
+ */
+export enum WebhookEventType {
+  PAYMENT_PAID = 'payment.paid',
+  PAYMENT_FAILED = 'payment.failed',
+  QRPH_EXPIRED = 'qrph.expired',
+}
+
+/**
+ * PayMongo data types in webhook payloads
+ * @description Data structure types in webhook events
+ */
+export enum PaymongoDataType {
+  QRPH = 'qrph',
+  PAYMENT = 'payment',
+  EVENT = 'event',
+}
+
+/**
+ * Payment success event types for logging
+ * @description Internal event types for payment processing
+ */
+export enum PaymentEventType {
+  PAYMENT_SUCCESS = 'payment_success',
+  PAYMENT_FAILURE = 'payment_failure',
+  QR_CODE_EXPIRED = 'qr_code_expired',
 }
