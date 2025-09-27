@@ -1,20 +1,12 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  QrCodeStatus,
-  PaymentStatus,
-  PaymentMethod,
-  WebhookEventType,
-  PaymongoDataType,
-  PaymentEventType,
-} from '@org/commons';
+import { PaymentEventType, PaymentMethod, PaymentStatus, PaymongoDataType, WebhookEventType } from '@org/commons';
 import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
-import { events, QrCode, qrCodes, webhookLogs, payments } from '../database/schema';
+import { events, payments, QrCode, qrCodes, webhookLogs } from '../database/schema';
 import { LoggingService } from '../logging/logging.service';
 import { QrCodesService } from '../qr-codes/qr-codes.service';
-import { RealtimeService } from '../realtime/realtime.service';
 
 export interface PaymongoWebhookPayload {
   data: PaymongoWebhookEvent;
@@ -117,7 +109,6 @@ export class WebhooksService {
     private configService: ConfigService,
     private databaseService: DatabaseService,
     private qrCodesService: QrCodesService,
-    private realtimeService: RealtimeService,
     private loggingService: LoggingService,
   ) {
     this.webhookSecret = this.configService.get<string>('PAYMONGO_WEBHOOK_SECRET') as string;
@@ -437,14 +428,7 @@ export class WebhooksService {
         message: `Payment successful for ${amount ? amount / 100 : 0} ${currency}`,
       });
 
-      // Broadcast payment success
-      this.realtimeService.notifyPaymentSuccess(qrCode.eventId, {
-        qrCodeId: qrCode.id,
-        eventId: qrCode.eventId,
-        paymentId: paymentData.id,
-        amount: amount ?? 0,
-        currency: currency ?? 'PHP',
-      });
+      // Payment success handled - clients can poll for status updates
     } catch (error) {
       this.logger.error(`Failed to handle payment success for ${paymentData.attributes.payment_intent_id}:`, error);
     }
@@ -517,13 +501,7 @@ export class WebhooksService {
         }),
       });
 
-      // Broadcast payment failure
-      this.realtimeService.notifyPaymentFailed(qrCode.eventId, {
-        qrCodeId: qrCode.id,
-        eventId: qrCode.eventId,
-        paymentId: paymentData.id,
-        failureReason: paymentData.attributes.failed_message || 'Payment failed',
-      });
+      // Payment failure handled - clients can poll for status updates
     } catch (error) {
       this.logger.error(`Failed to handle payment failure for ${paymentIntentId}:`, error);
     }
@@ -572,7 +550,7 @@ export class WebhooksService {
         .where(eq(webhookLogs.id, webhookLogId));
 
       // Mark QR code as expired
-      await this.qrCodesService.markQRCodeExpired(qrCode.id, qrCode.eventId);
+      await this.qrCodesService.markQRCodeExpired(qrCode.id);
 
       // Log the QR expiration event
       await this.loggingService.logEvent({
@@ -589,12 +567,7 @@ export class WebhooksService {
         message: `QR Ph expired: ${qrphId}`,
       });
 
-      // Broadcast QR code status update
-      this.realtimeService.notifyQRStatusUpdate(qrCode.eventId, {
-        qrCodeId: qrCode.id,
-        eventId: qrCode.eventId,
-        status: QrCodeStatus.EXPIRED,
-      });
+      // QR expiry is handled by expiry warning - no separate notification needed
     } catch (error) {
       this.logger.error('Failed to handle QR expiration:', error);
     }

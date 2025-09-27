@@ -39,6 +39,7 @@ async function bootstrap() {
       credentials: true,
     });
 
+
     // Global validation pipe
     app.useGlobalPipes(
       new ValidationPipe({
@@ -71,35 +72,13 @@ async function bootstrap() {
       Most endpoints require a Bearer token from Supabase authentication.
       Add your token to the "Authorize" button above to test endpoints.
       
-      ## WebSocket Real-time Communication
+      ## Real-time Updates
       
-      **Connection URL:** \`ws://localhost:${port}/events\`
+      **Client-side Polling:** Clients poll QR code status endpoints for real-time updates.
       
-      **Authentication:** Include JWT token in one of these ways:
-      - \`auth.token\` in connection options
-      - \`Authorization: Bearer <token>\` header
-      - \`token\` query parameter
+      **QR Code Status Endpoint:** \`GET /api/qr-codes/{qrCodeId}/status\`
       
-      **Available Events:**
-      
-      ### Client → Server
-      - \`joinEvent\` - Join event room for updates
-        \`\`\`json
-        { "eventId": "uuid" }
-        \`\`\`
-      - \`leaveEvent\` - Leave event room
-        \`\`\`json
-        { "eventId": "uuid" }
-        \`\`\`
-      
-      ### Server → Client
-      - \`qrStatusUpdate\` - QR code status changed
-      - \`paymentReceived\` - Payment completed
-      - \`qrCodeGenerated\` - New QR code created
-      - \`qrExpiryWarning\` - QR code expires soon
-      - \`connectionStatus\` - Connection status updates
-      
-      **Room-based Broadcasting:** Events are sent only to clients in specific event rooms.
+      **Polling Strategy:** Clients should poll every 2-3 seconds to check for status changes.
     `,
     )
     .setVersion('1.0')
@@ -121,7 +100,6 @@ async function bootstrap() {
     .addTag('QR Codes', 'QR code generation and lifecycle management')
     .addTag('Payments', 'PayMongo payment integration')
     .addTag('Users', 'User profile management')
-    .addTag('WebSocket', 'Real-time communication')
     .addServer(`http://localhost:${port}`, 'Development server')
     .build();
 

@@ -284,25 +284,33 @@ SELECT id FROM events WHERE id = 'your-event-id';
 
 1. **`payment.paid`** - ✅ Working
    - Creates payment record in `payments` table
-   - Updates QR code status to `paid`
+   - Updates QR code status to `PAID`
    - Links payment ID to QR code
    - Sets `used_at` timestamp
+   - Logs state change in `qr_code_state_changes` table
+   - Broadcasts `paymentSuccess` WebSocket event
 
 2. **`payment.failed`** - ✅ Working
-   - Updates QR code status to `failed`
+   - Updates QR code status to `FAILED`
    - Does NOT create payment record (correct behavior)
    - Logs failure reason
+   - Logs state change in `qr_code_state_changes` table
+   - Broadcasts `paymentFailed` WebSocket event
 
 3. **`qrph.expired`** - ✅ Working
-   - Updates QR code status to `expired`
+   - Updates QR code status to `EXPIRED`
    - Sets `is_active` to `false`
    - Does NOT create payment record (correct behavior)
+   - Logs state change in `qr_code_state_changes` table
+   - Broadcasts `qrExpiryWarning` WebSocket event
 
 **Key Implementation Details:**
 - Uses constants instead of magic strings (`QrCodeStatus`, `PaymentEventType`, etc.)
 - Proper error handling and logging
 - Database transactions for data consistency
 - Real-time notifications via WebSocket
+- State change tracking for audit trail
+- Strict state transitions (ACTIVE → PAID → SESSION_COMPLETED)
 
 ## Troubleshooting
 
@@ -319,6 +327,84 @@ SELECT id FROM events WHERE id = 'your-event-id';
 2. Verify database connections and table structures
 3. Test with simplified payloads first
 4. Use database queries to verify data updates
+
+## Quick Testing Steps
+
+### 1. Basic Webhook Test
+```bash
+# 1. Start backend server
+npm run start:dev
+
+# 2. Test payment success webhook
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -H "paymongo-signature: t=1721812322,te=test_signature,li=live_signature" \
+  -d '{"data": {"id": "evt_123", "type": "event", "attributes": {"type": "payment.paid", "livemode": false, "data": {"id": "code_test123", "type": "qrph", "attributes": {"code_id": "code_test123", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "paid", "payment_intent_id": "pi_test123", "amount": 2000, "currency": "PHP"}}}}'
+
+# 3. Check response (should be "accepted")
+```
+
+### 2. Complete QR Code Flow Test
+```bash
+# 1. Generate QR code first
+curl -X POST http://localhost:3000/api/qr-codes/generate \
+  -H "Content-Type: application/json" \
+  -d '{"eventId": "test-event-123", "userId": "test-user"}'
+
+# 2. Note the QR code ID from response
+# 3. Test payment success with actual QR code ID
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -H "paymongo-signature: t=1721812322,te=test_signature,li=live_signature" \
+  -d '{"data": {"id": "evt_123", "type": "event", "attributes": {"type": "payment.paid", "livemode": false, "data": {"id": "YOUR_QR_CODE_ID", "type": "qrph", "attributes": {"code_id": "YOUR_QR_CODE_ID", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "paid", "payment_intent_id": "pi_test123", "amount": 2000, "currency": "PHP"}}}}'
+
+# 4. Check QR code status (should be 'paid')
+curl http://localhost:3000/api/qr-codes/YOUR_QR_CODE_ID/status
+```
+
+### 3. Test All Webhook Types
+```bash
+# Payment Success
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"id": "evt_123", "type": "event", "attributes": {"type": "payment.paid", "livemode": false, "data": {"id": "code_test123", "type": "qrph", "attributes": {"code_id": "code_test123", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "paid", "payment_intent_id": "pi_test123", "amount": 2000, "currency": "PHP"}}}}'
+
+# Payment Failed
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"id": "evt_456", "type": "event", "attributes": {"type": "payment.failed", "livemode": false, "data": {"id": "code_test123", "type": "qrph", "attributes": {"code_id": "code_test123", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "failed", "payment_intent_id": "pi_test123", "failed_message": "Test failure", "failed_code": "RJCT", "amount": 2000, "currency": "PHP"}}}}'
+
+# QR Expired
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"id": "evt_789", "type": "event", "attributes": {"type": "qrph.expired", "livemode": false, "data": {"id": "code_test123", "type": "qrph", "attributes": {"code_id": "code_test123", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "expired", "payment_intent_id": "pi_test123"}}}}'
+```
+
+### 4. Verify Database Changes
+```sql
+-- Check QR code status
+SELECT id, status, is_active, created_at, used_at FROM qr_codes WHERE id = 'your-qr-code-id';
+
+-- Check state changes
+SELECT id, qr_code_id, from_state, to_state, created_at FROM qr_code_state_changes WHERE qr_code_id = 'your-qr-code-id';
+
+-- Check payment records
+SELECT id, qr_code_id, status, amount, created_at FROM payments WHERE qr_code_id = 'your-qr-code-id';
+```
+
+### 5. Test Error Handling
+```bash
+# Invalid signature
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -H "paymongo-signature: t=1721812322,te=invalid_signature,li=invalid_live_signature" \
+  -d '{"data": {"id": "evt_123", "type": "event", "attributes": {"type": "payment.paid", "livemode": false, "data": {"id": "code_test123", "type": "qrph", "attributes": {"code_id": "code_test123", "livemode": false, "organization_id": "org_test_123", "created_at": "2024-08-07T15:59:11.179+08:00", "source_id": "src_test_123", "source_status": "paid", "payment_intent_id": "pi_test123", "amount": 2000, "currency": "PHP"}}}}'
+
+# Invalid payload
+curl -X POST http://localhost:3000/api/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"invalid": "payload"}'
+```
 
 ## Notes
 

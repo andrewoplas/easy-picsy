@@ -9,6 +9,7 @@ import { DatabaseModule } from '../database/database.module';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { SupabaseModule } from '../supabase/supabase.module';
+import { QrCodesModule } from '../qr-codes/qr-codes.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SupabaseModule } from '../supabase/supabase.module';
     AuthModule,
     UsersModule,
     SupabaseModule,
+    QrCodesModule,
   ],
   controllers: [LoggingController, BoothLoggingController],
   providers: [

@@ -3,6 +3,7 @@ import { BoothEventData, BoothEventType, BoothStatus, GroupedSession } from '@or
 import { and, asc, count, desc, eq } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { BoothLog, boothLogs, events, NewBoothLog } from '../database/schema';
+import { QrCodesService } from '../qr-codes/qr-codes.service';
 
 export interface EventInfo {
   id: string;
@@ -45,7 +46,7 @@ export interface PaginationInfo {
 export class BoothLoggingService {
   private readonly logger = new Logger(BoothLoggingService.name);
 
-  constructor(private databaseService: DatabaseService) {}
+  constructor(private databaseService: DatabaseService, private qrCodesService: QrCodesService) {}
 
   async logBoothEvent(options: LogBoothEventOptions): Promise<string> {
     const db = this.databaseService.getDb();
@@ -68,6 +69,17 @@ export class BoothLoggingService {
       };
 
       const [created] = await db.insert(boothLogs).values(boothLog).returning();
+
+      // Handle session completion
+      if (options.boothEvent.event_type === BoothEventType.SESSION_END && options.qrCodeId && options.eventId) {
+        try {
+          await this.qrCodesService.markQRCodeCompleted(options.qrCodeId);
+          this.logger.log(`Marked QR code ${options.qrCodeId} as completed after session end`);
+        } catch (error) {
+          this.logger.error(`Failed to mark QR code ${options.qrCodeId} as completed:`, error);
+          // Don't throw - we still want to log the booth event even if QR status update fails
+        }
+      }
 
       this.logger.log(
         `Booth event logged: ${options.boothEvent.event_type} (${created.id}) for session ${options.sessionId}`,
@@ -113,8 +125,8 @@ export class BoothLoggingService {
     const boothLogsResults = await query;
 
     // Get unique event IDs from the booth logs
-    const eventIds = [...new Set(boothLogsResults.map(log => log.eventId).filter(Boolean))];
-    
+    const eventIds = [...new Set(boothLogsResults.map((log) => log.eventId).filter(Boolean))];
+
     // Fetch events data if there are any event IDs
     const eventsData: EventInfo[] = [];
     if (eventIds.length > 0) {
@@ -133,7 +145,7 @@ export class BoothLoggingService {
           .from(events)
           .where(eq(events.id, eventId!))
           .limit(1);
-        
+
         if (eventResult.length > 0) {
           eventsData.push({
             id: eventResult[0].id,
@@ -146,12 +158,12 @@ export class BoothLoggingService {
         }
       }
     }
-    
+
     // Create a map for quick event lookup
-    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
-    
+    const eventsMap = new Map(eventsData.map((event) => [event.id, event]));
+
     // Transform the results to match the expected format
-    return boothLogsResults.map(log => ({
+    return boothLogsResults.map((log) => ({
       ...log,
       event: log.eventId ? eventsMap.get(log.eventId) : undefined,
     }));
@@ -159,7 +171,7 @@ export class BoothLoggingService {
 
   async getSessionEvents(sessionId: string): Promise<BoothLogWithEvent[]> {
     const db = this.databaseService.getDb();
-    
+
     const boothLogsResults = await db
       .select()
       .from(boothLogs)
@@ -167,8 +179,8 @@ export class BoothLoggingService {
       .orderBy(asc(boothLogs.createdAt));
 
     // Get unique event IDs from the booth logs
-    const eventIds = [...new Set(boothLogsResults.map(log => log.eventId).filter(Boolean))];
-    
+    const eventIds = [...new Set(boothLogsResults.map((log) => log.eventId).filter(Boolean))];
+
     // Fetch events data if there are any event IDs
     const eventsData: EventInfo[] = [];
     if (eventIds.length > 0) {
@@ -185,7 +197,7 @@ export class BoothLoggingService {
           .from(events)
           .where(eq(events.id, eventId!))
           .limit(1);
-        
+
         if (eventResult.length > 0) {
           eventsData.push({
             id: eventResult[0].id,
@@ -198,12 +210,12 @@ export class BoothLoggingService {
         }
       }
     }
-    
+
     // Create a map for quick event lookup
-    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
-    
+    const eventsMap = new Map(eventsData.map((event) => [event.id, event]));
+
     // Transform the results to match the expected format
-    return boothLogsResults.map(log => ({
+    return boothLogsResults.map((log) => ({
       ...log,
       event: log.eventId ? eventsMap.get(log.eventId) : undefined,
     }));
@@ -250,8 +262,8 @@ export class BoothLoggingService {
     const totalSessions = totalSessionsResult[0]?.count || 0;
 
     // Get unique event IDs from the sessions
-    const eventIds = [...new Set(sessionsStart.map(session => session.eventId).filter(Boolean))];
-    
+    const eventIds = [...new Set(sessionsStart.map((session) => session.eventId).filter(Boolean))];
+
     // Fetch events data if there are any event IDs
     const eventsData: EventInfo[] = [];
     if (eventIds.length > 0) {
@@ -268,7 +280,7 @@ export class BoothLoggingService {
           .from(events)
           .where(eq(events.id, eventId!))
           .limit(1);
-        
+
         if (eventResult.length > 0) {
           eventsData.push({
             id: eventResult[0].id,
@@ -281,9 +293,9 @@ export class BoothLoggingService {
         }
       }
     }
-    
+
     // Create a map for quick event lookup
-    const eventsMap = new Map(eventsData.map(event => [event.id, event]));
+    const eventsMap = new Map(eventsData.map((event) => [event.id, event]));
 
     const sessions: GroupedSessionWithEvent[] = await Promise.all(
       sessionsStart.map(async (sessionStart) => {

@@ -10,34 +10,28 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { QrCodeRealtimeStatus } from '@org/commons';
 
-export interface QRCodeStatusUpdate {
+// Essential WebSocket events only
+export interface PaymentSuccess {
   qrCodeId: string;
   eventId: string;
-  status: QrCodeRealtimeStatus;
-  expiresAt?: string;
-  timeUntilExpiry?: number;
-  failureReason?: string;
-}
-
-export interface PaymentNotification {
   paymentId: string;
-  eventId: string;
-  qrCodeId: string;
   amount: number;
   currency: string;
-  status: 'completed' | 'failed';
 }
 
-export interface QRCodeGenerated {
+export interface PaymentFailed {
   qrCodeId: string;
   eventId: string;
-  checkoutUrl: string | null;
-  qrCodeImage: string;
-  expiresAt: string;
-  amount: number;
-  currency: string;
+  paymentId: string;
+  failureReason: string;
+}
+
+export interface QRExpiryWarning {
+  qrCodeId: string;
+  eventId: string;
+  minutesRemaining: number;
+  message: string;
 }
 
 @WebSocketGateway({
@@ -120,75 +114,9 @@ export class EventsGateway
   }
 
   /**
-   * Broadcast QR code status update to event room
-   */
-  broadcastQRStatusUpdate(eventId: string, update: QRCodeStatusUpdate) {
-    this.server.to(`event_${eventId}`).emit('qrStatusUpdate', update);
-    this.logger.log(
-      `Broadcasted QR status update for event ${eventId}: ${update.status}`
-    );
-  }
-
-  /**
-   * Broadcast payment notification to event room
-   */
-  broadcastPaymentNotification(eventId: string, payment: PaymentNotification) {
-    this.server.to(`event_${eventId}`).emit('paymentReceived', payment);
-    this.logger.log(
-      `Broadcasted payment notification for event ${eventId}: ${payment.status}`
-    );
-  }
-
-  /**
-   * Broadcast new QR code generation to event room
-   */
-  broadcastQRCodeGenerated(eventId: string, qrCode: QRCodeGenerated) {
-    this.server.to(`event_${eventId}`).emit('qrCodeGenerated', qrCode);
-    this.logger.log(`Broadcasted QR code generation for event ${eventId}`);
-  }
-
-  /**
-   * Broadcast QR code expiry warning (5 minutes before expiry)
-   */
-  broadcastQRExpiryWarning(
-    eventId: string,
-    qrCodeId: string,
-    minutesRemaining: number
-  ) {
-    this.server.to(`event_${eventId}`).emit('qrExpiryWarning', {
-      qrCodeId,
-      eventId,
-      minutesRemaining,
-      message: `QR code expires in ${minutesRemaining} minutes`,
-    });
-    this.logger.log(
-      `Broadcasted QR expiry warning for event ${eventId}: ${minutesRemaining}min remaining`
-    );
-  }
-
-  /**
-   * Send connection status to all clients
-   */
-  broadcastConnectionStatus(status: 'connected' | 'reconnected' | 'error') {
-    this.server.emit('connectionStatus', {
-      status,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  /**
    * Broadcast payment success to event room
    */
-  broadcastPaymentSuccess(
-    eventId: string,
-    payment: {
-      qrCodeId: string;
-      eventId: string;
-      paymentId: string;
-      amount: number;
-      currency: string;
-    }
-  ) {
+  broadcastPaymentSuccess(eventId: string, payment: PaymentSuccess) {
     this.server.to(`event_${eventId}`).emit('paymentSuccess', payment);
     this.logger.log(
       `Broadcasted payment success for event ${eventId}: ${payment.paymentId}`
@@ -198,18 +126,20 @@ export class EventsGateway
   /**
    * Broadcast payment failure to event room
    */
-  broadcastPaymentFailed(
-    eventId: string,
-    payment: {
-      qrCodeId: string;
-      eventId: string;
-      paymentId: string;
-      failureReason: string;
-    }
-  ) {
+  broadcastPaymentFailed(eventId: string, payment: PaymentFailed) {
     this.server.to(`event_${eventId}`).emit('paymentFailed', payment);
     this.logger.log(
       `Broadcasted payment failure for event ${eventId}: ${payment.failureReason}`
+    );
+  }
+
+  /**
+   * Broadcast QR code expiry warning (5 minutes before expiry)
+   */
+  broadcastQRExpiryWarning(eventId: string, warning: QRExpiryWarning) {
+    this.server.to(`event_${eventId}`).emit('qrExpiryWarning', warning);
+    this.logger.log(
+      `Broadcasted QR expiry warning for event ${eventId}: ${warning.minutesRemaining}min remaining`
     );
   }
 }

@@ -6,7 +6,6 @@ import { WebhookReconciliationService } from './webhook-reconciliation.service';
 import { DatabaseModule } from '../database/database.module';
 import { PaymongoModule } from '../paymongo/paymongo.module';
 import { QrCodesModule } from '../qr-codes/qr-codes.module';
-import { RealtimeModule } from '../realtime/realtime.module';
 import { LoggingModule } from '../logging/logging.module';
 
 @Module({
@@ -16,7 +15,6 @@ import { LoggingModule } from '../logging/logging.module';
     LoggingModule,
     PaymongoModule,
     forwardRef(() => QrCodesModule),
-    forwardRef(() => RealtimeModule),
   ],
   controllers: [WebhooksController],
   providers: [WebhooksService, WebhookReconciliationService],
