@@ -7,7 +7,6 @@ import { EventsModule } from '../events/events.module';
 import { LoggingModule } from '../logging/logging.module';
 import { PaymongoModule } from '../paymongo/paymongo.module';
 import { QrCodesModule } from '../qr-codes/qr-codes.module';
-import { RealtimeModule } from '../realtime/realtime.module';
 import { SupabaseModule } from '../supabase/supabase.module';
 import { UsersModule } from '../users/users.module';
 import { WebhooksModule } from '../webhooks/webhooks.module';
@@ -24,7 +23,6 @@ import { AppService } from './app.service';
     EventsModule,
     PaymongoModule,
     QrCodesModule,
-    RealtimeModule,
     WebhooksModule,
     LoggingModule,
     AnalyticsModule,
