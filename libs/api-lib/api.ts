@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Easy Picsy - Photobooth Payment API
- *        A comprehensive API for managing photobooth events, QR code payments, and real-time communication.              ## Features       - 🎫 Event Management (CRUD operations)       - 💳 PayMongo Payment Integration         - 🔄 Dynamic QR Code Generation (30-min expiry)       - ⚡ Real-time WebSocket Updates       - 🔐 Supabase Authentication       - 📊 Payment Analytics              ## Authentication       Most endpoints require a Bearer token from Supabase authentication.       Add your token to the \"Authorize\" button above to test endpoints.              ## WebSocket Real-time Communication              **Connection URL:** `ws://localhost:3000/events`              **Authentication:** Include JWT token in one of these ways:       - `auth.token` in connection options       - `Authorization: Bearer <token>` header       - `token` query parameter              **Available Events:**              ### Client → Server       - `joinEvent` - Join event room for updates         ```json         { \"eventId\": \"uuid\" }         ```       - `leaveEvent` - Leave event room         ```json         { \"eventId\": \"uuid\" }         ```              ### Server → Client       - `qrStatusUpdate` - QR code status changed       - `paymentReceived` - Payment completed       - `qrCodeGenerated` - New QR code created       - `qrExpiryWarning` - QR code expires soon       - `connectionStatus` - Connection status updates              **Room-based Broadcasting:** Events are sent only to clients in specific event rooms.     
+ *        A comprehensive API for managing photobooth events, QR code payments, and real-time communication.              ## Features       - 🎫 Event Management (CRUD operations)       - 💳 PayMongo Payment Integration         - 🔄 Dynamic QR Code Generation (30-min expiry)       - ⚡ Real-time WebSocket Updates       - 🔐 Supabase Authentication       - 📊 Payment Analytics              ## Authentication       Most endpoints require a Bearer token from Supabase authentication.       Add your token to the \"Authorize\" button above to test endpoints.              ## Real-time Updates              **Client-side Polling:** Clients poll QR code status endpoints for real-time updates.              **QR Code Status Endpoint:** `GET /api/qr-codes/{qrCodeId}/status`              **Polling Strategy:** Clients should poll every 2-3 seconds to check for status changes.     
  *
  * The version of the OpenAPI document: 1.0
  * Contact: support@easypicsy.com
@@ -530,9 +530,9 @@ export interface CurrentQrCodeResponseDto {
 export const CurrentQrCodeResponseDtoStatusEnum = {
     Active: 'active',
     Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated',
     Paid: 'paid',
+    Completed: 'completed',
+    Invalidated: 'invalidated',
     Failed: 'failed'
 } as const;
 
@@ -1348,9 +1348,9 @@ export interface QrCodeResponseDto {
 export const QrCodeResponseDtoStatusEnum = {
     Active: 'active',
     Expired: 'expired',
-    Used: 'used',
-    Invalidated: 'invalidated',
     Paid: 'paid',
+    Completed: 'completed',
+    Invalidated: 'invalidated',
     Failed: 'failed'
 } as const;
 

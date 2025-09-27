@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { QrCodeStatus } from '@org/commons/lib/types';
 import { and, eq, lt } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { qrCodes } from '../database/schema';
@@ -29,43 +29,37 @@ export class WebhookReconciliationService {
   async reconcileMissedPayments() {
     try {
       this.logger.log('Starting webhook reconciliation check');
-      
+
       const db = this.databaseService.getDb();
-      
+
       // Find active QR codes that are older than 2 minutes
       // These might have completed payments we missed
       const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-      
+
       const activeQrCodes = await db
         .select()
         .from(qrCodes)
-        .where(
-          and(
-            eq(qrCodes.status, 'active'),
-            eq(qrCodes.isActive, true),
-            lt(qrCodes.createdAt, twoMinutesAgo)
-          )
-        )
+        .where(and(eq(qrCodes.status, QrCodeStatus.ACTIVE), eq(qrCodes.isActive, true), lt(qrCodes.createdAt, twoMinutesAgo)))
         .limit(10); // Process in batches
-      
+
       if (activeQrCodes.length === 0) {
         return;
       }
-      
+
       this.logger.log(`Checking ${activeQrCodes.length} active QR codes for missed payments`);
-      
+
       for (const qrCode of activeQrCodes) {
         try {
           // Check payment intent status with PayMongo API
-          const paymentIntent = await this.paymongoService.getPaymentIntent(qrCode.paymongoLinkId);
-          
+          const paymentIntent = await this.paymongoService.getPaymentIntent(qrCode.paymentIntentId);
+
           // If payment is completed but QR code is still active, we missed the webhook
-          if (paymentIntent.attributes.status === 'succeeded' && qrCode.status === 'active') {
+          if (paymentIntent.attributes.status === 'succeeded' && qrCode.status === QrCodeStatus.ACTIVE) {
             this.logger.warn(`Found missed payment for QR code ${qrCode.id}`);
-            
+
             // Mark QR code as used
-            await this.qrCodesService.markQRCodeUsed(qrCode.id, qrCode.eventId);
-            
+            await this.qrCodesService.markQRCodePaid(qrCode.id, qrCode.eventId);
+
             // Log the reconciliation
             await this.loggingService.logEvent({
               eventType: 'payment_reconciled',
@@ -80,28 +74,28 @@ export class WebhookReconciliationService {
               message: 'Payment reconciled via API check (missed webhook)',
             });
           }
-          
+
           // If payment intent is expired, mark QR code as expired
-          if (paymentIntent.attributes.status === 'awaiting_payment_method' && 
-              new Date() > new Date(qrCode.expiresAt)) {
+          if (
+            paymentIntent.attributes.status === 'awaiting_payment_method' &&
+            new Date() > new Date(qrCode.expiresAt)
+          ) {
             await db
               .update(qrCodes)
-              .set({ 
-                status: 'expired',
-                isActive: false
+              .set({
+                status: QrCodeStatus.EXPIRED,
+                isActive: false,
               })
               .where(eq(qrCodes.id, qrCode.id));
-              
+
             this.logger.log(`Marked expired QR code ${qrCode.id} via reconciliation`);
           }
-          
         } catch (error) {
           this.logger.error(`Failed to reconcile QR code ${qrCode.id}:`, error);
         }
       }
-      
+
       this.logger.log('Webhook reconciliation check completed');
-      
     } catch (error) {
       this.logger.error('Reconciliation job failed:', error);
     }
@@ -115,21 +109,18 @@ export class WebhookReconciliationService {
     const db = this.databaseService.getDb();
     let reconciled = 0;
     let errors = 0;
-    
+
     try {
       // Get all QR codes for this event
-      const eventQrCodes = await db
-        .select()
-        .from(qrCodes)
-        .where(eq(qrCodes.eventId, eventId));
-      
+      const eventQrCodes = await db.select().from(qrCodes).where(eq(qrCodes.eventId, eventId));
+
       for (const qrCode of eventQrCodes) {
         try {
-          const paymentIntent = await this.paymongoService.getPaymentIntent(qrCode.paymongoLinkId);
-          
+          const paymentIntent = await this.paymongoService.getPaymentIntent(qrCode.paymentIntentId);
+
           // Update QR code status based on payment intent
-          if (paymentIntent.attributes.status === 'succeeded' && qrCode.status !== 'used') {
-            await this.qrCodesService.markQRCodeUsed(qrCode.id, qrCode.eventId);
+          if (paymentIntent.attributes.status === 'succeeded' && qrCode.status !== QrCodeStatus.PAID) {
+            await this.qrCodesService.markQRCodePaid(qrCode.id, qrCode.eventId);
             reconciled++;
           }
         } catch (error) {
@@ -137,9 +128,8 @@ export class WebhookReconciliationService {
           this.logger.error(`Failed to reconcile QR code ${qrCode.id}:`, error);
         }
       }
-      
+
       return { reconciled, errors };
-      
     } catch (error) {
       this.logger.error(`Failed to reconcile event ${eventId}:`, error);
       throw error;
