@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { QrCodeStatus } from '@org/commons/lib/types';
+import { QrCodeStatus } from '@org/commons';
 import { and, eq, lt } from 'drizzle-orm';
 import { DatabaseService } from '../database/database.service';
 import { qrCodes } from '../database/schema';
@@ -39,7 +39,13 @@ export class WebhookReconciliationService {
       const activeQrCodes = await db
         .select()
         .from(qrCodes)
-        .where(and(eq(qrCodes.status, QrCodeStatus.ACTIVE), eq(qrCodes.isActive, true), lt(qrCodes.createdAt, twoMinutesAgo)))
+        .where(
+          and(
+            eq(qrCodes.status, QrCodeStatus.ACTIVE),
+            eq(qrCodes.isActive, true),
+            lt(qrCodes.createdAt, twoMinutesAgo),
+          ),
+        )
         .limit(10); // Process in batches
 
       if (activeQrCodes.length === 0) {
