@@ -30,7 +30,7 @@ export default function TermsOfServicePage() {
           <section>
             <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-easy-black mb-3 sm:mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-700 leading-relaxed">
-              By accessing and using Easy Picsy ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+              By accessing and using Easy Picsy (&ldquo;the Service&rdquo;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
             </p>
           </section>
 

@@ -1,27 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
+import { ActivityTimeline } from '@/components/analytics/ActivityTimeline';
+import { TransactionHistory } from '@/components/analytics/TransactionHistory';
 import { Button } from '@/components/ui/button';
-import { ROUTES, buildRoute, navigation } from '@/lib/routes';
-import {
-  TrendingUp,
-  DollarSign,
-  Clock,
-  Printer,
-  Copy,
-  RefreshCw,
-  Activity,
-  ChevronRight,
-  Home,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
 import { useFormattedEventAnalytics } from '@/hooks/useAnalytics';
 import { eventsApi } from '@/lib/api/events';
+import { ROUTES, buildRoute } from '@/lib/routes';
 import { useQuery } from '@tanstack/react-query';
-import { TransactionHistory } from '@/components/analytics/TransactionHistory';
-import { ActivityTimeline } from '@/components/analytics/ActivityTimeline';
+import { Activity, ChevronRight, Clock, Copy, DollarSign, Home, Printer, RefreshCw, TrendingUp } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 // Custom hook for odometer animation
 const useOdometer = (targetValue: number, duration = 2000) => {
@@ -32,29 +22,29 @@ const useOdometer = (targetValue: number, duration = 2000) => {
     setIsAnimating(true);
     const startTime = Date.now();
     const startValue = 0;
-    
+
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Easing function for smooth animation
       const easeOutCubic = 1 - Math.pow(1 - progress, 3);
       const value = Math.floor(startValue + (targetValue - startValue) * easeOutCubic);
-      
+
       setCurrentValue(value);
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
         setIsAnimating(false);
       }
     };
-    
+
     // Start animation after a brief delay for better visual effect
     const timer = setTimeout(() => {
       requestAnimationFrame(animate);
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [targetValue, duration]);
 
@@ -65,7 +55,6 @@ export default function EventAnalyticsPage() {
   const router = useRouter();
   const params = useParams();
   const eventId = params.id as string;
-  
 
   // Fetch event details
   const { data: event, isLoading: eventLoading } = useQuery({
@@ -75,11 +64,11 @@ export default function EventAnalyticsPage() {
   });
 
   // Fetch analytics data
-  const { 
-    data: analytics, 
-    isLoading: analyticsLoading, 
+  const {
+    data: analytics,
+    isLoading: analyticsLoading,
     error: analyticsError,
-    refetch: refetchAnalytics 
+    refetch: refetchAnalytics,
   } = useFormattedEventAnalytics(eventId);
 
   // Loading state
@@ -94,10 +83,9 @@ export default function EventAnalyticsPage() {
     return new Intl.NumberFormat('en-PH', {
       style: 'currency',
       currency: 'PHP',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
-
 
   const handleRefresh = () => {
     toast.promise(refetchAnalytics(), {
@@ -123,12 +111,7 @@ export default function EventAnalyticsPage() {
                   {analyticsError instanceof Error ? analyticsError.message : 'An error occurred'}
                 </p>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh}
-                className="ml-auto"
-              >
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="ml-auto">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Retry
               </Button>
@@ -174,20 +157,14 @@ export default function EventAnalyticsPage() {
           Events
         </button>
         <ChevronRight className="w-4 h-4" />
-        <span className="text-dash-navy font-medium">
-          {event?.name || 'Event Analytics'}
-        </span>
+        <span className="text-dash-navy font-medium">{event?.name || 'Event Analytics'}</span>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-normal text-dash-navy tracking-wide">
-            {event?.name || 'Event Analytics'}
-          </h1>
-          <p className="text-dash-navy/70">
-            Event management and analytics
-          </p>
+          <h1 className="text-3xl font-normal text-dash-navy tracking-wide">{event?.name || 'Event Analytics'}</h1>
+          <p className="text-dash-navy/70">Event management and analytics</p>
         </div>
         <Button
           variant="outline"
@@ -214,10 +191,7 @@ export default function EventAnalyticsPage() {
                 <p className="text-sm text-blue-700">Access mobile-friendly booth controls</p>
               </div>
             </div>
-            <Button
-              onClick={() => router.push(buildRoute.eventRemote(eventId))}
-              variant="gradient"
-            >
+            <Button onClick={() => router.push(buildRoute.eventRemote(eventId))} variant="gradient">
               Open Remote
             </Button>
           </div>
@@ -230,7 +204,7 @@ export default function EventAnalyticsPage() {
           <TrendingUp className="w-6 h-6 mr-3" />
           Analytics Dashboard
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Running Earnings Card */}
           <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:shadow-lg transition-shadow">
@@ -238,12 +212,20 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 bg-emerald-500 rounded-lg transition-all duration-300 ${earnings.isAnimating ? 'animate-pulse scale-110' : ''}`}>
+                    <div
+                      className={`p-2 bg-emerald-500 rounded-lg transition-all duration-300 ${
+                        earnings.isAnimating ? 'animate-pulse scale-110' : ''
+                      }`}
+                    >
                       <DollarSign className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-emerald-700">Running Earnings</h3>
                   </div>
-                  <p className={`text-3xl font-bold text-emerald-900 transition-all duration-300 ${earnings.isAnimating ? 'text-emerald-600' : ''}`}>
+                  <p
+                    className={`text-3xl font-bold text-emerald-900 transition-all duration-300 ${
+                      earnings.isAnimating ? 'text-emerald-600' : ''
+                    }`}
+                  >
                     {analytics?.formattedEarnings || formatCurrency(0)}
                   </p>
                   <p className="text-xs text-emerald-600">Total revenue today</p>
@@ -263,9 +245,7 @@ export default function EventAnalyticsPage() {
                     </div>
                     <h3 className="text-sm font-medium text-blue-700">Avg Session Time</h3>
                   </div>
-                  <p className="text-3xl font-bold text-blue-900">
-                    {analytics?.sessionAverageTime || '0:00'}
-                  </p>
+                  <p className="text-3xl font-bold text-blue-900">{analytics?.sessionAverageTime || '0:00'}</p>
                   <p className="text-xs text-blue-600">Per session duration</p>
                 </div>
               </div>
@@ -278,12 +258,20 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 bg-purple-500 rounded-lg transition-all duration-300 ${prints.isAnimating ? 'animate-pulse scale-110' : ''}`}>
+                    <div
+                      className={`p-2 bg-purple-500 rounded-lg transition-all duration-300 ${
+                        prints.isAnimating ? 'animate-pulse scale-110' : ''
+                      }`}
+                    >
                       <Printer className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-purple-700">Total Prints</h3>
                   </div>
-                  <p className={`text-3xl font-bold text-purple-900 transition-all duration-300 ${prints.isAnimating ? 'text-purple-600' : ''}`}>
+                  <p
+                    className={`text-3xl font-bold text-purple-900 transition-all duration-300 ${
+                      prints.isAnimating ? 'text-purple-600' : ''
+                    }`}
+                  >
                     {prints.currentValue.toLocaleString()}
                   </p>
                   <p className="text-xs text-purple-600">Photos printed today</p>
@@ -298,12 +286,20 @@ export default function EventAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 bg-orange-500 rounded-lg transition-all duration-300 ${reprints.isAnimating ? 'animate-pulse scale-110' : ''}`}>
+                    <div
+                      className={`p-2 bg-orange-500 rounded-lg transition-all duration-300 ${
+                        reprints.isAnimating ? 'animate-pulse scale-110' : ''
+                      }`}
+                    >
                       <Copy className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-medium text-orange-700">Total Reprints</h3>
                   </div>
-                  <p className={`text-3xl font-bold text-orange-900 transition-all duration-300 ${reprints.isAnimating ? 'text-orange-600' : ''}`}>
+                  <p
+                    className={`text-3xl font-bold text-orange-900 transition-all duration-300 ${
+                      reprints.isAnimating ? 'text-orange-600' : ''
+                    }`}
+                  >
                     {reprints.currentValue.toLocaleString()}
                   </p>
                   <p className="text-xs text-orange-600">Reprints requested</p>

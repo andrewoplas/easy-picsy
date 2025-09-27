@@ -16,18 +16,57 @@ interface QrCodeStatusBadgeProps {
   status: `${QrCodeStatus}`;
 }
 
-const statusConfig: Record<`${QrCodeStatus}`, { color: string; label: string }> = {
-  [QrCodeStatus.ACTIVE]: { color: 'bg-green-100 text-green-800', label: 'ACTIVE' },
-  [QrCodeStatus.EXPIRED]: { color: 'bg-red-100 text-red-800', label: 'EXPIRED' },
-  [QrCodeStatus.USED]: { color: 'bg-blue-100 text-blue-800', label: 'USED' },
-  [QrCodeStatus.INVALIDATED]: { color: 'bg-gray-100 text-gray-800', label: 'INVALIDATED' },
-  [QrCodeStatus.PAID]: { color: 'bg-green-800 text-white', label: 'PAID' },
-  [QrCodeStatus.FAILED]: { color: 'bg-red-100 text-red-800', label: 'FAILED' },
+const statusConfig: Record<`${QrCodeStatus}`, { color: string; label: string; bgColor: string; textColor: string }> = {
+  [QrCodeStatus.ACTIVE]: { 
+    color: 'bg-green-100 text-green-800 border-green-200', 
+    label: 'ACTIVE',
+    bgColor: 'bg-green-50',
+    textColor: 'text-green-700'
+  },
+  [QrCodeStatus.EXPIRED]: { 
+    color: 'bg-amber-100 text-amber-800 border-amber-200', 
+    label: 'EXPIRED',
+    bgColor: 'bg-amber-50',
+    textColor: 'text-amber-700'
+  },
+  [QrCodeStatus.SESSION_COMPLETED]: { 
+    color: 'bg-blue-100 text-blue-800 border-blue-200', 
+    label: 'COMPLETED',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-700'
+  },
+  [QrCodeStatus.INVALIDATED]: { 
+    color: 'bg-gray-100 text-gray-600 border-gray-200', 
+    label: 'INVALIDATED',
+    bgColor: 'bg-gray-50',
+    textColor: 'text-gray-600'
+  },
+  [QrCodeStatus.PAID]: { 
+    color: 'bg-emerald-100 text-emerald-800 border-emerald-200', 
+    label: 'PAID',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700'
+  },
+  [QrCodeStatus.FAILED]: { 
+    color: 'bg-red-100 text-red-800 border-red-200', 
+    label: 'FAILED',
+    bgColor: 'bg-red-50',
+    textColor: 'text-red-700'
+  },
 };
 
 function QrCodeStatusBadge({ status }: QrCodeStatusBadgeProps) {
   const config = statusConfig[status];
-  return <Badge className={cn(config.color, 'px-2 py-0.5 text-xs font-medium font-sans')}>{config.label}</Badge>;
+  return (
+    <Badge 
+      className={cn(
+        'px-2 py-0.5 text-xs font-medium font-sans border',
+        config.color
+      )}
+    >
+      {config.label}
+    </Badge>
+  );
 }
 
 interface QrCodeStatProps {
@@ -118,13 +157,13 @@ function QrCodeItem({ qrCode }: QrCodeItemProps) {
 
             <div className="flex gap-3 pt-1">
               {qrCode.usedAt && (
-                <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-md flex items-center font-sans">
+                <div className="text-xs text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded-md flex items-center font-sans">
                   <Timer className="w-3 h-3 mr-1" />
                   Used: {formatDateTime(qrCode.usedAt as unknown as string)}
                 </div>
               )}
               {qrCode.invalidatedAt && (
-                <div className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-md flex items-center font-sans">
+                <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 px-2 py-1 rounded-md flex items-center font-sans">
                   <Trash2 className="w-3 h-3 mr-1" />
                   Invalidated: {formatDateTime(qrCode.invalidatedAt as unknown as string)}
                 </div>
@@ -225,29 +264,45 @@ function QrCodeStats({ qrCodes }: QrCodeStatsProps) {
       icon: <div className="w-2 h-2 rounded-full bg-green-500" />,
       bgColor: 'bg-green-50',
       hoverBgColor: 'hover:bg-green-100/50',
-      textColor: 'text-green-600',
+      textColor: 'text-green-700',
     },
     {
-      label: 'Used',
-      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.USED).length,
+      label: 'Session Completed',
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.SESSION_COMPLETED).length,
       icon: <div className="w-2 h-2 rounded-full bg-blue-500" />,
       bgColor: 'bg-blue-50',
       hoverBgColor: 'hover:bg-blue-100/50',
-      textColor: 'text-blue-600',
+      textColor: 'text-blue-700',
     },
     {
       label: 'Expired',
       value: qrCodes.filter((qr) => qr.status === QrCodeStatus.EXPIRED).length,
+      icon: <div className="w-2 h-2 rounded-full bg-amber-500" />,
+      bgColor: 'bg-amber-50',
+      hoverBgColor: 'hover:bg-amber-100/50',
+      textColor: 'text-amber-700',
+    },
+    {
+      label: 'Paid',
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.PAID).length,
+      icon: <div className="w-2 h-2 rounded-full bg-emerald-500" />,
+      bgColor: 'bg-emerald-50',
+      hoverBgColor: 'hover:bg-emerald-100/50',
+      textColor: 'text-emerald-700',
+    },
+    {
+      label: 'Failed',
+      value: qrCodes.filter((qr) => qr.status === QrCodeStatus.FAILED).length,
       icon: <div className="w-2 h-2 rounded-full bg-red-500" />,
       bgColor: 'bg-red-50',
       hoverBgColor: 'hover:bg-red-100/50',
-      textColor: 'text-red-600',
+      textColor: 'text-red-700',
     },
   ];
 
   return (
     <div className="border-t border-dash-gray/30 pt-4">
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {stats.map((stat, index) => (
           <div
             key={index}
